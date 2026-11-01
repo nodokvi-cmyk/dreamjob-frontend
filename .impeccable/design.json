@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-01T03:20:00Z",
+  "title": "Design System: DreamJob",
+  "extensions": {
+    "colorMeta": {
+      "enamel": { "role": "neutral", "displayName": "Midnight Enamel", "canonical": "#0b1230", "tonalRamp": ["#04071a", "#070c22", "#0b1230", "#142048", "#26346a", "#4a5a94", "#8f9cc6", "#dfe4f3"] },
+      "porcelain": { "role": "neutral", "displayName": "Porcelain", "canonical": "#f4f6fb", "tonalRamp": ["#2a3150", "#4a5677", "#7682a3", "#a7b1cc", "#c3cce2", "#d6dceb", "#e9edf6", "#f4f6fb"] },
+      "primary": { "role": "primary", "displayName": "Scarlet Line", "canonical": "#d71a2a", "tonalRamp": ["#3d060b", "#6e0c15", "#a3121f", "#d71a2a", "#e21d2d", "#ee5a63", "#f6a3a8", "#fde5e7"] },
+      "line-cobalt": { "role": "secondary", "displayName": "Cobalt Line", "canonical": "#1e5bff", "tonalRamp": ["#071a4d", "#0d2d85", "#1747c7", "#1e5bff", "#5b86ff", "#86a8ff", "#bccfff", "#e7eeff"] },
+      "line-amber": { "role": "tertiary", "displayName": "Amber Line", "canonical": "#ffc20e", "tonalRamp": ["#4a3600", "#7a5900", "#b38400", "#e6aa00", "#ffc20e", "#ffd453", "#ffe597", "#fff6d9"] },
+      "line-green": { "role": "secondary", "displayName": "Green Line", "canonical": "#22b14c", "tonalRamp": ["#06301a", "#0c5226", "#137a35", "#1b9a42", "#22b14c", "#4fd17c", "#98e6b2", "#e2f8ea"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only; uppercase Barlow Condensed." },
+      "heading": { "displayName": "Heading", "purpose": "Section and panel titles, uppercase." },
+      "label": { "displayName": "Transit label", "purpose": "Nav, buttons, station names, column titles; tracked uppercase." },
+      "body": { "displayName": "Body", "purpose": "Reading text and inputs in Barlow." }
+    },
+    "shadows": [
+      { "name": "search-lift", "value": "0 18px 40px -24px rgb(11 18 48 / 0.45)", "purpose": "Lifts the hero search field, the main task." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The line filling toward a reached station." },
+      { "name": "arrive", "value": "1.1s ease-out", "purpose": "One ring pulse when a station is reached." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main forward action: search, post a vacancy, create account.",
+      "html": "<button class=\"ds-btn-primary\">Post a vacancy<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:12px;background:#d71a2a;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .15s ease-out}.ds-btn-primary:hover{background:#b9131f}.ds-btn-primary:focus-visible{outline:2px solid #1e5bff;outline-offset:2px}.ds-btn-primary:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Button on Enamel",
+      "kind": "button",
+      "refersTo": "button-on-enamel",
+      "description": "Secondary action on the enamel shell, such as Sign in.",
+      "html": "<div style=\"background:#0b1230;padding:16px\"><button class=\"ds-btn-enamel\">Sign in</button></div>",
+      "css": ".ds-btn-enamel{height:40px;padding:0 16px;border:1px solid rgba(244,246,251,.35);border-radius:12px;background:transparent;color:#f4f6fb;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .15s,border-color .15s}.ds-btn-enamel:hover{background:#142048;border-color:rgba(244,246,251,.6)}.ds-btn-enamel:focus-visible{outline:2px solid #5b86ff;outline-offset:2px}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Hero search: keyword and city in one bordered field with the action inside.",
+      "html": "<form class=\"ds-search\"><input class=\"ds-search-input\" placeholder=\"Job title or keyword\"><span class=\"ds-search-seam\"></span><input class=\"ds-search-input\" placeholder=\"City\"><button class=\"ds-search-go\" type=\"button\">Search</button></form>",
+      "css": ".ds-search{display:flex;align-items:center;gap:0;max-width:640px;padding:8px;border:2px solid #0b1230;border-radius:17px;background:#fff;box-shadow:0 18px 40px -24px rgb(11 18 48/.45)}.ds-search-input{flex:1;min-width:0;height:48px;padding:0 12px;border:0;background:transparent;font-family:Barlow,sans-serif;font-size:17px;color:#0b1230;outline:none}.ds-search-input::placeholder{color:#4a5677}.ds-search-seam{width:1px;height:32px;background:#d6dceb}.ds-search-go{height:48px;padding:0 24px;border:0;border-radius:12px;background:#d71a2a;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.ds-search-go:hover{background:#b9131f}.ds-search:focus-within{border-color:#1e5bff}"
+    },
+    {
+      "name": "Header Navigation",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Enamel header with tracked labels; the active item carries a green bar.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link ds-active\" href=\"#\">Vacancies</a><a class=\"ds-nav-link\" href=\"#\">For companies</a></nav>",
+      "css": ".ds-nav{display:flex;height:64px;padding:0 16px;background:#0b1230;border-bottom:4px solid #e21d2d}.ds-nav-link{position:relative;display:flex;align-items:center;padding:0 12px;color:#b3bddc;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase}.ds-nav-link:hover{color:#f4f6fb}.ds-nav-link:focus-visible{outline:2px solid #5b86ff;outline-offset:-2px}.ds-active{color:#f4f6fb}.ds-active::after{content:'';position:absolute;left:12px;right:12px;bottom:0;height:3px;border-radius:9999px;background:#22b14c}"
+    },
+    {
+      "name": "Station Track",
+      "kind": "custom",
+      "refersTo": "journey-panel",
+      "description": "Signature status track: travelled line in scarlet, reached station filled, upcoming hollow.",
+      "html": "<ol class=\"ds-track\"><li class=\"ds-st ds-done\"><span class=\"ds-node\"></span>Pending review</li><li class=\"ds-st ds-here\"><span class=\"ds-node\"></span>Published</li><li class=\"ds-st\"><span class=\"ds-node\"></span>Closed</li></ol>",
+      "css": ".ds-track{list-style:none;margin:0;padding:24px;background:#0b1230;border-radius:22px;color:#f4f6fb;display:flex;flex-direction:column;gap:28px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.08em;text-transform:uppercase}.ds-st{position:relative;display:flex;align-items:center;gap:20px}.ds-st:not(:last-child)::before{content:'';position:absolute;left:8px;top:20px;height:36px;width:6px;border-radius:9999px;background:rgba(244,246,251,.2)}.ds-done::before{background:#e21d2d!important}.ds-node{position:relative;z-index:1;width:22px;height:22px;border-radius:50%;border:5px solid rgba(244,246,251,.4);background:#0b1230;box-sizing:border-box}.ds-done .ds-node{border-color:#e21d2d;background:#e21d2d}.ds-here .ds-node{border-color:#f4f6fb;background:#e21d2d}.ds-st:last-child{color:#b3bddc}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The DreamJob Line",
+    "overview": "DreamJob is a metro network in midnight enamel. A vacancy is a journey: categories are lines, statuses are stations. The enamel shell holds in both themes while the working surface switches between porcelain and enamel.",
+    "keyCharacteristics": ["Enamel shell with a scarlet rule", "Condensed transit caps for display and labels", "Line inks reserved for meaning", "Station track for every status"],
+    "rules": [
+      { "name": "Inks carry meaning", "body": "Line colours only ever mark a category, a state or the action.", "section": "colors" },
+      { "name": "Shell is constant", "body": "Header and footer stay enamel in both themes.", "section": "colors" },
+      { "name": "Seams over shadows", "body": "Regions split with 1px seams; one soft lift under the main search only.", "section": "elevation" }
+    ],
+    "dos": ["Use the station track for status and progress", "Keep salaries in tabular figures on the row", "Label every icon-only control"],
+    "donts": ["Don't paint regions with line inks", "Don't add eyebrow labels above headings", "Don't invent counts, employers or testimonials"]
+  }
+}

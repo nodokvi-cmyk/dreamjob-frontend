@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:1440px;height:900px;overflow:hidden;font-family:"Hanken Grotesk",sans-serif;background:#f4f6fb;color:#16233f}
+header{background:#16233f;color:#f4f6fb;padding:0 64px;height:72px;display:flex;align-items:center;gap:40px;border-bottom:4px solid #d63a2f}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;letter-spacing:-.02em}
+.dot{width:26px;height:26px;border-radius:50%;border:5px solid #f4f6fb;background:#d63a2f}
+nav{display:flex;gap:28px;font-size:16px;color:#c9d2e6}
+nav .on{color:#fff;box-shadow:inset 0 -3px #2c9a5b;padding-bottom:4px}
+.right{margin-left:auto;display:flex;gap:12px;align-items:center}
+.btn{padding:10px 18px;border-radius:10px;font-weight:600;font-size:15px}
+.ghost{border:1px solid #3a4a6e}
+.solid{background:#f4f6fb;color:#16233f}
+.hero{padding:44px 64px 24px;display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:end}
+h1{font-size:54px;line-height:1.04;letter-spacing:-.035em;font-weight:800}
+h1 span{color:#d63a2f}
+.lines{background:#16233f;border-radius:18px;padding:20px 22px;color:#f4f6fb}
+.lines h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9fb0d4;margin-bottom:14px}
+.ln{display:flex;align-items:center;gap:12px;font-size:15px;padding:7px 0}
+.ln i{width:32px;height:8px;border-radius:4px}
+.ln b{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:600}
+.search{margin:0 64px;display:flex;background:#fff;border:2px solid #16233f;border-radius:14px;padding:6px;gap:6px}
+.field{flex:1;padding:14px 16px;font-size:17px;color:#5a6785;border-right:1px solid #e3e7f1}
+.field:last-of-type{border:0}
+.go{background:#d63a2f;color:#fff;border-radius:9px;padding:14px 30px;font-weight:700;font-size:17px}
+.list{margin:22px 64px 0;display:flex;flex-direction:column;gap:12px}
+.row{background:#fff;border:1px solid #dfe4ef;border-radius:14px;padding:18px 24px;display:grid;grid-template-columns:8px 1fr 260px 220px;gap:22px;align-items:center}
+.row .stripe{height:56px;border-radius:4px}
+.t{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.co{font-size:14px;color:#5a6785;margin-top:4px;display:flex;gap:10px;align-items:center}
+.ver{font-size:12px;font-weight:700;color:#2c9a5b;border:1.5px solid #2c9a5b;border-radius:999px;padding:2px 8px}
+.stations{display:flex;align-items:center}
+.st{width:14px;height:14px;border-radius:50%;border:3px solid #16233f;background:#fff}
+.st.done{background:#16233f}
+.seg{flex:1;height:4px;background:#16233f}
+.seg.off{background:#cfd6e6}
+.pay{text-align:right}
+.pay strong{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.pay small{font-size:13px;color:#5a6785}
+</style></head><body>
+<header><div class="logo"><span class="dot"></span>DreamJob</div>
+<nav><span class="on">Vacancies</span><span>For companies</span></nav>
+<div class="right"><span class="btn ghost">◐</span><span class="btn ghost">Sign in</span><span class="btn solid">Post a vacancy</span></div></header>
+<section class="hero"><h1>Verified employers.<br>Pay you can see.<br><span>Your next stop.</span></h1>
+<div class="lines"><h3>Lines · categories</h3>
+<div class="ln"><i style="background:#d63a2f"></i>Engineering<b>128</b></div>
+<div class="ln"><i style="background:#2c9a5b"></i>Finance<b>64</b></div>
+<div class="ln"><i style="background:#e2a72e"></i>Hospitality<b>41</b></div>
+<div class="ln"><i style="background:#3d6fd6"></i>Logistics<b>37</b></div></div></section>
+<div class="search"><div class="field">Job title or keyword</div><div class="field">Tbilisi</div><div class="field">Salary from</div><div class="go">Search</div></div>
+<div class="list">
+<div class="row"><div class="stripe" style="background:#d63a2f"></div><div><div class="t">Senior Frontend Engineer</div><div class="co">Kartuli Soft <span class="ver">Verified</span> · Hybrid · Tbilisi</div></div><div class="stations"><span class="st done"></span><span class="seg"></span><span class="st done"></span><span class="seg off"></span><span class="st"></span></div><div class="pay"><strong>5,500 – 7,000 GEL</strong><small>Closes 24 Nov</small></div></div>
+<div class="row"><div class="stripe" style="background:#3d6fd6"></div><div><div class="t">Operations Coordinator</div><div class="co">Batumi Port Logistics <span class="ver">Verified</span> · Onsite · Batumi</div></div><div class="stations"><span class="st done"></span><span class="seg"></span><span class="st done"></span><span class="seg off"></span><span class="st"></span></div><div class="pay"><strong>2,800 – 3,400 GEL</strong><small>Closes 2 Dec</small></div></div>
+<div class="row"><div class="stripe" style="background:#2c9a5b"></div><div><div class="t">Junior Accountant</div><div class="co">Rustaveli Finance <span class="ver">Verified</span> · Onsite · Tbilisi</div></div><div class="stations"><span class="st done"></span><span class="seg"></span><span class="st done"></span><span class="seg off"></span><span class="st"></span></div><div class="pay"><strong>1,800 – 2,200 GEL</strong><small>Closes 9 Dec</small></div></div>
+</div></body></html>
