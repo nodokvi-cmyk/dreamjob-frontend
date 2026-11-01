@@ -1,5 +1,5 @@
-import { routes } from "@/lib/routes";
-import type { Session } from "@/types";
+import { routes, withQuery } from "@/lib/routes";
+import type { AccountType, Session } from "@/types";
 
 export interface NavLink {
   href: string;
@@ -7,6 +7,27 @@ export interface NavLink {
 }
 
 export const companySignUpHref = `${routes.signUp}?account=company`;
+
+export function accountTypeFrom(value: string | null | undefined): AccountType {
+  return value === "company" ? "company" : "user";
+}
+
+export function accountParam(type: AccountType): string | null {
+  return type === "company" ? "company" : null;
+}
+
+export function homeFor(session: Session): string {
+  if (session.accountRole === "company") return routes.dashboard;
+  if (session.accountRole === "admin") return routes.admin;
+  return routes.vacancies;
+}
+
+export function afterAuthPath(session: Session, next: string | null): string {
+  if (session.account.passwordSetupRequired) {
+    return withQuery(routes.setPassword, { next });
+  }
+  return next ?? homeFor(session);
+}
 
 export function displayName(session: Session): string {
   if (session.accountRole === "company") {

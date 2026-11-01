@@ -18,31 +18,38 @@ export interface RequestOptions {
 export class ApiError extends Error {
   readonly status: number;
   readonly code: string | undefined;
+  readonly details: string[];
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, code?: string, details: string[] = []) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.code = code;
+    this.details = details;
   }
 }
 
 const NETWORK_MESSAGE =
   "We couldn't reach DreamJob. Check your connection and try again.";
 
-function messageFrom(data: unknown, status: number): string {
-  if (isObject(data)) {
-    const { message } = data;
-    if (typeof message === "string" && message.trim() !== "") return message;
-    if (Array.isArray(message)) {
-      const parts = message.filter(
-        (part): part is string => typeof part === "string",
-      );
-      if (parts.length > 0) return parts.join(". ");
-    }
+export const TOO_MANY_MESSAGE = "Too many attempts. Wait a minute and try again.";
+
+function messagesFrom(data: unknown): string[] {
+  if (!isObject(data)) return [];
+  const { message } = data;
+  if (typeof message === "string" && message.trim() !== "") return [message];
+  if (Array.isArray(message)) {
+    return message.filter(
+      (part): part is string => typeof part === "string" && part.trim() !== "",
+    );
   }
-  if (status === 429) return "Too many attempts. Wait a minute and try again.";
+  return [];
+}
+
+function messageFrom(messages: string[], status: number): string {
+  if (status === 429) return TOO_MANY_MESSAGE;
   if (status >= 500) return "Something went wrong on our side. Try again soon.";
+  if (messages.length > 0) return messages.join(". ");
   return `Request failed (${status})`;
 }
 
@@ -96,10 +103,13 @@ export async function api<T>(
 
   const data = await readBody(response);
   if (!response.ok) {
+    const messages = messagesFrom(data);
+    const details = response.status === 400 && messages.length > 1 ? messages : [];
     throw new ApiError(
-      messageFrom(data, response.status),
+      messageFrom(messages, response.status),
       response.status,
       codeFrom(data),
+      details,
     );
   }
   return parse(data);

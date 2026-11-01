@@ -8,7 +8,19 @@ import {
   stringArray,
   stringOr,
 } from "@/lib/decode";
-import type { Company, Director } from "@/types";
+import { api } from "@/services/api";
+import { parseMessage } from "@/services/auth.service";
+import type { Company, Director, MessageResponse, NewPasswordInput } from "@/types";
+
+export function setCompanyPassword(
+  id: string,
+  input: NewPasswordInput,
+): Promise<MessageResponse> {
+  return api(`/companies/${encodeURIComponent(id)}/password`, parseMessage, {
+    method: "PATCH",
+    body: input,
+  });
+}
 
 function parseDirector(value: unknown): Director | undefined {
   if (!isObject(value)) return undefined;

@@ -18,7 +18,7 @@ export function ProtectedRoute({
   roles,
   allowPasswordSetup = false,
 }: ProtectedRouteProps) {
-  const { status, session, error, refresh } = useAuth();
+  const { status, session, error, retry } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -37,7 +37,7 @@ export function ProtectedRoute({
       <GateMessage
         title="We couldn't load your account"
         body={error ?? "Check your connection and try again."}
-        action={{ label: "Try again", onClick: refresh }}
+        action={{ label: "Try again", onClick: retry }}
       />
     );
   }

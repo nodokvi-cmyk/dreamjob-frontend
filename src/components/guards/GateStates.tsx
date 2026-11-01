@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 type GateAction = { label: string; onClick: () => void } | { label: string; href: string };
 
-export function GateSpinner() {
+export function GateSpinner({ label = "Loading your account" }: { label?: string }) {
   return (
     <div role="status" className="grid flex-1 place-items-center px-4 py-24">
       <div className="flex flex-col items-center gap-5">
@@ -14,7 +14,7 @@ export function GateSpinner() {
           <span className="size-5 rounded-full border-4 border-foreground bg-background motion-safe:animate-[station-pulse_1.2s_ease-in-out_infinite]" />
           <span className="h-1 w-10 rounded-full bg-line-scarlet/40" />
         </div>
-        <p className="transit-label text-sm text-muted-foreground">Loading your account</p>
+        <p className="transit-label text-sm text-muted-foreground">{label}</p>
       </div>
     </div>
   );

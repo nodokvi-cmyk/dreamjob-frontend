@@ -6,12 +6,42 @@ export const routes = {
   verifyEmail: "/verify-email",
   setPassword: "/set-password",
   forgotPassword: "/forgot-password",
+  resetPassword: "/reset-password",
   profile: "/profile",
   dashboard: "/dashboard",
   admin: "/admin",
 };
 
+const AUTH_PATHS = [
+  routes.signIn,
+  routes.signUp,
+  routes.verifyEmail,
+  routes.setPassword,
+  routes.forgotPassword,
+  routes.resetPassword,
+];
+
+export function safeNext(value: string | null | undefined): string | null {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+    return null;
+  }
+  const path = value.split(/[?#]/)[0];
+  if (AUTH_PATHS.includes(path)) return null;
+  return value;
+}
+
+export function withQuery(
+  path: string,
+  params: Record<string, string | null | undefined>,
+): string {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) query.set(key, value);
+  }
+  const search = query.toString();
+  return search ? `${path}?${search}` : path;
+}
+
 export function signInWithNext(pathname: string): string {
-  if (!pathname.startsWith("/") || pathname.startsWith("//")) return routes.signIn;
-  return `${routes.signIn}?next=${encodeURIComponent(pathname)}`;
+  return withQuery(routes.signIn, { next: safeNext(pathname) });
 }

@@ -9,7 +9,16 @@ import {
   stringArray,
   stringOr,
 } from "@/lib/decode";
-import type { User, UserRole } from "@/types";
+import { api } from "@/services/api";
+import { parseMessage } from "@/services/auth.service";
+import type { MessageResponse, NewPasswordInput, User, UserRole } from "@/types";
+
+export function setUserPassword(id: string, input: NewPasswordInput): Promise<MessageResponse> {
+  return api(`/users/${encodeURIComponent(id)}/password`, parseMessage, {
+    method: "PATCH",
+    body: input,
+  });
+}
 
 const USER_ROLES: readonly UserRole[] = ["user", "admin"];
 

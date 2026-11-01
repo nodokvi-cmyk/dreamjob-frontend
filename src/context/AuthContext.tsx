@@ -23,7 +23,8 @@ interface AuthContextValue {
   error: string | null;
   signIn: (token: string) => Promise<Session>;
   signOut: () => void;
-  refresh: () => void;
+  refresh: () => Promise<Session>;
+  retry: () => void;
 }
 
 interface Loaded {
@@ -94,16 +95,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => controller.abort();
   }, [token, payload, revision, isCurrent]);
 
-  const signIn = useCallback(
+  const load = useCallback(
     async (nextToken: string) => {
       const nextPayload = decodeToken(nextToken);
       if (!nextPayload) throw new Error("The server sent an invalid sign-in token.");
       const session = await getSession(nextPayload, nextToken);
       setLoaded({ token: nextToken, revision, session, error: null });
-      tokenStore.set(nextToken);
       return session;
     },
     [revision],
+  );
+
+  const signIn = useCallback(
+    async (nextToken: string) => {
+      const session = await load(nextToken);
+      tokenStore.set(nextToken);
+      return session;
+    },
+    [load],
   );
 
   const signOut = useCallback(() => {
@@ -111,7 +120,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.assign(window.location.origin);
   }, []);
 
-  const refresh = useCallback(() => setRevision((value) => value + 1), []);
+  const refresh = useCallback(async () => {
+    const current = tokenStore.get();
+    if (!current) throw new Error("You're signed out. Sign in again.");
+    return load(current);
+  }, [load]);
+
+  const retry = useCallback(() => setRevision((value) => value + 1), []);
 
   const fresh = loaded !== null && loaded.token === token ? loaded : null;
 
@@ -130,8 +145,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       refresh,
+      retry,
     }),
-    [status, fresh, signIn, signOut, refresh],
+    [status, fresh, signIn, signOut, refresh, retry],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed } from "next/font/google";
 import Script from "next/script";
+import { CompanyNotice } from "@/components/layout/CompanyNotice";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { AuthProvider } from "@/context/AuthContext";
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Script>
         <AuthProvider>
           <SiteHeader />
+          <CompanyNotice />
           <main id="main" className="flex flex-1 flex-col">
             {children}
           </main>

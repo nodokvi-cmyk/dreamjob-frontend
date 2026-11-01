@@ -2,6 +2,8 @@ export type AuthRole = "user" | "admin" | "company";
 
 export type UserRole = "user" | "admin";
 
+export type AccountType = "user" | "company";
+
 export interface TokenPayload {
   accountId: string;
   accountRole: AuthRole;
@@ -72,6 +74,40 @@ export interface CurrentUser extends User {
 
 export interface CurrentCompany extends Company {
   passwordSetupRequired: boolean;
+}
+
+export interface UserSignUpInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  birthDate: string;
+  phone?: string;
+}
+
+export interface DirectorInput {
+  fullName: string;
+  phone?: string;
+}
+
+export interface CompanySignUpInput {
+  companyName: string;
+  email: string;
+  description: string;
+  phone?: string;
+  location?: string;
+  website?: string;
+  operatingCities?: string[];
+  director?: DirectorInput;
+}
+
+export interface NewPasswordInput {
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface ResetPasswordInput extends NewPasswordInput {
+  email: string;
+  code: string;
 }
 
 export type Session =
