@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow, Barlow_Condensed } from "next/font/google";
+import { Barlow, Barlow_Condensed, Noto_Sans_Georgian } from "next/font/google";
 import Script from "next/script";
 import { CompanyNotice } from "@/components/layout/CompanyNotice";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -19,6 +19,28 @@ const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
+
+const lari = Noto_Sans_Georgian({
+  subsets: ["latin-ext"],
+  axes: ["wdth"],
+  preload: false,
+  adjustFontFallback: false,
+});
+
+function familyParts(family: string): string[] {
+  return family.split(",").map((part) => part.trim());
+}
+
+function withLari(family: string): string {
+  const [primary, ...fallbacks] = familyParts(family);
+  const [lariFamily] = familyParts(lari.style.fontFamily);
+  return [primary, lariFamily, ...fallbacks, "sans-serif"].join(", ");
+}
+
+const fontStacks = {
+  "--font-stack-sans": withLari(barlow.style.fontFamily),
+  "--font-stack-display": withLari(barlowCondensed.style.fontFamily),
+};
 
 export const metadata: Metadata = {
   title: {
@@ -42,6 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       suppressHydrationWarning
       className={`${barlow.variable} ${barlowCondensed.variable} h-full antialiased`}
+      style={fontStacks}
     >
       <body className="flex min-h-full flex-col">
         <Script id="theme" strategy="beforeInteractive">

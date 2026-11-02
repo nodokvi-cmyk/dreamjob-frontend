@@ -1,10 +1,14 @@
 import { ArrowRightIcon, MapPinIcon, SearchIcon } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
+import { LatestVacancies } from "@/components/vacancies/LatestVacancies";
 import { companySignUpHref } from "@/lib/account";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { LOCATION_MAX, QUERY_MAX, vacanciesHref } from "@/lib/vacancyQuery";
+import type { VacancyQuery } from "@/types";
 
 const STATIONS = [
   {
@@ -39,6 +43,12 @@ const PRINCIPLES = [
   },
 ];
 
+const SHORTCUTS: { label: string; query: VacancyQuery }[] = [
+  { label: "Remote", query: { workMode: "remote" } },
+  { label: "Internship", query: { employmentType: "internship" } },
+  { label: "Part-time", query: { employmentType: "part-time" } },
+];
+
 export default function HomePage() {
   return (
     <>
@@ -68,7 +78,7 @@ export default function HomePage() {
                 <input
                   name="q"
                   type="search"
-                  maxLength={100}
+                  maxLength={QUERY_MAX}
                   placeholder="Job title or keyword"
                   className="h-12 w-full min-w-0 bg-transparent text-[1.05rem] outline-none placeholder:text-muted-foreground"
                 />
@@ -79,7 +89,7 @@ export default function HomePage() {
                 <span className="sr-only">City</span>
                 <input
                   name="location"
-                  maxLength={100}
+                  maxLength={LOCATION_MAX}
                   placeholder="City"
                   className="h-12 w-full min-w-0 bg-transparent text-[1.05rem] outline-none placeholder:text-muted-foreground"
                 />
@@ -92,13 +102,13 @@ export default function HomePage() {
 
             <p className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
               <span>Try</span>
-              {["Remote", "Internship", "Part-time"].map((term) => (
+              {SHORTCUTS.map((shortcut) => (
                 <Link
-                  key={term}
-                  href={`${routes.vacancies}?${term === "Remote" ? "workMode=remote" : `employmentType=${term.toLowerCase()}`}`}
+                  key={shortcut.label}
+                  href={vacanciesHref(shortcut.query)}
                   className="rounded-full border border-border px-3 py-1 font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-muted"
                 >
-                  {term}
+                  {shortcut.label}
                 </Link>
               ))}
             </p>
@@ -162,6 +172,10 @@ export default function HomePage() {
           </aside>
         </div>
       </section>
+
+      <Suspense fallback={null}>
+        <LatestVacancies />
+      </Suspense>
 
       <section aria-labelledby="principles-title" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <h2 id="principles-title" className="sr-only">

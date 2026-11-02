@@ -132,6 +132,8 @@ Enamel (#0b1230) is both the shell and the dark-mode ground. Porcelain (#f4f6fb)
 
 Barlow Condensed is the transit sign voice: display headlines and headings in uppercase, labels and buttons in tracked uppercase (`transit-label`). Barlow is the reading face for body and inputs. Salaries and counts use tabular figures (`tabular`).
 
+Neither Barlow face has the lari sign (₾, U+20BE), so Noto Sans Georgian (latin-ext subset only) follows Barlow in both stacks and draws just the missing characters, narrowed to width 75 inside condensed text. It was chosen because its ₾ sits closest to Barlow's weight and width, and the file it needs is small (22.7 KB, against 290 KB for Noto Sans). Without it, the system font drew a mismatched ₾ beside salaries.
+
 ### Hierarchy
 
 - Display: hero only, three short lines, last line in scarlet.

@@ -9,7 +9,7 @@ import { usePickedFile } from "@/components/profile/usePickedFile";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { formError, problem } from "@/lib/errors";
-import { formatBytes, PDF_ACCEPT, pdfProblem } from "@/lib/files";
+import { formatBytes, MAX_UPLOAD_LABEL, PDF_ACCEPT, pdfProblem } from "@/lib/files";
 import { cn } from "@/lib/utils";
 import { getCvLink, removeCv, setCvVisibility, uploadCv } from "@/services/users.service";
 import type { CurrentUser } from "@/types";
@@ -119,7 +119,7 @@ export function CvPanel({ accountId, account }: { accountId: string; account: Cu
             ) : (
               <>
                 <p className="font-semibold">No CV yet</p>
-                <p className="text-muted-foreground">One PDF, up to 5 MB.</p>
+                <p className="text-muted-foreground">One PDF, up to {MAX_UPLOAD_LABEL}.</p>
               </>
             )}
           </div>

@@ -1,4 +1,8 @@
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+export const MAX_UPLOAD_MB = 4;
+
+export const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+
+export const MAX_UPLOAD_LABEL = `${MAX_UPLOAD_MB} MB`;
 
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -15,7 +19,7 @@ export function formatBytes(bytes: number): string {
 function sizeProblem(file: File): string | null {
   if (file.size === 0) return "That file is empty. Choose another one.";
   if (file.size > MAX_UPLOAD_BYTES) {
-    return `That file is ${formatBytes(file.size)}. The limit is 5 MB.`;
+    return `That file is ${formatBytes(file.size)}. The limit is ${MAX_UPLOAD_LABEL}.`;
   }
   return null;
 }

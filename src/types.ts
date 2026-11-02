@@ -139,3 +139,49 @@ export interface CvLink {
 export type Session =
   | { accountId: string; accountRole: "user" | "admin"; account: CurrentUser }
   | { accountId: string; accountRole: "company"; account: CurrentCompany };
+
+export type WorkMode = "remote" | "onsite" | "hybrid";
+
+export type EmploymentType = "full-time" | "part-time" | "internship" | "temporary";
+
+export type Currency = "GEL" | "USD" | "EUR";
+
+export type VacancyStatus = "pending" | "published" | "rejected" | "closed" | "expired";
+
+export type VacancySort = "-date" | "date" | "-salary" | "salary" | "deadline" | "-deadline";
+
+export interface VacancyPhoto {
+  id: string;
+  url: string;
+}
+
+export interface Vacancy {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
+  location: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  currency: Currency;
+  requirements: string[];
+  deadline: string;
+  status: VacancyStatus;
+  photos: VacancyPhoto[];
+  company: string;
+  createdAt: string;
+}
+
+export interface VacancyQuery {
+  q?: string;
+  category?: string;
+  location?: string;
+  workMode?: WorkMode;
+  employmentType?: EmploymentType;
+  salaryMin?: number;
+  currency?: Currency;
+  sort?: VacancySort;
+  page?: number;
+}

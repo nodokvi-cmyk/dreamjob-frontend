@@ -88,3 +88,9 @@ export function array<T>(
   if (!Array.isArray(value)) throw new DecodeError(path);
   return value.map(item);
 }
+
+export function isoDate(source: JsonObject, key: string): string {
+  const value = string(source, key);
+  if (Number.isNaN(Date.parse(value))) throw new DecodeError(key);
+  return value;
+}

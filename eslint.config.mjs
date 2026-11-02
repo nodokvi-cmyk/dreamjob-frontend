@@ -6,7 +6,10 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    files: ["src/components/profile/AccountPhoto.tsx"],
+    files: [
+      "src/components/profile/AccountPhoto.tsx",
+      "src/components/vacancies/VacancyPhoto.tsx",
+    ],
     rules: { "@next/next/no-img-element": "off" },
   },
   // Override default ignores of eslint-config-next.

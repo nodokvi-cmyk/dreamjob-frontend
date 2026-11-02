@@ -10,7 +10,7 @@ import { usePickedFile } from "@/components/profile/usePickedFile";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { problem } from "@/lib/errors";
-import { formatBytes, IMAGE_ACCEPT, imageProblem } from "@/lib/files";
+import { formatBytes, IMAGE_ACCEPT, imageProblem, MAX_UPLOAD_LABEL } from "@/lib/files";
 
 interface PhotoPanelProps {
   kind: "avatar" | "logo";
@@ -94,7 +94,7 @@ export function PhotoPanel({ kind, src, name, upload, remove }: PhotoPanelProps)
             </div>
           ) : (
             <p id={hintId} className="text-sm text-muted-foreground">
-              JPEG, PNG or WebP, up to 5 MB.{" "}
+              JPEG, PNG or WebP, up to {MAX_UPLOAD_LABEL}.{" "}
               {kind === "avatar" ? "We crop it to a square." : "We fit it inside a square, never stretched."}
             </p>
           )}

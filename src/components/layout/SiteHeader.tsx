@@ -3,7 +3,7 @@
 import { ArrowRightIcon, LogOutIcon, MenuIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { Logo } from "@/components/layout/StationMark";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -30,8 +30,19 @@ import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
+  return (
+    <Suspense fallback={<HeaderBar pathname="" />}>
+      <CurrentHeader />
+    </Suspense>
+  );
+}
+
+function CurrentHeader() {
+  return <HeaderBar pathname={usePathname()} />;
+}
+
+function HeaderBar({ pathname }: { pathname: string }) {
   const { status, session, signOut } = useAuth();
-  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const nav = primaryNav(session);
   const closeMenu = () => setMenuOpen(false);
