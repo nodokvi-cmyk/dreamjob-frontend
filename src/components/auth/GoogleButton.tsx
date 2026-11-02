@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 import { FormAlert } from "@/components/form/FormAlert";
 import { useAuth } from "@/context/AuthContext";
+import { clearAuthDrafts } from "@/lib/authDraft";
 import { formError, problem, type FormError } from "@/lib/errors";
 import { signInWithGoogle } from "@/services/auth.service";
 import type { AccountType } from "@/types";
@@ -53,6 +54,7 @@ function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
     setError(null);
     try {
       const { token } = await signInWithGoogle(accountType, idToken);
+      clearAuthDrafts();
       await signIn(token);
     } catch (reason: unknown) {
       setPending(false);

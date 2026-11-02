@@ -12,23 +12,28 @@ import { FormAlert } from "@/components/form/FormAlert";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { TextField } from "@/components/form/TextField";
 import { useAuth } from "@/context/AuthContext";
+import { clearAuthDrafts, codeDraft } from "@/lib/authDraft";
 import { CODE_REJECTED, formError, problem, type FormError } from "@/lib/errors";
 import { normalizeEmail } from "@/lib/form";
 import { routes } from "@/lib/routes";
 import { resendCode, verifyEmail } from "@/services/auth.service";
 
 export function VerifyEmailScreen() {
-  const { accountType, setAccountType, email: emailParam, flag, dropFlag, link } = useAuthParams();
+  const { accountType: urlAccount, setAccountType, link } = useAuthParams();
   const { signIn } = useAuth();
-  const [email, setEmail] = useState(emailParam);
+  const [draft] = useState(() => codeDraft.read("verify"));
+  const [email, setEmail] = useState(draft?.email ?? "");
   const [code, setCode] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<FormError | null>(null);
-  const knownEmail = emailParam !== "";
+  const accountType = draft?.account ?? urlAccount;
   const address = normalizeEmail(email);
 
   const sendAgain = useCallback(() => resendCode(accountType, address), [accountType, address]);
-  const clearResendFlag = useCallback(() => dropFlag("resend"), [dropFlag]);
+
+  const markResent = useCallback(() => {
+    if (draft) codeDraft.save({ ...draft, resend: false });
+  }, [draft]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,6 +45,7 @@ export function VerifyEmailScreen() {
     setError(null);
     try {
       const { token } = await verifyEmail(accountType, address, code);
+      clearAuthDrafts();
       await signIn(token);
     } catch (reason: unknown) {
       setPending(false);
@@ -51,10 +57,15 @@ export function VerifyEmailScreen() {
     <AuthShell
       title="Check your email"
       lead={
-        knownEmail ? (
+        draft ? (
           <p>
-            We sent a <span className="whitespace-nowrap">6-digit</span> code to <span className="font-semibold break-all text-foreground">{emailParam}</span>.{" "}
-            <Link href={link(routes.signUp)} className="font-semibold text-cobalt-ink hover:underline">
+            We sent a <span className="whitespace-nowrap">6-digit</span> code to{" "}
+            <span className="font-semibold break-all text-foreground">{draft.email}</span>.{" "}
+            <Link
+              href={link(routes.signUp, accountType)}
+              onClick={() => codeDraft.clear()}
+              className="font-semibold text-cobalt-ink hover:underline"
+            >
               Wrong email?
             </Link>
           </p>
@@ -65,9 +76,9 @@ export function VerifyEmailScreen() {
       journey={signUpJourney(1, accountType)}
     >
       <div className="flex flex-col gap-6">
-        {knownEmail ? null : <AccountSwitch value={accountType} onChange={setAccountType} disabled={pending} />}
+        {draft ? null : <AccountSwitch value={accountType} onChange={setAccountType} disabled={pending} />}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {knownEmail ? null : (
+          {draft ? null : (
             <TextField
               label="Email"
               type="email"
@@ -80,15 +91,15 @@ export function VerifyEmailScreen() {
               onChange={(event) => setEmail(event.target.value)}
             />
           )}
-          <CodeField value={code} onChange={setCode} autoFocus={knownEmail} />
+          <CodeField value={code} onChange={setCode} autoFocus={draft !== null} />
           {error ? <FormAlert tone="error" message={error.message} details={error.details} /> : null}
           <SubmitButton pending={pending} label="Confirm email" pendingLabel="Checking the code" />
         </form>
         <ResendCode
           email={address}
           onResend={sendAgain}
-          sendOnMount={flag("resend")}
-          onMountSent={clearResendFlag}
+          sendOnMount={draft?.resend ?? false}
+          onMountSent={markResent}
           mountNotice={`You started signing up with this email before. We sent a new code to ${address}.`}
         />
       </div>

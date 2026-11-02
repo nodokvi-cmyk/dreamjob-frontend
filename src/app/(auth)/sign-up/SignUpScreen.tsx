@@ -9,6 +9,7 @@ import { GoogleButton } from "@/components/auth/GoogleButton";
 import { signUpJourney } from "@/components/auth/journeys";
 import { useAuthParams } from "@/components/auth/useAuthParams";
 import { FormAlert } from "@/components/form/FormAlert";
+import { codeDraft, emailPrefill } from "@/lib/authDraft";
 import { formError, problem, type FormError } from "@/lib/errors";
 import { routes } from "@/lib/routes";
 import { ApiError } from "@/services/api";
@@ -36,11 +37,13 @@ export function SignUpScreen() {
     setTakenEmail(null);
     try {
       await send();
-      router.push(link(routes.verifyEmail, { email }));
+      codeDraft.save({ flow: "verify", email, account: accountType, resend: false });
+      router.push(link(routes.verifyEmail));
     } catch (reason: unknown) {
       if (reason instanceof ApiError && reason.status === 409) {
         if (reason.code === "EMAIL_NOT_VERIFIED") {
-          router.push(link(routes.verifyEmail, { email, resend: "1" }));
+          codeDraft.save({ flow: "verify", email, account: accountType, resend: true });
+          router.push(link(routes.verifyEmail));
           return;
         }
         setTakenEmail(email);
@@ -69,7 +72,8 @@ export function SignUpScreen() {
         <p>
           It may belong to an existing account.{" "}
           <Link
-            href={link(routes.signIn, { email: takenEmail })}
+            href={link(routes.signIn)}
+            onClick={() => emailPrefill.save(takenEmail, accountType)}
             className="font-semibold text-cobalt-ink hover:underline"
           >
             Sign in instead

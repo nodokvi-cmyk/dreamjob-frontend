@@ -10,15 +10,16 @@ import { useAuthParams } from "@/components/auth/useAuthParams";
 import { FormAlert } from "@/components/form/FormAlert";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { TextField } from "@/components/form/TextField";
+import { codeDraft, emailPrefill } from "@/lib/authDraft";
 import { formError, type FormError } from "@/lib/errors";
 import { normalizeEmail } from "@/lib/form";
 import { routes } from "@/lib/routes";
 import { forgotPassword } from "@/services/auth.service";
 
 export function ForgotPasswordScreen() {
-  const { accountType, setAccountType, email: emailParam, link } = useAuthParams();
+  const { accountType, setAccountType, link } = useAuthParams();
   const router = useRouter();
-  const [email, setEmail] = useState(emailParam);
+  const [email, setEmail] = useState(() => emailPrefill.read(accountType)?.email ?? "");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<FormError | null>(null);
 
@@ -29,7 +30,8 @@ export function ForgotPasswordScreen() {
     setError(null);
     try {
       await forgotPassword(accountType, address);
-      router.push(link(routes.resetPassword, { email: address }));
+      codeDraft.save({ flow: "reset", email: address, account: accountType, resend: false });
+      router.push(link(routes.resetPassword));
     } catch (reason: unknown) {
       setPending(false);
       setError(formError(reason));
@@ -44,7 +46,11 @@ export function ForgotPasswordScreen() {
       footer={
         <p>
           Remembered it?{" "}
-          <Link href={link(routes.signIn, { email: normalizeEmail(email) || null })} className="font-semibold text-cobalt-ink hover:underline">
+          <Link
+            href={link(routes.signIn)}
+            onClick={() => emailPrefill.save(normalizeEmail(email), accountType)}
+            className="font-semibold text-cobalt-ink hover:underline"
+          >
             Sign in
           </Link>
         </p>

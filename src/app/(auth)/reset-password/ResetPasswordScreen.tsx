@@ -13,6 +13,7 @@ import { FormAlert } from "@/components/form/FormAlert";
 import { NewPasswordFields } from "@/components/form/PasswordField";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { TextField } from "@/components/form/TextField";
+import { codeDraft, emailPrefill } from "@/lib/authDraft";
 import { CODE_REJECTED, formError, problem, type FormError } from "@/lib/errors";
 import { normalizeEmail } from "@/lib/form";
 import { passwordProblem } from "@/lib/password";
@@ -20,15 +21,17 @@ import { routes } from "@/lib/routes";
 import { forgotPassword, resetPassword } from "@/services/auth.service";
 
 export function ResetPasswordScreen() {
-  const { accountType, setAccountType, email: emailParam, link } = useAuthParams();
+  const { accountType: urlAccount, setAccountType, link } = useAuthParams();
   const router = useRouter();
-  const [email, setEmail] = useState(emailParam);
+  const [draft] = useState(() => codeDraft.read("reset"));
+  const [email, setEmail] = useState(draft?.email ?? "");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<FormError | null>(null);
-  const knownEmail = emailParam !== "";
+  const knownEmail = draft !== null;
+  const accountType = draft?.account ?? urlAccount;
   const address = normalizeEmail(email);
 
   const sendAgain = useCallback(() => forgotPassword(accountType, address), [accountType, address]);
@@ -53,7 +56,9 @@ export function ResetPasswordScreen() {
         newPassword: password,
         confirmNewPassword: confirm,
       });
-      router.push(link(routes.signIn, { email: address, reset: "1" }));
+      codeDraft.clear();
+      emailPrefill.save(address, accountType, true);
+      router.push(link(routes.signIn, accountType));
     } catch (reason: unknown) {
       setPending(false);
       setError(formError(reason, { 401: CODE_REJECTED }));
@@ -64,11 +69,18 @@ export function ResetPasswordScreen() {
     <AuthShell
       title="Set a new password"
       lead={
-        knownEmail ? (
+        draft ? (
           <p>
-            If an account exists for <span className="font-semibold break-all text-foreground">{emailParam}</span>, we
+            If an account exists for <span className="font-semibold break-all text-foreground">{draft.email}</span>, we
             sent it a <span className="whitespace-nowrap">6-digit</span> code.{" "}
-            <Link href={link(routes.forgotPassword)} className="font-semibold text-cobalt-ink hover:underline">
+            <Link
+              href={link(routes.forgotPassword, accountType)}
+              onClick={() => {
+                codeDraft.clear();
+                emailPrefill.save(draft.email, accountType);
+              }}
+              className="font-semibold text-cobalt-ink hover:underline"
+            >
               Wrong email?
             </Link>
           </p>

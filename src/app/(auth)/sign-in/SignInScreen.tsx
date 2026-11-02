@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { AccountSwitch } from "@/components/auth/AccountSwitch";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { GoogleButton } from "@/components/auth/GoogleButton";
@@ -11,25 +11,33 @@ import { PasswordField } from "@/components/form/PasswordField";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { TextField } from "@/components/form/TextField";
 import { useAuth } from "@/context/AuthContext";
+import { clearAuthDrafts, emailPrefill } from "@/lib/authDraft";
 import { formError, type FormError } from "@/lib/errors";
+import { normalizeEmail } from "@/lib/form";
 import { routes } from "@/lib/routes";
 import { signInWithPassword } from "@/services/auth.service";
 
 export function SignInScreen() {
-  const { accountType, setAccountType, email: emailParam, flag, link } = useAuthParams();
+  const { accountType, setAccountType, link } = useAuthParams();
   const { signIn } = useAuth();
-  const [email, setEmail] = useState(emailParam);
+  const [prefill] = useState(() => emailPrefill.read(accountType));
+  const [email, setEmail] = useState(prefill?.email ?? "");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<FormError | null>(null);
-  const resetDone = flag("reset");
+  const resetDone = prefill?.passwordReset ?? false;
+
+  useEffect(() => {
+    emailPrefill.dropNotice(accountType);
+  }, [accountType]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     setError(null);
     try {
-      const { token } = await signInWithPassword(accountType, email.trim(), password);
+      const { token } = await signInWithPassword(accountType, normalizeEmail(email), password);
+      clearAuthDrafts();
       await signIn(token);
     } catch (reason: unknown) {
       setPending(false);
@@ -79,7 +87,8 @@ export function SignInScreen() {
             autoComplete="current-password"
             aside={
               <Link
-                href={link(routes.forgotPassword, { email: email.trim() || null })}
+                href={link(routes.forgotPassword)}
+                onClick={() => emailPrefill.save(normalizeEmail(email), accountType)}
                 className="text-sm font-semibold text-cobalt-ink hover:underline"
               >
                 Forgot password?
