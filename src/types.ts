@@ -215,3 +215,16 @@ export interface VacancyQuery {
   sort?: VacancySort;
   page?: number;
 }
+
+export type AdminStatusFilter = VacancyStatus | "all";
+
+export interface AdminVacancyQuery {
+  q?: string;
+  status: AdminStatusFilter;
+  companyId?: string;
+  category?: string;
+  workMode?: WorkMode;
+  employmentType?: EmploymentType;
+  sort?: VacancySort;
+  page?: number;
+}

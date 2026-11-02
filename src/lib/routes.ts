@@ -11,10 +11,16 @@ export const routes = {
   dashboard: "/dashboard",
   newVacancy: "/dashboard/vacancies/new",
   admin: "/admin",
+  adminVacancies: "/admin/vacancies",
+  adminCompanies: "/admin/companies",
 };
 
 export function ownVacancyHref(id: string): string {
   return `${routes.dashboard}/vacancies/${encodeURIComponent(id)}`;
+}
+
+export function adminVacancyHref(id: string): string {
+  return `${routes.adminVacancies}/${encodeURIComponent(id)}`;
 }
 
 export function editVacancyHref(id: string): string {

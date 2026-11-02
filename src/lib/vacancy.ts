@@ -195,3 +195,7 @@ export function summary(text: string, limit = 160): string {
   const space = cut.lastIndexOf(" ");
   return `${(space > limit * 0.6 ? cut.slice(0, space) : cut).trimEnd()}…`;
 }
+
+export function canReview(vacancy: Pick<Vacancy, "status" | "deadline">, now: number): boolean {
+  return vacancy.status === "pending" && Date.parse(vacancy.deadline) > now;
+}

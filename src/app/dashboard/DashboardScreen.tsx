@@ -70,7 +70,10 @@ function Dashboard({ account }: { account: CurrentCompany }) {
           </div>
           <CompanyStanding account={account} />
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <StatusLine query={query} />
+            <StatusLine
+              active={query.status}
+              href={(status) => dashboardHref({ q: query.q, status })}
+            />
             <form
               role="search"
               onSubmit={(event) => {

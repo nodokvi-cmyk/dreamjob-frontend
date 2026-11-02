@@ -18,26 +18,26 @@ export const QUERY_MAX = 64;
 export const CATEGORY_MAX = 64;
 export const LOCATION_MAX = 128;
 export const SALARY_MAX = 1_000_000_000;
-const PAGE_MAX = 10_000;
+export const PAGE_MAX = 10_000;
 
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
-function first(value: string | string[] | undefined): string {
+export function first(value: string | string[] | undefined): string {
   if (Array.isArray(value)) return value[0] ?? "";
   return value ?? "";
 }
 
-function text(value: string | string[] | undefined, max: number): string | undefined {
+export function text(value: string | string[] | undefined, max: number): string | undefined {
   const trimmed = first(value).trim().slice(0, max).trim();
   return trimmed || undefined;
 }
 
-function pick<T extends string>(value: string | string[] | undefined, allowed: readonly T[]): T | undefined {
+export function pick<T extends string>(value: string | string[] | undefined, allowed: readonly T[]): T | undefined {
   const raw = first(value);
   return allowed.find((option) => option === raw);
 }
 
-function positiveInt(value: string | string[] | undefined, max: number): number | undefined {
+export function positiveInt(value: string | string[] | undefined, max: number): number | undefined {
   const raw = first(value).trim();
   if (!/^\d{1,10}$/.test(raw)) return undefined;
   const parsed = Number(raw);

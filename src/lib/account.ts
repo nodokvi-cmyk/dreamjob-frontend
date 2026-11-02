@@ -18,7 +18,7 @@ export function accountParam(type: AccountType): string | null {
 
 export function homeFor(session: Session): string {
   if (session.accountRole === "company") return routes.dashboard;
-  if (session.accountRole === "admin") return routes.admin;
+  if (session.accountRole === "admin") return routes.adminVacancies;
   return routes.vacancies;
 }
 

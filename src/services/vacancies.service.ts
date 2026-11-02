@@ -75,7 +75,7 @@ function pageParser<T>(item: (value: unknown) => T): (data: unknown) => Paginate
 
 export const parseVacancyPage = pageParser(parseVacancy);
 
-const parseOwnVacancyPage = pageParser(parseOwnVacancy);
+export const parseOwnVacancyPage = pageParser(parseOwnVacancy);
 
 function ignore(): null {
   return null;
