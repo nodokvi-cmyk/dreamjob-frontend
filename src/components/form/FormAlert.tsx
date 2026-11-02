@@ -1,18 +1,20 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Tone = "error" | "success" | "info";
+type Tone = "error" | "success" | "info" | "attention";
 
 const DOT: Record<Tone, string> = {
   error: "bg-line-scarlet ring-line-scarlet/20",
   success: "bg-line-green ring-line-green/20",
   info: "bg-line-cobalt ring-line-cobalt/20",
+  attention: "bg-line-amber ring-line-amber/25",
 };
 
 const FRAME: Record<Tone, string> = {
   error: "border-destructive/35",
   success: "border-line-green/40",
   info: "border-border",
+  attention: "border-line-amber/60",
 };
 
 interface FormAlertProps {

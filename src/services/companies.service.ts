@@ -10,16 +10,42 @@ import {
 } from "@/lib/decode";
 import { api } from "@/services/api";
 import { parseMessage } from "@/services/auth.service";
-import type { Company, Director, MessageResponse, NewPasswordInput } from "@/types";
+import type {
+  ChangePasswordInput,
+  Company,
+  CompanyUpdateInput,
+  Director,
+  MessageResponse,
+} from "@/types";
+
+function companyPath(id: string, action?: string): string {
+  const base = `/companies/${encodeURIComponent(id)}`;
+  return action ? `${base}/${action}` : base;
+}
 
 export function setCompanyPassword(
   id: string,
-  input: NewPasswordInput,
+  input: ChangePasswordInput,
 ): Promise<MessageResponse> {
-  return api(`/companies/${encodeURIComponent(id)}/password`, parseMessage, {
-    method: "PATCH",
-    body: input,
-  });
+  return api(companyPath(id, "password"), parseMessage, { method: "PATCH", body: input });
+}
+
+export function updateCompany(id: string, input: CompanyUpdateInput): Promise<Company> {
+  return api(companyPath(id), parseCompany, { method: "PATCH", body: input });
+}
+
+export function uploadLogo(id: string, file: File): Promise<Company> {
+  const body = new FormData();
+  body.append("logo", file);
+  return api(companyPath(id, "logo"), parseCompany, { method: "PATCH", body });
+}
+
+export function removeLogo(id: string): Promise<Company> {
+  return api(companyPath(id, "logo"), parseCompany, { method: "DELETE" });
+}
+
+export function deleteCompany(id: string): Promise<Company> {
+  return api(companyPath(id), parseCompany, { method: "DELETE" });
 }
 
 function parseDirector(value: unknown): Director | undefined {

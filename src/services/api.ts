@@ -46,8 +46,13 @@ function messagesFrom(data: unknown): string[] {
   return [];
 }
 
+const COOLDOWN_MESSAGE = /^Wait \d+ seconds?\b/;
+
 function messageFrom(messages: string[], status: number): string {
-  if (status === 429) return TOO_MANY_MESSAGE;
+  if (status === 429) {
+    const cooldown = messages.find((message) => COOLDOWN_MESSAGE.test(message));
+    return cooldown ? `${cooldown}.` : TOO_MANY_MESSAGE;
+  }
   if (status >= 500) return "Something went wrong on our side. Try again soon.";
   if (messages.length > 0) return messages.join(". ");
   return `Request failed (${status})`;

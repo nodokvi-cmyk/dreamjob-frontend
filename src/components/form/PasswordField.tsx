@@ -16,6 +16,8 @@ interface PasswordFieldProps {
   aside?: ReactNode;
   describedBy?: string;
   autoFocus?: boolean;
+  required?: boolean;
+  hint?: ReactNode;
 }
 
 export function PasswordField({
@@ -27,12 +29,15 @@ export function PasswordField({
   aside,
   describedBy,
   autoFocus,
+  required = true,
+  hint,
 }: PasswordFieldProps) {
   const id = useId();
   const [visible, setVisible] = useState(false);
+  const describedIds = [describedBy, hint ? `${id}-hint` : undefined].filter(Boolean).join(" ");
 
   return (
-    <FieldFrame id={id} label={label} aside={aside}>
+    <FieldFrame id={id} label={label} aside={aside} optional={!required} hint={hint}>
       <div className="relative">
         <Input
           id={id}
@@ -45,9 +50,9 @@ export function PasswordField({
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
-          required
+          required={required}
           autoFocus={autoFocus}
-          aria-describedby={describedBy}
+          aria-describedby={describedIds || undefined}
           className="pr-12"
         />
         <button

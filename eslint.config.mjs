@@ -5,8 +5,13 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    files: ["src/components/profile/AccountPhoto.tsx"],
+    rules: { "@next/next/no-img-element": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
+    ".claude/**",
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",

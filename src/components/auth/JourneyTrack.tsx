@@ -9,6 +9,7 @@ interface JourneyTrackProps {
   stations: readonly Station[];
   current: number;
   className?: string;
+  label?: string;
 }
 
 function stateOf(index: number, current: number): "done" | "here" | "next" {
@@ -19,10 +20,10 @@ function stateOf(index: number, current: number): "done" | "here" | "next" {
 
 const SR_STATE = { done: "Done", here: "Current step", next: "Coming up" };
 
-export function JourneyLine({ stations, current, className }: JourneyTrackProps) {
+export function JourneyLine({ stations, current, className, label = "Steps" }: JourneyTrackProps) {
   return (
     <ol
-      aria-label="Steps"
+      aria-label={label}
       className={cn("grid", className)}
       style={{ gridTemplateColumns: `repeat(${stations.length}, minmax(0, 1fr))` }}
     >

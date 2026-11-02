@@ -70,6 +70,11 @@ export const emailPrefill = {
     if (typeof data.email !== "string") return null;
     return { email: data.email, account, passwordReset: data.passwordReset === true };
   },
+  peek(): EmailPrefill | null {
+    const data = readJson(PREFILL_KEY);
+    const account = isObject(data) ? accountOf(data.account) : null;
+    return account ? emailPrefill.read(account) : null;
+  },
   save(email: string, account: AccountType, passwordReset = false) {
     if (email === "") return;
     writeJson(PREFILL_KEY, { email, account, passwordReset });
@@ -80,6 +85,32 @@ export const emailPrefill = {
   },
   clear() {
     remove(PREFILL_KEY);
+  },
+};
+
+export type EmailChangeStep = "current" | "new";
+
+export interface EmailChangeDraft {
+  accountId: string;
+  newEmail: string;
+  step: EmailChangeStep;
+}
+
+const EMAIL_CHANGE_KEY = "dreamjob.emailChange";
+
+export const emailChangeDraft = {
+  read(accountId: string): EmailChangeDraft | null {
+    const data = readJson(EMAIL_CHANGE_KEY);
+    if (!isObject(data) || data.accountId !== accountId) return null;
+    if (typeof data.newEmail !== "string" || data.newEmail === "") return null;
+    if (data.step !== "current" && data.step !== "new") return null;
+    return { accountId, newEmail: data.newEmail, step: data.step };
+  },
+  save(draft: EmailChangeDraft) {
+    writeJson(EMAIL_CHANGE_KEY, draft);
+  },
+  clear() {
+    remove(EMAIL_CHANGE_KEY);
   },
 };
 

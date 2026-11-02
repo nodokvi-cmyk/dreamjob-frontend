@@ -10,6 +10,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { emailChangeDraft } from "@/lib/authDraft";
 import { decodeToken, tokenStore } from "@/lib/token";
 import { ApiError } from "@/services/api";
 import { getSession } from "@/services/auth.service";
@@ -23,6 +24,7 @@ interface AuthContextValue {
   error: string | null;
   signIn: (token: string) => Promise<Session>;
   signOut: () => void;
+  signOutTo: (path: string) => void;
   refresh: () => Promise<Session>;
   retry: () => void;
 }
@@ -115,10 +117,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [load],
   );
 
-  const signOut = useCallback(() => {
+  const signOutTo = useCallback((path: string) => {
+    emailChangeDraft.clear();
     tokenStore.clear();
-    window.location.assign(window.location.origin);
+    window.location.assign(new URL(path, window.location.origin).href);
   }, []);
+
+  const signOut = useCallback(() => signOutTo("/"), [signOutTo]);
 
   const refresh = useCallback(async () => {
     const current = tokenStore.get();
@@ -144,10 +149,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       error: status === "error" ? (fresh?.error ?? null) : null,
       signIn,
       signOut,
+      signOutTo,
       refresh,
       retry,
     }),
-    [status, fresh, signIn, signOut, refresh, retry],
+    [status, fresh, signIn, signOut, signOutTo, refresh, retry],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;

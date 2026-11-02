@@ -105,9 +105,35 @@ export interface NewPasswordInput {
   confirmNewPassword: string;
 }
 
+export interface ChangePasswordInput extends NewPasswordInput {
+  currentPassword?: string;
+}
+
 export interface ResetPasswordInput extends NewPasswordInput {
   email: string;
   code: string;
+}
+
+export interface UserUpdateInput {
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  phone?: string;
+}
+
+export interface CompanyUpdateInput {
+  companyName?: string;
+  description?: string;
+  location?: string;
+  website?: string;
+  operatingCities?: string[];
+  phone?: string;
+  director?: DirectorInput | null;
+}
+
+export interface CvLink {
+  url: string;
+  expiresIn: number;
 }
 
 export type Session =

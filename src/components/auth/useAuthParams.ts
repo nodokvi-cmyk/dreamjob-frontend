@@ -13,23 +13,24 @@ export interface AuthParams {
   link: (path: string, type?: AccountType) => string;
 }
 
-export function useAuthParams(): AuthParams {
+export function useAuthParams(fallback: AccountType = "user"): AuthParams {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const accountType = accountTypeFrom(params.get("account"));
+  const raw = params.get("account");
+  const accountType = raw === null ? fallback : accountTypeFrom(raw);
   const next = safeNext(params.get("next"));
 
   const setAccountType = useCallback(
     (type: AccountType) => {
       const query = new URLSearchParams(params.toString());
-      const value = accountParam(type);
+      const value = accountParam(type) ?? (fallback === "user" ? null : type);
       if (value) query.set("account", value);
       else query.delete("account");
       const search = query.toString();
       router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false });
     },
-    [params, pathname, router],
+    [params, pathname, router, fallback],
   );
 
   const link = useCallback(

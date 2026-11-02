@@ -17,7 +17,8 @@ import { routes } from "@/lib/routes";
 import { forgotPassword } from "@/services/auth.service";
 
 export function ForgotPasswordScreen() {
-  const { accountType, setAccountType, link } = useAuthParams();
+  const [handoff] = useState(() => emailPrefill.peek());
+  const { accountType, setAccountType, link } = useAuthParams(handoff?.account);
   const router = useRouter();
   const [email, setEmail] = useState(() => emailPrefill.read(accountType)?.email ?? "");
   const [pending, setPending] = useState(false);
