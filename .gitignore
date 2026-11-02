@@ -48,3 +48,5 @@ CLAUDE.md
 # impeccable local state
 .impeccable/questions/
 .impeccable/config.local.json
+.impeccable/mocks/
+.impeccable/review/
