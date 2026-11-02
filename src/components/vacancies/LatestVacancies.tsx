@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
 import { VacancyList } from "@/components/vacancies/VacancyList";
 import { routes } from "@/lib/routes";
-import { listVacancies } from "@/services/vacancies.service";
+import { listVacancies } from "@/services/publicVacancies.service";
 import type { Paginated, Vacancy } from "@/types";
 
 const LATEST_COUNT = 6;

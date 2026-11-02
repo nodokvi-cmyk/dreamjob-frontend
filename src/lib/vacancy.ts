@@ -133,6 +133,54 @@ export function deadlineInfo(vacancy: Pick<Vacancy, "deadline" | "status">, now:
   };
 }
 
+const dateTimeFormat = new Intl.DateTimeFormat(LOCALE, {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: TIME_ZONE,
+});
+
+export function formatDateTime(iso: string): string {
+  return dateTimeFormat.format(new Date(iso));
+}
+
+const TBILISI_OFFSET = "+04:00";
+
+export function tbilisiDay(time: number): string {
+  return dayKeyFormat.format(time);
+}
+
+export function addDays(day: string, days: number): string {
+  const [year, month, date] = day.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, date + days)).toISOString().slice(0, 10);
+}
+
+export function endOfTbilisiDay(day: string): string {
+  return new Date(`${day}T23:59:59.999${TBILISI_OFFSET}`).toISOString();
+}
+
+export function formatDay(day: string): string {
+  return formatDate(endOfTbilisiDay(day));
+}
+
+export const STATUS_LABELS: Record<VacancyStatus, string> = {
+  pending: "In review",
+  published: "Live",
+  rejected: "Rejected",
+  closed: "Closed",
+  expired: "Expired",
+};
+
+export function isFinal(status: VacancyStatus): boolean {
+  return status === "closed" || status === "expired";
+}
+
+export function canClose(vacancy: Pick<Vacancy, "status" | "deadline">, now: number): boolean {
+  return vacancy.status === "published" && Date.parse(vacancy.deadline) > now;
+}
+
 export function placeLabel(vacancy: Pick<Vacancy, "location" | "workMode">): string {
   const mode = WORK_MODE_LABELS[vacancy.workMode];
   const location = vacancy.location.trim();

@@ -1,11 +1,9 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { vacanciesHref } from "@/lib/vacancyQuery";
-import type { VacancyQuery } from "@/types";
 
 interface PaginationProps {
-  query: VacancyQuery;
+  href: (page: number) => string;
   total: number;
   page: number;
   take: number;
@@ -18,11 +16,11 @@ export function pageCount(total: number, take: number): number {
   return Math.max(1, Math.ceil(total / Math.max(1, take)));
 }
 
-export function Pagination({ query, total, page, take }: PaginationProps) {
+export function Pagination({ href, total, page, take }: PaginationProps) {
   const pages = pageCount(total, take);
   if (pages <= 1) return null;
-  const previous = page > 1 ? vacanciesHref({ ...query, page: Math.min(page - 1, pages) }) : null;
-  const next = page < pages ? vacanciesHref({ ...query, page: page + 1 }) : null;
+  const previous = page > 1 ? href(Math.min(page - 1, pages)) : null;
+  const next = page < pages ? href(page + 1) : null;
 
   return (
     <nav aria-label="Pagination" className="flex items-center justify-between gap-4 border-t border-border pt-6">

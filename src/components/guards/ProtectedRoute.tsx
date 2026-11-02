@@ -11,12 +11,14 @@ interface ProtectedRouteProps {
   children: ReactNode;
   roles?: readonly AuthRole[];
   allowPasswordSetup?: boolean;
+  redirectOtherRoles?: boolean;
 }
 
 export function ProtectedRoute({
   children,
   roles,
   allowPasswordSetup = false,
+  redirectOtherRoles = false,
 }: ProtectedRouteProps) {
   const { status, session, error, retry } = useAuth();
   const router = useRouter();
@@ -27,10 +29,13 @@ export function ProtectedRoute({
   const roleAllowed =
     session !== null && (roles === undefined || roles.includes(session.accountRole));
 
+  const sendHome = session !== null && !needsPassword && !roleAllowed && redirectOtherRoles;
+
   useEffect(() => {
     if (status === "anonymous") router.replace(signInWithNext(pathname));
     else if (needsPassword) router.replace(routes.setPassword);
-  }, [status, needsPassword, pathname, router]);
+    else if (sendHome) router.replace(routes.home);
+  }, [status, needsPassword, sendHome, pathname, router]);
 
   if (status === "error") {
     return (
@@ -42,7 +47,7 @@ export function ProtectedRoute({
     );
   }
 
-  if (status !== "authenticated" || needsPassword) return <GateSpinner />;
+  if (status !== "authenticated" || needsPassword || sendHome) return <GateSpinner />;
 
   if (!roleAllowed) {
     return (

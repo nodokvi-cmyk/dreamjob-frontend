@@ -12,11 +12,17 @@ interface FieldFrameProps {
   optional?: boolean;
   hint?: ReactNode;
   aside?: ReactNode;
+  error?: string;
   className?: string;
   children: ReactNode;
 }
 
-export function FieldFrame({ id, label, optional, hint, aside, className, children }: FieldFrameProps) {
+export function describedBy(id: string, hint: ReactNode, error: string | undefined): string | undefined {
+  const ids = [error ? `${id}-error` : null, hint ? `${id}-hint` : null].filter(Boolean);
+  return ids.length > 0 ? ids.join(" ") : undefined;
+}
+
+export function FieldFrame({ id, label, optional, hint, aside, error, className, children }: FieldFrameProps) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex items-baseline justify-between gap-3">
@@ -27,6 +33,11 @@ export function FieldFrame({ id, label, optional, hint, aside, className, childr
         {aside}
       </div>
       {children}
+      {error ? (
+        <p id={`${id}-error`} className="text-sm font-medium text-destructive">
+          {error}
+        </p>
+      ) : null}
       {hint ? (
         <p id={`${id}-hint`} className="text-sm text-muted-foreground">
           {hint}
@@ -41,13 +52,27 @@ interface TextFieldProps extends Omit<ComponentProps<"input">, "id"> {
   optional?: boolean;
   hint?: ReactNode;
   aside?: ReactNode;
+  error?: string;
 }
 
-export function TextField({ label, optional, hint, aside, className, ...props }: TextFieldProps) {
+export function TextField({ label, optional, hint, aside, error, className, ...props }: TextFieldProps) {
   const id = useId();
   return (
-    <FieldFrame id={id} label={label} optional={optional} hint={hint} aside={aside} className={className}>
-      <Input id={id} aria-describedby={hint ? `${id}-hint` : undefined} {...props} />
+    <FieldFrame
+      id={id}
+      label={label}
+      optional={optional}
+      hint={hint}
+      aside={aside}
+      error={error}
+      className={className}
+    >
+      <Input
+        id={id}
+        aria-describedby={describedBy(id, hint, error)}
+        aria-invalid={error ? true : undefined}
+        {...props}
+      />
     </FieldFrame>
   );
 }
@@ -56,6 +81,7 @@ interface TextAreaFieldProps extends Omit<ComponentProps<"textarea">, "id" | "va
   label: string;
   optional?: boolean;
   hint?: ReactNode;
+  error?: string;
   value: string;
   maxLength: number;
 }
@@ -64,6 +90,7 @@ export function TextAreaField({
   label,
   optional,
   hint,
+  error,
   value,
   maxLength,
   className,
@@ -76,6 +103,7 @@ export function TextAreaField({
       label={label}
       optional={optional}
       hint={hint}
+      error={error}
       className={className}
       aside={
         <span className="tabular text-xs text-muted-foreground" aria-hidden>
@@ -87,7 +115,8 @@ export function TextAreaField({
         id={id}
         value={value}
         maxLength={maxLength}
-        aria-describedby={hint ? `${id}-hint` : undefined}
+        aria-describedby={describedBy(id, hint, error)}
+        aria-invalid={error ? true : undefined}
         {...props}
       />
     </FieldFrame>

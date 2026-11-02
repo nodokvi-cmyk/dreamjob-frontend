@@ -63,8 +63,7 @@ function codeFrom(data: unknown): string | undefined {
   return undefined;
 }
 
-async function readBody(response: Response): Promise<unknown> {
-  const text = await response.text();
+export function parseBody(text: string): unknown {
   if (text === "") return null;
   try {
     const data: unknown = JSON.parse(text);
@@ -74,13 +73,31 @@ async function readBody(response: Response): Promise<unknown> {
   }
 }
 
+async function readBody(response: Response): Promise<unknown> {
+  return parseBody(await response.text());
+}
+
+export function networkError(): ApiError {
+  return new ApiError(NETWORK_MESSAGE, 0);
+}
+
+export function apiErrorFrom(status: number, data: unknown): ApiError {
+  const messages = messagesFrom(data);
+  const details = status === 400 && messages.length > 1 ? messages : [];
+  return new ApiError(messageFrom(messages, status), status, codeFrom(data), details);
+}
+
+export function currentToken(token: string | null | undefined): string | null {
+  return token === undefined ? tokenStore.get() : token;
+}
+
 export async function api<T>(
   path: string,
   parse: (data: unknown) => T,
   options: RequestOptions = {},
 ): Promise<T> {
   const { method = "GET", body, signal, cache } = options;
-  const token = options.token === undefined ? tokenStore.get() : options.token;
+  const token = currentToken(options.token);
   const headers = new Headers({ Accept: "application/json" });
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
@@ -103,19 +120,10 @@ export async function api<T>(
     });
   } catch (error: unknown) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
-    throw new ApiError(NETWORK_MESSAGE, 0);
+    throw networkError();
   }
 
   const data = await readBody(response);
-  if (!response.ok) {
-    const messages = messagesFrom(data);
-    const details = response.status === 400 && messages.length > 1 ? messages : [];
-    throw new ApiError(
-      messageFrom(messages, response.status),
-      response.status,
-      codeFrom(data),
-      details,
-    );
-  }
+  if (!response.ok) throw apiErrorFrom(response.status, data);
   return parse(data);
 }

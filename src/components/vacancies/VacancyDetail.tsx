@@ -1,7 +1,25 @@
-import { CircleSlashIcon, ExternalLinkIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  BriefcaseBusinessIcon,
+  CheckIcon,
+  CircleSlashIcon,
+  ExternalLinkIcon,
+  MapPinIcon,
+  TagIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
+import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
 import { VacancyPhoto } from "@/components/vacancies/VacancyPhoto";
 import { cn } from "@/lib/utils";
-import { deadlineInfo, formatDate } from "@/lib/vacancy";
+import {
+  EMPLOYMENT_TYPE_LABELS,
+  WORK_MODE_LABELS,
+  deadlineInfo,
+  formatDate,
+  formatSalary,
+  placeLabel,
+} from "@/lib/vacancy";
 import type { Vacancy } from "@/types";
 
 export function EndedBanner({ status }: { status: Vacancy["status"] }) {
@@ -134,5 +152,157 @@ export function PhotoGallery({ photos, title }: { photos: Vacancy["photos"]; tit
         })}
       </ul>
     </section>
+  );
+}
+
+interface VacancyDetailViewProps {
+  vacancy: Vacancy;
+  now: number;
+  back: { href: string; label: string };
+}
+
+export function VacancyDetailView({ vacancy, now, back }: VacancyDetailViewProps) {
+  const salary = formatSalary(vacancy);
+
+  return (
+    <article className="flex flex-1 flex-col">
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pt-6 pb-9 sm:px-6 md:pt-8 lg:px-8">
+          <Link
+            href={back.href}
+            className="inline-flex w-fit items-center gap-2 rounded-md transit-label text-[0.85rem] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeftIcon aria-hidden className="size-4" />
+            {back.label}
+          </Link>
+          <EndedBanner status={vacancy.status} />
+          <div className="flex max-w-4xl flex-col gap-5">
+            <h1 className="font-display text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[0.98] font-bold tracking-[-0.02em] break-words uppercase">
+              {vacancy.title}
+            </h1>
+            <VacancyEmployer company={vacancy.company} size="lg" />
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[1.02rem] text-muted-foreground">
+              <li className="inline-flex items-center gap-2">
+                <MapPinIcon aria-hidden className="size-[1.1rem] shrink-0" />
+                {placeLabel(vacancy)}
+              </li>
+              <li className="inline-flex items-center gap-2">
+                <BriefcaseBusinessIcon aria-hidden className="size-[1.1rem] shrink-0" />
+                {EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]}
+              </li>
+              {vacancy.category ? (
+                <li className="inline-flex items-center gap-2">
+                  <TagIcon aria-hidden className="size-[1.1rem] shrink-0" />
+                  {vacancy.category}
+                </li>
+              ) : null}
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 pt-8 pb-20 sm:px-6 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pt-10">
+        <aside
+          aria-label="Key facts"
+          className="self-start rounded-2xl bg-enamel p-6 text-on-enamel sm:p-7 lg:sticky lg:top-24 lg:col-span-5 lg:col-start-8 lg:row-start-1 xl:col-span-4 xl:col-start-9 dark:ring-1 dark:ring-enamel-seam"
+        >
+          <p className="transit-label text-[0.85rem] text-on-enamel-muted">Salary</p>
+          {salary ? (
+            <p className="mt-2 font-display text-[2.4rem] leading-none font-bold tracking-[-0.01em] tabular">
+              {salary}
+            </p>
+          ) : (
+            <p className="mt-2 text-lg text-on-enamel-muted">Salary not specified</p>
+          )}
+
+          <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-enamel-seam pt-5">
+            <Fact term="Location" value={vacancy.location.trim() || "Not specified"} />
+            <Fact term="Work mode" value={WORK_MODE_LABELS[vacancy.workMode]} />
+            <Fact term="Contract" value={EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]} />
+            <Fact term="Category" value={vacancy.category || "Not specified"} />
+          </dl>
+
+          <div className="mt-6 border-t border-enamel-seam pt-6">
+            <VacancyTrack vacancy={vacancy} now={now} />
+          </div>
+        </aside>
+
+        <div className="flex min-w-0 flex-col gap-12 lg:col-span-7 lg:row-start-1 xl:col-span-8 xl:pr-6">
+          <PhotoGallery photos={vacancy.photos} title={vacancy.title} />
+
+          <section aria-labelledby="about-title" className="flex flex-col gap-4">
+            <h2 id="about-title" className="font-display text-[1.75rem] leading-none font-bold tracking-[-0.01em] uppercase">
+              About the role
+            </h2>
+            <p className="max-w-[70ch] text-[1.06rem] leading-[1.7] break-words whitespace-pre-line">
+              {vacancy.description}
+            </p>
+          </section>
+
+          {vacancy.requirements.length > 0 ? (
+            <section aria-labelledby="requirements-title" className="flex flex-col gap-5">
+              <h2
+                id="requirements-title"
+                className="font-display text-[1.75rem] leading-none font-bold tracking-[-0.01em] uppercase"
+              >
+                Requirements
+              </h2>
+              <ul className="flex max-w-[70ch] flex-col gap-3.5">
+                {vacancy.requirements.map((requirement, index) => (
+                  <li key={`${index}-${requirement}`} className="flex gap-3.5 text-[1.06rem] leading-relaxed">
+                    <span
+                      aria-hidden
+                      className="mt-[0.3rem] grid size-[1.15rem] shrink-0 place-items-center rounded-full bg-foreground text-background"
+                    >
+                      <CheckIcon className="size-3" strokeWidth={3} />
+                    </span>
+                    <span className="min-w-0 break-words">{requirement}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function Fact({ term, value }: { term: string; value: string }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1">
+      <dt className="transit-label text-[0.78rem] text-on-enamel-muted">{term}</dt>
+      <dd className="text-[1.02rem] font-medium break-words">{value}</dd>
+    </div>
+  );
+}
+
+export function VacancyDetailSkeleton({ label = "Loading vacancy" }: { label?: string }) {
+  return (
+    <div role="status" aria-label={label} className="flex flex-1 flex-col">
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pt-6 pb-9 sm:px-6 md:pt-8 lg:px-8">
+          <Skeleton className="h-4 w-32" />
+          <div className="flex max-w-4xl flex-col gap-5">
+            <Skeleton className="h-12 w-[min(36rem,90%)]" />
+            <Skeleton className="h-12 w-[min(24rem,70%)]" />
+            <div className="flex items-center gap-3.5">
+              <Skeleton className="size-14 rounded-[12px]" />
+              <Skeleton className="h-5 w-28" />
+            </div>
+            <Skeleton className="h-5 w-[min(26rem,85%)]" />
+          </div>
+        </div>
+      </div>
+      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 pt-8 pb-20 sm:px-6 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pt-10">
+        <div className="h-[22rem] rounded-2xl bg-enamel lg:col-span-5 lg:col-start-8 lg:row-start-1 xl:col-span-4 xl:col-start-9 dark:ring-1 dark:ring-enamel-seam" />
+        <div className="flex flex-col gap-4 lg:col-span-7 lg:row-start-1 xl:col-span-8">
+          <Skeleton className="h-7 w-48" />
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-4" style={{ width: `${92 - index * 7}%` }} />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

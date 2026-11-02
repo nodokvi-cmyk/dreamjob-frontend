@@ -1,4 +1,3 @@
-import { cacheLife } from "next/cache";
 import {
   array,
   isoDate,
@@ -11,11 +10,20 @@ import {
   stringOr,
 } from "@/lib/decode";
 import { CURRENCIES, EMPLOYMENT_TYPES, VACANCY_STATUSES, WORK_MODES } from "@/lib/vacancy";
-import { apiSearch } from "@/lib/vacancyQuery";
+import { ownApiSearch } from "@/lib/vacancyQuery";
 import { ApiError, api } from "@/services/api";
-import type { Paginated, Vacancy, VacancyPhoto, VacancyQuery } from "@/types";
+import { uploadWithProgress } from "@/services/upload";
+import type {
+  OwnVacancy,
+  OwnVacancyQuery,
+  Paginated,
+  Vacancy,
+  VacancyInput,
+  VacancyPhoto,
+  VacancyUpdateInput,
+} from "@/types";
 
-const OBJECT_ID = /^[a-f\d]{24}$/i;
+export const OBJECT_ID = /^[a-f\d]{24}$/i;
 
 function parsePhoto(value: unknown): VacancyPhoto {
   const source = object(value, "photo");
@@ -44,38 +52,90 @@ export function parseVacancy(data: unknown): Vacancy {
   };
 }
 
-export function parseVacancyPage(data: unknown): Paginated<Vacancy> {
-  const source = object(data, "vacancies");
+export function parseOwnVacancy(data: unknown): OwnVacancy {
+  const source = object(data, "vacancy");
   return {
-    items: array(source.items, "items", parseVacancy),
-    total: number(source, "total"),
-    page: number(source, "page"),
-    take: number(source, "take"),
+    ...parseVacancy(source),
+    rejectionReason: stringOr(source, "rejectionReason", "").trim(),
+    updatedAt: isoDate(source, "updatedAt"),
   };
 }
 
-async function fetchVacancyPage(search: string): Promise<Paginated<Vacancy>> {
-  "use cache";
-  cacheLife("minutes");
-  return api(`/vacancies?${search}`, parseVacancyPage, { token: null });
+function pageParser<T>(item: (value: unknown) => T): (data: unknown) => Paginated<T> {
+  return (data) => {
+    const source = object(data, "vacancies");
+    return {
+      items: array(source.items, "items", item),
+      total: number(source, "total"),
+      page: number(source, "page"),
+      take: number(source, "take"),
+    };
+  };
 }
 
-async function fetchVacancy(id: string): Promise<Vacancy | null> {
-  "use cache";
-  cacheLife("minutes");
-  try {
-    return await api(`/vacancies/${id}`, parseVacancy, { token: null });
-  } catch (error: unknown) {
-    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return null;
-    throw error;
-  }
+export const parseVacancyPage = pageParser(parseVacancy);
+
+const parseOwnVacancyPage = pageParser(parseOwnVacancy);
+
+function ignore(): null {
+  return null;
 }
 
-export function listVacancies(query: VacancyQuery, take: number): Promise<Paginated<Vacancy>> {
-  return fetchVacancyPage(apiSearch(query, take));
+
+export function listMyVacancies(
+  query: OwnVacancyQuery,
+  take: number,
+  signal?: AbortSignal,
+): Promise<Paginated<OwnVacancy>> {
+  return api(`/vacancies/mine?${ownApiSearch(query, take)}`, parseOwnVacancyPage, {
+    signal,
+    cache: "no-store",
+  });
 }
 
-export async function getVacancy(id: string): Promise<Vacancy | null> {
-  if (!OBJECT_ID.test(id)) return null;
-  return fetchVacancy(id.toLowerCase());
+export function getOwnVacancy(id: string, accountId: string, signal?: AbortSignal): Promise<OwnVacancy> {
+  if (!OBJECT_ID.test(id)) return Promise.reject(new ApiError("Vacancy not found", 404));
+  const parseOwned = (data: unknown): OwnVacancy => {
+    if (parseVacancy(data).company !== accountId) throw new ApiError("Vacancy not found", 404);
+    return parseOwnVacancy(data);
+  };
+  return api(`/vacancies/${encodeURIComponent(id)}`, parseOwned, { signal, cache: "no-store" });
+}
+
+export function createVacancy(input: VacancyInput): Promise<OwnVacancy> {
+  return api("/vacancies", parseOwnVacancy, { method: "POST", body: input });
+}
+
+export function updateVacancy(id: string, input: VacancyUpdateInput): Promise<OwnVacancy> {
+  return api(`/vacancies/${encodeURIComponent(id)}`, parseOwnVacancy, { method: "PATCH", body: input });
+}
+
+export function closeVacancy(id: string): Promise<OwnVacancy> {
+  return api(`/vacancies/${encodeURIComponent(id)}/close`, parseOwnVacancy, { method: "PATCH" });
+}
+
+export async function deleteVacancy(id: string): Promise<void> {
+  await api(`/vacancies/${encodeURIComponent(id)}`, ignore, { method: "DELETE" });
+}
+
+export function uploadVacancyPhoto(
+  id: string,
+  file: File,
+  onProgress?: (fraction: number) => void,
+  signal?: AbortSignal,
+): Promise<OwnVacancy> {
+  const body = new FormData();
+  body.append("photos", file);
+  return uploadWithProgress(`/vacancies/${encodeURIComponent(id)}/photos`, body, parseOwnVacancy, {
+    onProgress,
+    signal,
+  });
+}
+
+export function removeVacancyPhoto(id: string, photoId: string): Promise<OwnVacancy> {
+  return api(
+    `/vacancies/${encodeURIComponent(id)}/photos/${encodeURIComponent(photoId)}`,
+    parseOwnVacancy,
+    { method: "DELETE" },
+  );
 }

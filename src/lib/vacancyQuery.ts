@@ -7,10 +7,11 @@ import {
   EMPLOYMENT_TYPES,
   VACANCY_SORTS,
   formatMoney,
+  VACANCY_STATUSES,
   WORK_MODE_LABELS,
   WORK_MODES,
 } from "@/lib/vacancy";
-import type { VacancyQuery } from "@/types";
+import type { OwnVacancyQuery, VacancyQuery } from "@/types";
 
 export const PAGE_SIZE = 10;
 export const QUERY_MAX = 64;
@@ -84,6 +85,37 @@ export function apiSearch(query: VacancyQuery, take: number): string {
     if (value) params.set(key, value);
   }
   params.set("sort", query.sort ?? DEFAULT_SORT);
+  params.set("take", String(take));
+  return params.toString();
+}
+
+export function parseOwnVacancyQuery(params: RawSearchParams): OwnVacancyQuery {
+  const page = positiveInt(params.page, PAGE_MAX);
+  return {
+    q: text(params.q, QUERY_MAX),
+    status: pick(params.status, VACANCY_STATUSES),
+    page: page === 1 ? undefined : page,
+  };
+}
+
+function ownParams(query: OwnVacancyQuery): Record<string, string | undefined> {
+  return {
+    q: query.q,
+    status: query.status,
+    page: query.page === undefined || query.page <= 1 ? undefined : String(query.page),
+  };
+}
+
+export function dashboardHref(query: OwnVacancyQuery): string {
+  return withQuery(routes.dashboard, ownParams(query));
+}
+
+export function ownApiSearch(query: OwnVacancyQuery, take: number): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(ownParams(query))) {
+    if (value) params.set(key, value);
+  }
+  params.set("sort", DEFAULT_SORT);
   params.set("take", String(take));
   return params.toString();
 }

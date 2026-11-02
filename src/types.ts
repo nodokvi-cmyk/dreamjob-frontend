@@ -174,6 +174,36 @@ export interface Vacancy {
   createdAt: string;
 }
 
+export interface OwnVacancy extends Vacancy {
+  rejectionReason: string;
+  updatedAt: string;
+}
+
+export interface VacancyInput {
+  title: string;
+  description: string;
+  category: string;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
+  location: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  currency: Currency;
+  requirements: string[];
+  deadline: string;
+}
+
+export type VacancyUpdateInput = Partial<Omit<VacancyInput, "salaryMin" | "salaryMax">> & {
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+};
+
+export interface OwnVacancyQuery {
+  q?: string;
+  status?: VacancyStatus;
+  page?: number;
+}
+
 export interface VacancyQuery {
   q?: string;
   category?: string;

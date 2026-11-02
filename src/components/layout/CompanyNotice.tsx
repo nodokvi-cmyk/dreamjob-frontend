@@ -2,12 +2,25 @@
 
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { isActive } from "@/lib/account";
 import { routes } from "@/lib/routes";
 
 export function CompanyNotice() {
+  return (
+    <Suspense fallback={null}>
+      <NoticeBar />
+    </Suspense>
+  );
+}
+
+function NoticeBar() {
+  const pathname = usePathname();
   const { session } = useAuth();
   if (!session || session.accountRole !== "company") return null;
+  if (isActive(pathname, routes.dashboard)) return null;
   const { account } = session;
   if (account.passwordSetupRequired) return null;
   if (account.isProfileComplete && account.approved) return null;

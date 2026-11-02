@@ -2,8 +2,6 @@
 
 import { ArrowRightIcon, MapPinIcon, SearchIcon, SlidersHorizontalIcon, XIcon } from "lucide-react";
 import {
-  useEffect,
-  useEffectEvent,
   useId,
   useLayoutEffect,
   useState,
@@ -27,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useDraft } from "@/components/vacancies/useDraft";
 import { useVacancySearch } from "@/components/vacancies/VacancySearch";
 import { CATEGORIES } from "@/lib/categories";
 import { cn } from "@/lib/utils";
@@ -50,35 +49,6 @@ import {
 import type { VacancyQuery } from "@/types";
 
 const ANY = "any";
-const TYPING_DELAY = 450;
-
-function useDraft(incoming: string, commit: (value: string) => void) {
-  const [draft, setDraft] = useState(incoming);
-  const [synced, setSynced] = useState(incoming);
-  const [sent, setSent] = useState(incoming);
-
-  if (incoming !== synced) {
-    setSynced(incoming);
-    if (incoming !== sent) {
-      setSent(incoming);
-      setDraft(incoming);
-    }
-  }
-
-  const onCommit = useEffectEvent((value: string) => {
-    setSent(value);
-    commit(value);
-  });
-
-  useEffect(() => {
-    const value = draft.trim();
-    if (value === sent) return;
-    const timer = window.setTimeout(() => onCommit(value), TYPING_DELAY);
-    return () => window.clearTimeout(timer);
-  }, [draft, sent]);
-
-  return { draft, setDraft, markSent: setSent };
-}
 
 function sheetFilterCount(query: VacancyQuery): number {
   return activeFilters(query).filter((filter) => filter.key !== "q" && filter.key !== "location")

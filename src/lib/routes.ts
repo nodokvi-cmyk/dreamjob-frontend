@@ -9,8 +9,17 @@ export const routes = {
   resetPassword: "/reset-password",
   profile: "/profile",
   dashboard: "/dashboard",
+  newVacancy: "/dashboard/vacancies/new",
   admin: "/admin",
 };
+
+export function ownVacancyHref(id: string): string {
+  return `${routes.dashboard}/vacancies/${encodeURIComponent(id)}`;
+}
+
+export function editVacancyHref(id: string): string {
+  return `${ownVacancyHref(id)}/edit`;
+}
 
 const AUTH_PATHS = [
   routes.signIn,

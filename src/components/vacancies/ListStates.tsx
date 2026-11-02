@@ -81,12 +81,15 @@ export function PastLastPage({ href }: { href: string }) {
 export function ResultsError({
   title = "The list didn't load",
   body = "We couldn't reach DreamJob just now. Check your connection, then try again.",
+  onRetry,
 }: {
   title?: string;
   body?: string;
+  onRetry?: () => void;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const retry = () => startTransition(() => (onRetry ? onRetry() : router.refresh()));
   return (
     <div role="alert">
       <ListMessage
@@ -94,7 +97,7 @@ export function ResultsError({
         title={title}
         body={body}
         action={
-          <Button size="lg" disabled={pending} onClick={() => startTransition(() => router.refresh())}>
+          <Button size="lg" disabled={pending} onClick={retry}>
             <RotateCwIcon aria-hidden className={pending ? "motion-safe:animate-spin" : undefined} />
             {pending ? "Trying again…" : "Try again"}
           </Button>

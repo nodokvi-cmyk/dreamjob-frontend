@@ -12,7 +12,7 @@ import {
   parseVacancyQuery,
   vacanciesHref,
 } from "@/lib/vacancyQuery";
-import { listVacancies } from "@/services/vacancies.service";
+import { listVacancies } from "@/services/publicVacancies.service";
 import type { Paginated, Vacancy, VacancyQuery } from "@/types";
 
 export const metadata: Metadata = {
@@ -79,7 +79,12 @@ export default async function VacanciesPage({ searchParams }: PageProps<"/vacanc
             ) : result.items.length > 0 ? (
               <>
                 <VacancyList vacancies={result.items} now={now} />
-                <Pagination query={query} total={result.total} page={result.page} take={result.take} />
+                <Pagination
+                  href={(page) => vacanciesHref({ ...query, page })}
+                  total={result.total}
+                  page={result.page}
+                  take={result.take}
+                />
               </>
             ) : result.total > 0 ? (
               <PastLastPage href={vacanciesHref({ ...query, page: undefined })} />
