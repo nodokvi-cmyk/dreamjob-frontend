@@ -389,6 +389,7 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
                 </Select>
               </FieldFrame>
             </div>
+            <p className="text-sm text-muted-foreground">Leave empty if the salary is by agreement</p>
             <p aria-live="polite" className="text-sm text-muted-foreground">
               {preview ? (
                 <>
@@ -396,7 +397,7 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
                   <span className="font-display text-base font-bold text-foreground tabular">{preview}</span>
                 </>
               ) : (
-                "Seekers see “Salary not specified”."
+                "Seekers see “Salary by agreement”."
               )}
             </p>
           </div>

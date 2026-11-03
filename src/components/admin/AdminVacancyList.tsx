@@ -103,7 +103,7 @@ function AdminVacancyRow({
           {salary ? (
             <span className="font-display text-[1.35rem] leading-none font-bold tabular">{salary}</span>
           ) : (
-            <span className="text-[0.95rem] text-muted-foreground">Salary not specified</span>
+            <span className="text-[0.95rem] text-muted-foreground">Salary by agreement</span>
           )}
           <DeadlineStop vacancy={vacancy} now={now} />
         </div>

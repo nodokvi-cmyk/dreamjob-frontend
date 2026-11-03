@@ -212,7 +212,7 @@ export function VacancyDetailView({ vacancy, now, back }: VacancyDetailViewProps
               {salary}
             </p>
           ) : (
-            <p className="mt-2 text-lg text-on-enamel-muted">Salary not specified</p>
+            <p className="mt-2 text-lg text-on-enamel-muted">Salary by agreement</p>
           )}
 
           <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-enamel-seam pt-5">

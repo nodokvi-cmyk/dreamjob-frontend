@@ -23,7 +23,7 @@ async function load(id: string): Promise<Loaded> {
 }
 
 function metaDescription(vacancy: Vacancy): string {
-  const salary = formatSalary(vacancy) ?? "Salary not specified";
+  const salary = formatSalary(vacancy) ?? "Salary by agreement";
   const facts = `${placeLabel(vacancy)} · ${EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]} · ${salary}.`;
   return summary(`${facts} ${vacancy.description}`);
 }
