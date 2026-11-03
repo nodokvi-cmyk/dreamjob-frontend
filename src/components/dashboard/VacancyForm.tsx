@@ -455,10 +455,16 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
               onChange={(event) => set("deadline", event.target.value)}
               onBlur={blur("deadline")}
               aria-invalid={shown("deadline") ? true : undefined}
-              aria-describedby={describedBy(`${id}-deadline`, true, shown("deadline"))}
+              aria-describedby={[describedBy(`${id}-deadline`, true, shown("deadline")), `${id}-deadline-review`]
+                .filter(Boolean)
+                .join(" ")}
               className="tabular"
             />
           </FieldFrame>
+          <p id={`${id}-deadline-review`} className="max-w-[62ch] text-sm text-muted-foreground">
+            Review can take a few days. Choose a deadline that leaves room for it. A vacancy that passes its
+            deadline before approval expires and cannot be approved.
+          </p>
         </ProfileSection>
       </fieldset>
 
