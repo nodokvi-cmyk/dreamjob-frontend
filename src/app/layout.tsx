@@ -5,6 +5,7 @@ import { CompanyNotice } from "@/components/layout/CompanyNotice";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { AuthProvider } from "@/context/AuthContext";
+import { SITE_URL } from "@/lib/site";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -43,9 +44,10 @@ const fontStacks = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: SITE_URL,
   title: {
-    default: "DreamJob · Jobs from verified employers in Georgia",
-    template: "%s · DreamJob",
+    default: "GetDreamJob · Jobs from verified employers in Georgia",
+    template: "%s · GetDreamJob",
   },
   description:
     "Search vacancies across Georgia from employers our team has approved, with salary ranges right on the listing.",

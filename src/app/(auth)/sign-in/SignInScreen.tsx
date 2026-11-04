@@ -55,7 +55,7 @@ export function SignInScreen() {
       lead="Pick your account type, then sign in."
       footer={
         <p>
-          New to DreamJob?{" "}
+          New to GetDreamJob?{" "}
           <Link href={link(routes.signUp)} className="font-semibold text-cobalt-ink hover:underline">
             Create an account
           </Link>

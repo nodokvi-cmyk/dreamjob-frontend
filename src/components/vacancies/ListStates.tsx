@@ -80,7 +80,7 @@ export function PastLastPage({ href }: { href: string }) {
 
 export function ResultsError({
   title = "The list didn't load",
-  body = "We couldn't reach DreamJob just now. Check your connection, then try again.",
+  body = "We couldn't reach GetDreamJob just now. Check your connection, then try again.",
   onRetry,
 }: {
   title?: string;

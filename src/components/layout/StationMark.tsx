@@ -19,7 +19,7 @@ export function Logo({ className }: { className?: string }) {
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <StationMark />
       <span className="font-display text-[1.6rem] leading-none font-bold tracking-[-0.01em] uppercase">
-        DreamJob
+        GetDreamJob
       </span>
     </span>
   );

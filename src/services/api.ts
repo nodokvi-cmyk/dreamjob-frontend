@@ -30,7 +30,7 @@ export class ApiError extends Error {
 }
 
 const NETWORK_MESSAGE =
-  "We couldn't reach DreamJob. Check your connection and try again.";
+  "We couldn't reach GetDreamJob. Check your connection and try again.";
 
 export const TOO_MANY_MESSAGE = "Too many attempts. Wait a minute and try again.";
 

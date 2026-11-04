@@ -12,6 +12,7 @@ import {
   parseVacancyQuery,
   vacanciesHref,
 } from "@/lib/vacancyQuery";
+import { openGraphFor } from "@/lib/site";
 import { listVacancies } from "@/services/publicVacancies.service";
 import type { Paginated, Vacancy, VacancyQuery } from "@/types";
 
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
   title: "Vacancies",
   description:
     "Search published vacancies across Georgia by keyword, city, category, work mode, contract type and pay.",
+  openGraph: openGraphFor("/vacancies"),
 };
 
 interface Loaded {

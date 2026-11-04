@@ -15,7 +15,7 @@ export default function NotFound() {
           This stop doesn&apos;t exist
         </h1>
         <p className="text-lg text-muted-foreground">
-          The page you&apos;re looking for isn&apos;t on the DreamJob line. It may have moved, or
+          The page you&apos;re looking for isn&apos;t on the GetDreamJob line. It may have moved, or
           the vacancy may have closed.
         </p>
         <div className="mt-2 flex flex-wrap justify-center gap-3">

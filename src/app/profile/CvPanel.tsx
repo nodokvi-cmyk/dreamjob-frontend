@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { getCvLink, removeCv, setCvVisibility, uploadCv } from "@/services/users.service";
 import type { CurrentUser } from "@/types";
 
-const BLOCKED = "Your browser blocked the new tab. Allow pop-ups for DreamJob, then try again.";
+const BLOCKED = "Your browser blocked the new tab. Allow pop-ups for GetDreamJob, then try again.";
 
 export function CvPanel({ accountId, account }: { accountId: string; account: CurrentUser }) {
   const { refresh } = useAuth();

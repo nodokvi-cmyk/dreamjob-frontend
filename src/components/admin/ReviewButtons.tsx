@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { approveVacancy, rejectVacancy } from "@/services/admin.service";
 import type { OwnVacancy } from "@/types";
 
-export const REASON_MAX = 500;
+export const REASON_MAX = 1000;
 
 interface ReviewButtonsProps {
   vacancy: Pick<OwnVacancy, "id" | "title">;

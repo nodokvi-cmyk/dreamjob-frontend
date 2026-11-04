@@ -257,7 +257,7 @@ function AdminProfile({ session, account }: { session: Session; account: Current
     <Frame>
       <ProfileHeader session={session} photo={account.avatarUrl} photoFit="cover" />
       <div className="max-w-2xl">
-        <ProfileSection id="details" title="Details" lead="Admin accounts are managed by the DreamJob team and can't be edited here.">
+        <ProfileSection id="details" title="Details" lead="Admin accounts are managed by the GetDreamJob team and can't be edited here.">
           <dl className="divide-y divide-border rounded-[17px] border border-border bg-card">
             {rows.map((row) => (
               <div key={row.label} className="flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:items-baseline sm:gap-6">

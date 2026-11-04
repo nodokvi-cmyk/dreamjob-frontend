@@ -56,7 +56,7 @@ function HeaderBar({ pathname }: { pathname: string }) {
         Skip to content
       </a>
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:gap-10 lg:px-8">
-        <Link href={routes.home} className="rounded-md text-on-enamel" aria-label="DreamJob home">
+        <Link href={routes.home} className="rounded-md text-on-enamel" aria-label="GetDreamJob home">
           <Logo />
         </Link>
 

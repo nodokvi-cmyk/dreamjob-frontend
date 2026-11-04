@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { ResultsError } from "@/components/vacancies/ListStates";
 import { VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { routes } from "@/lib/routes";
+import { openGraphFor } from "@/lib/site";
 import { EMPLOYMENT_TYPE_LABELS, formatSalary, placeLabel, summary } from "@/lib/vacancy";
 import { getVacancy } from "@/services/publicVacancies.service";
 import type { Vacancy } from "@/types";
@@ -40,14 +41,11 @@ export async function generateMetadata({ params }: PageProps<"/vacancies/[id]">)
     title: vacancy.title,
     description,
     robots: { index: vacancy.status === "published", follow: true },
-    openGraph: {
-      type: "website",
-      siteName: "DreamJob",
-      locale: "en_GB",
+    openGraph: openGraphFor(`/vacancies/${vacancy.id}`, {
       title: vacancy.title,
       description,
       images: photo ? [{ url: photo.url, alt: vacancy.title }] : undefined,
-    },
+    }),
     twitter: {
       card: photo ? "summary_large_image" : "summary",
       title: vacancy.title,
@@ -65,7 +63,7 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
       <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
         <ResultsError
           title="This vacancy didn't load"
-          body="We couldn't reach DreamJob just now. Check your connection, then try again."
+          body="We couldn't reach GetDreamJob just now. Check your connection, then try again."
         />
       </div>
     );

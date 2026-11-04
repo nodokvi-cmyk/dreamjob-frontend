@@ -40,7 +40,7 @@ export function SiteFooter() {
       </div>
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_repeat(3,1fr)] lg:px-8">
         <div className="flex max-w-xs flex-col gap-4">
-          <Link href={routes.home} className="w-fit rounded-md" aria-label="DreamJob home">
+          <Link href={routes.home} className="w-fit rounded-md" aria-label="GetDreamJob home">
             <Logo />
           </Link>
           <p className="text-[0.95rem] leading-relaxed text-on-enamel-muted">
@@ -68,7 +68,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-enamel-seam">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-5 text-sm text-on-enamel-muted sm:px-6 lg:px-8">
-          <p>DreamJob · Jobs in Georgia</p>
+          <p>GetDreamJob · Jobs in Georgia</p>
           <p>Salaries in GEL, USD and EUR</p>
         </div>
       </div>

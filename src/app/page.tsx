@@ -1,4 +1,5 @@
 import { ArrowRightIcon, MapPinIcon, SearchIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Form from "next/form";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -6,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { LatestVacancies } from "@/components/vacancies/LatestVacancies";
 import { companySignUpHref } from "@/lib/account";
 import { routes } from "@/lib/routes";
+import { openGraphFor } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LOCATION_MAX, QUERY_MAX, vacanciesHref } from "@/lib/vacancyQuery";
 import type { VacancyQuery } from "@/types";
+
+export const metadata: Metadata = { openGraph: openGraphFor("/") };
 
 const STATIONS = [
   {
@@ -179,7 +183,7 @@ export default function HomePage() {
 
       <section aria-labelledby="principles-title" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <h2 id="principles-title" className="sr-only">
-          Why DreamJob
+          Why GetDreamJob
         </h2>
         <ul className="grid gap-10 md:grid-cols-3 md:gap-8">
           {PRINCIPLES.map((principle) => (
