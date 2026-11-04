@@ -4,7 +4,7 @@ import type { AccountType } from "@/types";
 const SIGN_UP_STATIONS = [
   { name: "Your details", detail: "Tell us who you are. No password yet." },
   { name: "Email code", detail: "Type the 6-digit code we email you." },
-  { name: "Password", detail: "Choose a password and you're in." },
+  { name: "Password", detail: "Once your email is verified, you choose your password." },
 ];
 
 const RESET_STATIONS = [
