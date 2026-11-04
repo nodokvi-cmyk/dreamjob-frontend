@@ -1,12 +1,13 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useGoogleReturn } from "@/components/auth/useGoogleReturn";
 import { FormAlert } from "@/components/form/FormAlert";
-import { useAuth } from "@/context/AuthContext";
-import { clearAuthDrafts } from "@/lib/authDraft";
-import { formError, problem, type FormError } from "@/lib/errors";
-import { signInWithGoogle } from "@/services/auth.service";
+import { googleReturn } from "@/lib/authDraft";
+import { googleCallbackPath } from "@/lib/googleRedirect";
+import { safeNext } from "@/lib/routes";
 import type { AccountType } from "@/types";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
@@ -37,38 +38,16 @@ export function GoogleButton({ accountType, intent }: GoogleButtonProps) {
 }
 
 function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
-  const { signIn } = useAuth();
+  const next = safeNext(useSearchParams().get("next"));
   const container = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<FormError | null>(null);
   const dark = useSyncExternalStore(subscribeTheme, isDarkTheme, isDarkOnServer);
+  const returned = useGoogleReturn(accountType);
+  const error = returned && returned.account === accountType ? returned.error : null;
 
-  const handleCredential = useEffectEvent(async (response: GoogleCredentialResponse) => {
-    const idToken = response.credential;
-    if (typeof idToken !== "string" || idToken === "") {
-      setError(problem("Google didn't send a sign-in token. Try again."));
-      return;
-    }
-    setPending(true);
-    setError(null);
-    try {
-      const { token } = await signInWithGoogle(accountType, idToken);
-      clearAuthDrafts();
-      await signIn(token);
-    } catch (reason: unknown) {
-      setPending(false);
-      setError(
-        formError(reason, {
-          401: "Google sign-in didn't work for this account. Try again, or use your email.",
-          409:
-            accountType === "company"
-              ? "This Google email already belongs to a job seeker account. Switch to Job seeker above."
-              : "This Google email already belongs to a company account. Switch to Company above.",
-        }),
-      );
-    }
-  });
+  useEffect(() => {
+    googleReturn.save(accountType, next);
+  }, [accountType, next]);
 
   useEffect(() => {
     const google = window.google;
@@ -76,10 +55,8 @@ function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
     if (!ready || !google || !element) return;
     google.accounts.id.initialize({
       client_id: CLIENT_ID,
-      callback: (response) => {
-        void handleCredential(response);
-      },
-      ux_mode: "popup",
+      login_uri: new URL(googleCallbackPath(accountType), window.location.origin).href,
+      ux_mode: "redirect",
       context: intent,
     });
     element.replaceChildren();
@@ -92,7 +69,7 @@ function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
       logo_alignment: "center",
       width: Math.round(Math.min(400, Math.max(220, element.clientWidth))),
     });
-  }, [ready, dark, intent]);
+  }, [ready, dark, intent, accountType]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -102,16 +79,10 @@ function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
         <span className="transit-label text-xs">or</span>
         <span className="h-px flex-1 bg-border" />
       </div>
-      <div
-        ref={container}
-        aria-busy={pending}
-        className="flex min-h-11 w-full justify-center [color-scheme:normal]"
-      />
-      {pending ? (
-        <p role="status" className="text-center text-sm text-muted-foreground">
-          Signing you in with Google
-        </p>
-      ) : null}
+      <div ref={container} className="flex min-h-11 w-full justify-center [color-scheme:normal]" />
+      <p className="text-center text-sm text-muted-foreground">
+        Google opens its own page, then brings you back here.
+      </p>
       {error ? <FormAlert tone="error" message={error.message} details={error.details} /> : null}
     </div>
   );

@@ -4,7 +4,8 @@ interface GoogleCredentialResponse {
 
 interface GoogleIdConfiguration {
   client_id: string;
-  callback: (response: GoogleCredentialResponse) => void;
+  callback?: (response: GoogleCredentialResponse) => void;
+  login_uri?: string;
   ux_mode?: "popup" | "redirect";
   context?: "signin" | "signup" | "use";
   use_fedcm_for_button?: boolean;

@@ -1,4 +1,5 @@
 import { isObject } from "@/lib/decode";
+import { safeNext } from "@/lib/routes";
 import type { AccountType } from "@/types";
 
 export type CodeFlow = "verify" | "reset";
@@ -114,7 +115,30 @@ export const emailChangeDraft = {
   },
 };
 
+export interface GoogleReturn {
+  account: AccountType;
+  next: string | null;
+}
+
+const GOOGLE_RETURN_KEY = "dreamjob.googleReturn";
+
+export const googleReturn = {
+  read(): GoogleReturn | null {
+    const data = readJson(GOOGLE_RETURN_KEY);
+    const account = isObject(data) ? accountOf(data.account) : null;
+    if (!isObject(data) || account === null) return null;
+    return { account, next: safeNext(typeof data.next === "string" ? data.next : null) };
+  },
+  save(account: AccountType, next: string | null) {
+    writeJson(GOOGLE_RETURN_KEY, { account, next });
+  },
+  clear() {
+    remove(GOOGLE_RETURN_KEY);
+  },
+};
+
 export function clearAuthDrafts() {
   codeDraft.clear();
   emailPrefill.clear();
+  googleReturn.clear();
 }

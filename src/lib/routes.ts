@@ -7,6 +7,7 @@ export const routes = {
   setPassword: "/set-password",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
+  googleComplete: "/google/complete",
   profile: "/profile",
   dashboard: "/dashboard",
   newVacancy: "/dashboard/vacancies/new",
@@ -34,6 +35,7 @@ const AUTH_PATHS = [
   routes.setPassword,
   routes.forgotPassword,
   routes.resetPassword,
+  routes.googleComplete,
 ];
 
 export function safeNext(value: string | null | undefined): string | null {
