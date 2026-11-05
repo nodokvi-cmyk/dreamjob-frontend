@@ -1,47 +1,31 @@
 "use client";
 
+import { Google_Sans } from "next/font/google";
 import { useSearchParams } from "next/navigation";
-import Script from "next/script";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 import { useGoogleReturn } from "@/components/auth/useGoogleReturn";
 import { FormAlert } from "@/components/form/FormAlert";
 import { googleReturn } from "@/lib/authDraft";
-import { googleCallbackPath } from "@/lib/googleRedirect";
+import { googleStartHref } from "@/lib/googleRedirect";
 import { safeNext } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import type { AccountType } from "@/types";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
-const SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 
-function subscribeTheme(onChange: () => void) {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-  return () => observer.disconnect();
-}
-
-function isDarkTheme(): boolean {
-  return document.documentElement.classList.contains("dark");
-}
-
-function isDarkOnServer(): boolean {
-  return false;
-}
+const googleSans = Google_Sans({ subsets: ["latin"], weight: ["500"], display: "swap", adjustFontFallback: false });
 
 interface GoogleButtonProps {
   accountType: AccountType;
-  intent: "signin" | "signup";
 }
 
-export function GoogleButton({ accountType, intent }: GoogleButtonProps) {
+export function GoogleButton({ accountType }: GoogleButtonProps) {
   if (!CLIENT_ID) return null;
-  return <GoogleButtonInner accountType={accountType} intent={intent} />;
+  return <GoogleButtonInner accountType={accountType} />;
 }
 
-function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
+function GoogleButtonInner({ accountType }: GoogleButtonProps) {
   const next = safeNext(useSearchParams().get("next"));
-  const container = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
-  const dark = useSyncExternalStore(subscribeTheme, isDarkTheme, isDarkOnServer);
   const returned = useGoogleReturn(accountType);
   const error = returned && returned.account === accountType ? returned.error : null;
 
@@ -49,37 +33,25 @@ function GoogleButtonInner({ accountType, intent }: GoogleButtonProps) {
     googleReturn.save(accountType, next);
   }, [accountType, next]);
 
-  useEffect(() => {
-    const google = window.google;
-    const element = container.current;
-    if (!ready || !google || !element) return;
-    google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      login_uri: new URL(googleCallbackPath(accountType), window.location.origin).href,
-      ux_mode: "redirect",
-      context: intent,
-    });
-    element.replaceChildren();
-    google.accounts.id.renderButton(element, {
-      type: "standard",
-      theme: dark ? "filled_black" : "outline",
-      size: "large",
-      text: intent === "signup" ? "signup_with" : "continue_with",
-      shape: "rectangular",
-      logo_alignment: "center",
-      width: Math.round(Math.min(400, Math.max(220, element.clientWidth))),
-    });
-  }, [ready, dark, intent, accountType]);
-
   return (
     <div className="flex flex-col gap-4">
-      <Script src={SCRIPT_SRC} strategy="afterInteractive" onReady={() => setReady(true)} />
       <div className="flex items-center gap-3 text-muted-foreground" aria-hidden>
         <span className="h-px flex-1 bg-border" />
         <span className="transit-label text-xs">or</span>
         <span className="h-px flex-1 bg-border" />
       </div>
-      <div ref={container} className="flex min-h-11 w-full justify-center [color-scheme:normal]" />
+      <a
+        href={googleStartHref(accountType)}
+        className={cn(
+          googleSans.className,
+          "flex h-12 w-full items-center justify-center gap-2.5 rounded-[4px] border border-[#747775] bg-white px-3 text-sm leading-5 font-medium text-[#1F1F1F] transition-[filter] hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:border-[#8E918F] dark:bg-[#131314] dark:text-[#E3E3E3] dark:hover:brightness-125",
+        )}
+      >
+        <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-[2px] bg-white">
+          <span className="block size-5 bg-[url('/google-g.png')] bg-contain bg-center bg-no-repeat" />
+        </span>
+        <span>Continue with Google</span>
+      </a>
       <p className="text-center text-sm text-muted-foreground">
         Google opens its own page, then brings you back here.
       </p>

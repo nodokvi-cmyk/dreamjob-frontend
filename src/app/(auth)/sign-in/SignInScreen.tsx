@@ -98,7 +98,7 @@ export function SignInScreen() {
           {error ? <FormAlert tone="error" message={error.message} details={error.details} /> : null}
           <SubmitButton pending={pending} label="Sign in" pendingLabel="Signing in" />
         </form>
-        <GoogleButton accountType={accountType} intent="signin" />
+        <GoogleButton accountType={accountType} />
       </div>
     </AuthShell>
   );

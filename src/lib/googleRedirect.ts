@@ -6,6 +6,7 @@ export const GOOGLE_ERROR_PARAM = "google_error";
 const GOOGLE_ERROR_CODES = [
   "csrf",
   "missing",
+  "cancelled",
   "rejected",
   "conflict",
   "busy",
@@ -35,6 +36,8 @@ export function googleErrorMessage(code: GoogleErrorCode, account: AccountType):
       return "Google sign-in couldn't be verified. Try again.";
     case "missing":
       return "Google didn't send a sign-in token. Try again.";
+    case "cancelled":
+      return "Google sign-in was cancelled. Try again, or use your email.";
     case "rejected":
       return "Google sign-in didn't work for this account. Try again, or use your email.";
     case "conflict":
@@ -50,6 +53,12 @@ export function googleErrorMessage(code: GoogleErrorCode, account: AccountType):
     case "failed":
       return "Google sign-in didn't work. Try again, or use your email.";
   }
+}
+
+export const GOOGLE_START_PATH = "/api/google/start";
+
+export function googleStartHref(account: AccountType): string {
+  return `${GOOGLE_START_PATH}?account=${account}`;
 }
 
 export function googleCallbackPath(account: AccountType): string {

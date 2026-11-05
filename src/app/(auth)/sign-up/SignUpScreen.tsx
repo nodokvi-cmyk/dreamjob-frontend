@@ -111,7 +111,7 @@ export function SignUpScreen() {
       <div className="flex flex-col gap-6">
         <AccountSwitch value={accountType} onChange={handleSwitch} disabled={pending} />
         {company ? <CompanySignUpForm {...formProps} /> : <UserSignUpForm {...formProps} />}
-        <GoogleButton accountType={accountType} intent="signup" />
+        <GoogleButton accountType={accountType} />
       </div>
     </AuthShell>
   );
