@@ -8,8 +8,9 @@ import {
   TagIcon,
 } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
+import { type EmployerInfo, VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
 import { VacancyPhoto } from "@/components/vacancies/VacancyPhoto";
 import { cn } from "@/lib/utils";
 import {
@@ -159,9 +160,11 @@ interface VacancyDetailViewProps {
   vacancy: Vacancy;
   now: number;
   back: { href: string; label: string };
+  employer: EmployerInfo;
+  actions?: ReactNode;
 }
 
-export function VacancyDetailView({ vacancy, now, back }: VacancyDetailViewProps) {
+export function VacancyDetailView({ vacancy, now, back, employer, actions }: VacancyDetailViewProps) {
   const salary = formatSalary(vacancy);
 
   return (
@@ -180,7 +183,7 @@ export function VacancyDetailView({ vacancy, now, back }: VacancyDetailViewProps
             <h1 className="font-display text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[0.98] font-bold tracking-[-0.02em] break-words uppercase">
               {vacancy.title}
             </h1>
-            <VacancyEmployer company={vacancy.company} size="lg" />
+            <VacancyEmployer employer={employer} size="lg" />
             <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[1.02rem] text-muted-foreground">
               <li className="inline-flex items-center gap-2">
                 <MapPinIcon aria-hidden className="size-[1.1rem] shrink-0" />
@@ -214,6 +217,8 @@ export function VacancyDetailView({ vacancy, now, back }: VacancyDetailViewProps
           ) : (
             <p className="mt-2 text-lg text-on-enamel-muted">Salary by agreement</p>
           )}
+
+          {actions}
 
           <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-enamel-seam pt-5">
             <Fact term="Location" value={vacancy.location.trim() || "Not specified"} />

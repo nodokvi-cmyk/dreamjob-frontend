@@ -37,15 +37,6 @@ export function displayName(session: Session): string {
   return [firstName, lastName].filter(Boolean).join(" ") || session.account.email;
 }
 
-export function initials(name: string): string {
-  const letters = name
-    .split(/[\s@._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase());
-  return letters.join("") || "DJ";
-}
-
 export function roleLabel(session: Session): string {
   if (session.accountRole === "company") return "Company";
   if (session.accountRole === "admin") return "Admin";

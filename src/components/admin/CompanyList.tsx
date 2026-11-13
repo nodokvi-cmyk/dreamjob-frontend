@@ -49,7 +49,7 @@ function CompanyRow({
       className="flex flex-col gap-4 px-1 py-5 sm:px-2 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:gap-x-8"
     >
       <div className="flex min-w-0 gap-4">
-        <AccountPhoto src={company.logoUrl} name={name} alt={`${name} logo`} size="md" fit="contain" />
+        <AccountPhoto src={company.logoUrl} kind="company" alt={`${name} logo`} size="md" fit="contain" />
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex min-w-0 flex-col gap-0.5">
             <h2

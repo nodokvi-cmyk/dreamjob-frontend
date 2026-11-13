@@ -1,26 +1,54 @@
 import {
   array,
+  boolean,
+  DecodeError,
+  booleanOr,
+  isObject,
   isoDate,
   number,
   object,
   oneOf,
+  optionalIsoDate,
   optionalNumber,
+  pageParser,
   string,
   stringArray,
   stringOr,
+  type JsonObject,
 } from "@/lib/decode";
-import { CURRENCIES, EMPLOYMENT_TYPES, VACANCY_STATUSES, WORK_MODES } from "@/lib/vacancy";
-import { ownApiSearch } from "@/lib/vacancyQuery";
+import { APPLICATION_STATUSES } from "@/lib/applications";
+import {
+  ADMIN_VACANCY_STATUSES,
+  CURRENCIES,
+  EMPLOYMENT_TYPES,
+  USER_VACANCY_STATUSES,
+  VACANCY_STATUSES,
+  WORK_MODES,
+} from "@/lib/vacancy";
+import { apiSearch, ownApiSearch } from "@/lib/vacancyQuery";
 import { ApiError, api } from "@/services/api";
 import { uploadWithProgress } from "@/services/upload";
 import type {
+  AdminVacancy,
+  AdminVacancyCard,
+  BillingResult,
+  CompanyDisplay,
+  MyApplicationMark,
   OwnVacancy,
+  OwnVacancyCard,
   OwnVacancyQuery,
   Paginated,
+  PrivateVacancyFields,
   Vacancy,
+  VacancyBase,
+  VacancyCard,
+  VacancyCardFields,
+  VacancyDetail,
   VacancyInput,
   VacancyPhoto,
+  VacancyQuery,
   VacancyUpdateInput,
+  ViewerMarks,
 } from "@/types";
 
 export const OBJECT_ID = /^[a-f\d]{24}$/i;
@@ -30,12 +58,14 @@ function parsePhoto(value: unknown): VacancyPhoto {
   return { id: string(source, "id"), url: string(source, "url") };
 }
 
-export function parseVacancy(data: unknown): Vacancy {
-  const source = object(data, "vacancy");
+function parsePhotos(source: JsonObject): VacancyPhoto[] {
+  return source.photos === undefined ? [] : array(source.photos, "photos", parsePhoto);
+}
+
+function parseBase(source: JsonObject): VacancyBase {
   return {
     id: string(source, "id"),
     title: string(source, "title"),
-    description: stringOr(source, "description", ""),
     category: stringOr(source, "category", ""),
     employmentType: oneOf(source, "employmentType", EMPLOYMENT_TYPES),
     workMode: oneOf(source, "workMode", WORK_MODES),
@@ -43,50 +73,157 @@ export function parseVacancy(data: unknown): Vacancy {
     salaryMin: optionalNumber(source, "salaryMin"),
     salaryMax: optionalNumber(source, "salaryMax"),
     currency: oneOf(source, "currency", CURRENCIES),
-    requirements: stringArray(source, "requirements"),
     deadline: isoDate(source, "deadline"),
-    status: oneOf(source, "status", VACANCY_STATUSES),
-    photos: source.photos === undefined ? [] : array(source.photos, "photos", parsePhoto),
     company: string(source, "company"),
     createdAt: isoDate(source, "createdAt"),
   };
 }
 
-export function parseOwnVacancy(data: unknown): OwnVacancy {
-  const source = object(data, "vacancy");
+function parseCardFields(source: JsonObject): VacancyCardFields {
+  return { ...parseBase(source), excerpt: stringOr(source, "excerpt", "") };
+}
+
+export function parseCompanyDisplay(source: JsonObject): CompanyDisplay {
   return {
-    ...parseVacancy(source),
+    companyName: stringOr(source, "companyName", ""),
+    logoUrl: stringOr(source, "logoUrl", ""),
+  };
+}
+
+function parseApplicationMark(value: unknown): MyApplicationMark | null {
+  if (value === null || value === undefined) return null;
+  const source = object(value, "myApplication");
+  return {
+    id: string(source, "id"),
+    status: oneOf(source, "status", APPLICATION_STATUSES),
+    canReapply: boolean(source, "canReapply"),
+    submissions: number(source, "submissions"),
+  };
+}
+
+function parseViewerMarks(source: JsonObject): ViewerMarks {
+  return {
+    companyApproved: booleanOr(source, "companyApproved", false),
+    myApplication: parseApplicationMark(source.myApplication),
+    isBookmarked: booleanOr(source, "isBookmarked", false),
+  };
+}
+
+function parsePrivate(source: JsonObject): PrivateVacancyFields {
+  return {
     rejectionReason: stringOr(source, "rejectionReason", "").trim(),
+    submittedAt: optionalIsoDate(source, "submittedAt"),
+    firstPublishedAt: optionalIsoDate(source, "firstPublishedAt"),
+    freeWindowEndsAt: optionalIsoDate(source, "freeWindowEndsAt"),
     updatedAt: isoDate(source, "updatedAt"),
   };
 }
 
-function pageParser<T>(item: (value: unknown) => T): (data: unknown) => Paginated<T> {
-  return (data) => {
-    const source = object(data, "vacancies");
-    return {
-      items: array(source.items, "items", item),
-      total: number(source, "total"),
-      page: number(source, "page"),
-      take: number(source, "take"),
-    };
+export function parseVacancyCard(data: unknown): VacancyCard {
+  const source = object(data, "vacancy");
+  return {
+    ...parseCardFields(source),
+    ...parseCompanyDisplay(source),
+    ...parseViewerMarks(source),
+    status: oneOf(source, "status", USER_VACANCY_STATUSES),
   };
 }
 
-export const parseVacancyPage = pageParser(parseVacancy);
+export function parseOwnVacancyCard(data: unknown): OwnVacancyCard {
+  const source = object(data, "vacancy");
+  return {
+    ...parseCardFields(source),
+    ...parsePrivate(source),
+    status: oneOf(source, "status", VACANCY_STATUSES),
+    photos: parsePhotos(source),
+  };
+}
 
-export const parseOwnVacancyPage = pageParser(parseOwnVacancy);
+export function parseAdminVacancyCard(data: unknown): AdminVacancyCard {
+  const source = object(data, "vacancy");
+  return {
+    ...parseCardFields(source),
+    ...parsePrivate(source),
+    ...parseCompanyDisplay(source),
+    status: oneOf(source, "status", ADMIN_VACANCY_STATUSES),
+    companyApproved: booleanOr(source, "companyApproved", false),
+  };
+}
+
+export function parseVacancy(data: unknown): Vacancy {
+  const source = object(data, "vacancy");
+  return {
+    ...parseBase(source),
+    description: stringOr(source, "description", ""),
+    requirements: stringArray(source, "requirements"),
+    status: oneOf(source, "status", VACANCY_STATUSES),
+    photos: parsePhotos(source),
+  };
+}
+
+export function parseOwnVacancy(data: unknown): OwnVacancy {
+  const source = object(data, "vacancy");
+  return { ...parseVacancy(source), ...parsePrivate(source) };
+}
+
+export function parseVacancyDetail(data: unknown): VacancyDetail {
+  const source = object(data, "vacancy");
+  return { ...parseVacancy(source), ...parseCompanyDisplay(source), ...parseViewerMarks(source) };
+}
+
+export function parseAdminVacancy(data: unknown): AdminVacancy {
+  const source = object(data, "vacancy");
+  return {
+    ...parseOwnVacancy(source),
+    ...parseCompanyDisplay(source),
+    companyApproved: booleanOr(source, "companyApproved", false),
+  };
+}
+
+export const parseVacancyPage = pageParser("vacancies", parseVacancyCard);
+
+export const parseOwnVacancyPage = pageParser("vacancies", parseOwnVacancyCard);
+
+export const parseAdminVacancyPage = pageParser("vacancies", parseAdminVacancyCard);
+
+function parseBillingResult(data: unknown): BillingResult {
+  const source = object(data, "billing");
+  if (source.status === "paymentRequired") {
+    return { status: "paymentRequired", checkoutUrl: string(source, "checkoutUrl") };
+  }
+  if (source.status === "done" && isObject(source.vacancy)) {
+    return { status: "done", vacancy: parseOwnVacancy(source.vacancy) };
+  }
+  throw new DecodeError("status");
+}
 
 function ignore(): null {
   return null;
 }
 
+function vacancyPath(id: string, action?: string): string {
+  const base = `/vacancies/${encodeURIComponent(id)}`;
+  return action ? `${base}/${action}` : base;
+}
+
+export function listVacanciesForViewer(
+  query: VacancyQuery,
+  take: number,
+  signal?: AbortSignal,
+): Promise<Paginated<VacancyCard>> {
+  return api(`/vacancies?${apiSearch(query, take)}`, parseVacancyPage, { signal, cache: "no-store" });
+}
+
+export function getVacancyForViewer(id: string, signal?: AbortSignal): Promise<VacancyDetail> {
+  if (!OBJECT_ID.test(id)) return Promise.reject(new ApiError("Vacancy not found", 404));
+  return api(vacancyPath(id), parseVacancyDetail, { signal, cache: "no-store" });
+}
 
 export function listMyVacancies(
   query: OwnVacancyQuery,
   take: number,
   signal?: AbortSignal,
-): Promise<Paginated<OwnVacancy>> {
+): Promise<Paginated<OwnVacancyCard>> {
   return api(`/vacancies/mine?${ownApiSearch(query, take)}`, parseOwnVacancyPage, {
     signal,
     cache: "no-store",
@@ -99,7 +236,7 @@ export function getOwnVacancy(id: string, accountId: string, signal?: AbortSigna
     if (parseVacancy(data).company !== accountId) throw new ApiError("Vacancy not found", 404);
     return parseOwnVacancy(data);
   };
-  return api(`/vacancies/${encodeURIComponent(id)}`, parseOwned, { signal, cache: "no-store" });
+  return api(vacancyPath(id), parseOwned, { signal, cache: "no-store" });
 }
 
 export function createVacancy(input: VacancyInput): Promise<OwnVacancy> {
@@ -107,15 +244,23 @@ export function createVacancy(input: VacancyInput): Promise<OwnVacancy> {
 }
 
 export function updateVacancy(id: string, input: VacancyUpdateInput): Promise<OwnVacancy> {
-  return api(`/vacancies/${encodeURIComponent(id)}`, parseOwnVacancy, { method: "PATCH", body: input });
+  return api(vacancyPath(id), parseOwnVacancy, { method: "PATCH", body: input });
 }
 
 export function closeVacancy(id: string): Promise<OwnVacancy> {
-  return api(`/vacancies/${encodeURIComponent(id)}/close`, parseOwnVacancy, { method: "PATCH" });
+  return api(vacancyPath(id, "close"), parseOwnVacancy, { method: "PATCH" });
+}
+
+export function submitVacancy(id: string): Promise<BillingResult> {
+  return api(vacancyPath(id, "submit"), parseBillingResult, { method: "POST" });
+}
+
+export function extendVacancy(id: string, deadline: string): Promise<BillingResult> {
+  return api(vacancyPath(id, "extend"), parseBillingResult, { method: "POST", body: { deadline } });
 }
 
 export async function deleteVacancy(id: string): Promise<void> {
-  await api(`/vacancies/${encodeURIComponent(id)}`, ignore, { method: "DELETE" });
+  await api(vacancyPath(id), ignore, { method: "DELETE" });
 }
 
 export function uploadVacancyPhoto(
@@ -126,16 +271,14 @@ export function uploadVacancyPhoto(
 ): Promise<OwnVacancy> {
   const body = new FormData();
   body.append("photos", file);
-  return uploadWithProgress(`/vacancies/${encodeURIComponent(id)}/photos`, body, parseOwnVacancy, {
+  return uploadWithProgress(vacancyPath(id, "photos"), body, parseOwnVacancy, {
     onProgress,
     signal,
   });
 }
 
 export function removeVacancyPhoto(id: string, photoId: string): Promise<OwnVacancy> {
-  return api(
-    `/vacancies/${encodeURIComponent(id)}/photos/${encodeURIComponent(photoId)}`,
-    parseOwnVacancy,
-    { method: "DELETE" },
-  );
+  return api(`${vacancyPath(id, "photos")}/${encodeURIComponent(photoId)}`, parseOwnVacancy, {
+    method: "DELETE",
+  });
 }

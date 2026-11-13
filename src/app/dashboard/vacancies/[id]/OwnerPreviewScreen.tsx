@@ -10,13 +10,13 @@ import { GateSpinner } from "@/components/guards/GateStates";
 import { Notice } from "@/components/profile/SaveRow";
 import { useAction } from "@/components/profile/useAction";
 import { VacancyDetailSkeleton, VacancyDetailView } from "@/components/vacancies/VacancyDetail";
-import { vacancyHref } from "@/components/vacancies/VacancyList";
 import { useAuth } from "@/context/AuthContext";
-import { editVacancyHref, routes } from "@/lib/routes";
+import { editVacancyHref, routes, vacancyHref } from "@/lib/routes";
 import { formatDateTime } from "@/lib/vacancy";
 import type { CurrentCompany, OwnVacancy } from "@/types";
 
 const STATUS_COPY: Record<OwnVacancy["status"], string> = {
+  notSubmitted: "Only you can see this draft. Submit it to send it for review.",
   pending: "Only you can see this page while our team reviews it.",
   published: "It's live. Seekers find it in the vacancy list and see this page.",
   rejected: "Only you can see this page. Edit it and save to send it back for review.",
@@ -115,7 +115,12 @@ function OwnerPreview({ id, accountId, account }: { id: string; accountId: strin
           </div>
         </div>
       </section>
-      <VacancyDetailView vacancy={vacancy} now={now} back={{ href: routes.dashboard, label: "Dashboard" }} />
+      <VacancyDetailView
+        vacancy={vacancy}
+        now={now}
+        back={{ href: routes.dashboard, label: "Dashboard" }}
+        employer={{ companyName: account.companyName, logoUrl: account.logoUrl, approved: account.approved }}
+      />
     </div>
   );
 }

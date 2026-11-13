@@ -4,7 +4,7 @@ import {
   DEFAULT_SORT,
   EMPLOYMENT_TYPES,
   VACANCY_SORTS,
-  VACANCY_STATUSES,
+  ADMIN_VACANCY_STATUSES,
   WORK_MODES,
 } from "@/lib/vacancy";
 import {
@@ -32,7 +32,7 @@ export function parseAdminQuery(params: RawSearchParams): AdminVacancyQuery {
   const status =
     first(params.status) === "all"
       ? "all"
-      : (pick(params.status, VACANCY_STATUSES) ?? DEFAULT_ADMIN_STATUS);
+      : (pick(params.status, ADMIN_VACANCY_STATUSES) ?? DEFAULT_ADMIN_STATUS);
   return {
     q: text(params.q, QUERY_MAX),
     status,

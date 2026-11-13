@@ -15,9 +15,9 @@ import {
   accountMenu,
   companyNotice,
   displayName,
-  initials,
   roleLabel,
 } from "@/lib/account";
+import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { routes } from "@/lib/routes";
 import type { Session } from "@/types";
 
@@ -34,8 +34,15 @@ export function AccountMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="group flex h-10 items-center gap-2.5 rounded-lg border border-enamel-seam py-1 pr-2.5 pl-1 text-left transition-colors hover:bg-enamel-raised aria-expanded:bg-enamel-raised">
-        <span className="relative grid size-8 place-items-center rounded-md bg-on-enamel font-display text-sm font-bold text-enamel">
-          {initials(name)}
+        <span className="relative">
+          <AccountPhoto
+            src={session.accountRole === "company" ? session.account.logoUrl : session.account.avatarUrl}
+            kind={session.accountRole === "company" ? "company" : "user"}
+            alt=""
+            size="sm"
+            fit={session.accountRole === "company" ? "contain" : "cover"}
+            className="border-enamel-seam"
+          />
           {notice ? (
             <span
               aria-hidden

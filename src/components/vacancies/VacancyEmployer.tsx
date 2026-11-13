@@ -1,43 +1,69 @@
-import { Building2Icon } from "lucide-react";
+import { TriangleAlertIcon } from "lucide-react";
+import Link from "next/link";
+import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { cn } from "@/lib/utils";
-import type { Vacancy } from "@/types";
+
+export interface EmployerInfo {
+  companyName: string;
+  logoUrl: string;
+  approved: boolean;
+  href?: string;
+}
 
 interface VacancyEmployerProps {
-  company: Vacancy["company"];
+  employer: EmployerInfo;
   size: "sm" | "lg";
   tone?: "surface" | "enamel";
   className?: string;
 }
 
-const TILE = {
-  sm: "size-7 rounded-[7px] border-b-2 [&_svg]:size-3.5",
-  lg: "size-14 rounded-[12px] border-b-4 [&_svg]:size-6",
-};
+export const UNAPPROVED_COMPANY = "This company currently has no approved status";
 
-export function VacancyEmployer({ company, size, tone = "surface", className }: VacancyEmployerProps) {
+export function CompanyWarning({ tone = "surface", className }: { tone?: "surface" | "enamel"; className?: string }) {
   return (
-    <span
-      data-company={company}
-      className={cn("flex min-w-0 items-center", size === "sm" ? "gap-2" : "gap-3.5", className)}
-    >
-      <span
-        aria-hidden
-        className={cn(
-          "grid shrink-0 place-items-center border-line-scarlet bg-enamel text-on-enamel-muted dark:ring-1 dark:ring-enamel-seam",
-          TILE[size],
+    <span className={cn("inline-flex items-start gap-1.5 text-sm", tone === "enamel" ? "text-on-enamel" : "text-foreground", className)}>
+      <TriangleAlertIcon aria-hidden className="mt-px size-4 shrink-0 text-line-amber" strokeWidth={2.25} />
+      {UNAPPROVED_COMPANY}
+    </span>
+  );
+}
+
+export function VacancyEmployer({ employer, size, tone = "surface", className }: VacancyEmployerProps) {
+  const name = employer.companyName.trim() || "Company";
+  const linked = employer.approved && employer.href;
+  const nameClass = cn(
+    "truncate",
+    size === "sm" ? "text-[0.95rem] font-medium" : "text-lg font-semibold",
+    tone === "enamel" ? "text-on-enamel" : "text-foreground",
+  );
+
+  return (
+    <span className={cn("flex min-w-0 flex-col gap-1.5", className)}>
+      <span className={cn("flex min-w-0 items-center", size === "sm" ? "gap-2" : "gap-3.5")}>
+        {employer.logoUrl ? (
+          <AccountPhoto
+            src={employer.logoUrl}
+            kind="company"
+            alt=""
+            size={size === "sm" ? "xs" : "tile"}
+            fit="contain"
+          />
+        ) : null}
+        {linked ? (
+          <Link
+            href={linked}
+            className={cn(
+              nameClass,
+              "relative z-10 rounded-sm underline-offset-4 hover:underline hover:decoration-line-scarlet hover:decoration-2",
+            )}
+          >
+            {name}
+          </Link>
+        ) : (
+          <span className={nameClass}>{name}</span>
         )}
-      >
-        <Building2Icon />
       </span>
-      <span
-        className={cn(
-          "truncate",
-          size === "sm" ? "text-[0.95rem] font-medium" : "text-lg font-semibold",
-          tone === "enamel" ? "text-on-enamel" : "text-foreground",
-        )}
-      >
-        Employer
-      </span>
+      {employer.approved ? null : <CompanyWarning tone={tone} />}
     </span>
   );
 }

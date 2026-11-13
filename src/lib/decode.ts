@@ -94,3 +94,47 @@ export function isoDate(source: JsonObject, key: string): string {
   if (Number.isNaN(Date.parse(value))) throw new DecodeError(key);
   return value;
 }
+
+export function optionalIsoDate(source: JsonObject, key: string): string | undefined {
+  const value = optionalString(source, key);
+  if (value !== undefined && Number.isNaN(Date.parse(value))) throw new DecodeError(key);
+  return value;
+}
+
+export function nullableIsoDate(source: JsonObject, key: string): string | null {
+  return optionalIsoDate(source, key) ?? null;
+}
+
+export function optionalOneOf<T extends string>(
+  source: JsonObject,
+  key: string,
+  allowed: readonly T[],
+): T | undefined {
+  const value = source[key];
+  if (value === undefined || value === null) return undefined;
+  return oneOf(source, key, allowed);
+}
+
+export interface PageShape {
+  total: number;
+  page: number;
+  take: number;
+}
+
+export function pageShape(source: JsonObject): PageShape {
+  return {
+    total: number(source, "total"),
+    page: number(source, "page"),
+    take: number(source, "take"),
+  };
+}
+
+export function pageParser<T>(
+  path: string,
+  item: (value: unknown) => T,
+): (data: unknown) => PageShape & { items: T[] } {
+  return (data) => {
+    const source = object(data, path);
+    return { items: array(source.items, "items", item), ...pageShape(source) };
+  };
+}

@@ -1,6 +1,8 @@
 import type {
   Currency,
   EmploymentType,
+  AdminVacancyStatus,
+  UserVacancyStatus,
   Vacancy,
   VacancySort,
   VacancyStatus,
@@ -18,12 +20,21 @@ export const EMPLOYMENT_TYPES: readonly EmploymentType[] = [
 
 export const CURRENCIES: readonly Currency[] = ["GEL", "USD", "EUR"];
 
-export const VACANCY_STATUSES: readonly VacancyStatus[] = [
+export const ADMIN_VACANCY_STATUSES: readonly AdminVacancyStatus[] = [
   "pending",
   "published",
   "rejected",
   "closed",
   "expired",
+];
+
+export const VACANCY_STATUSES: readonly VacancyStatus[] = ["notSubmitted", ...ADMIN_VACANCY_STATUSES];
+
+export const USER_VACANCY_STATUSES: readonly UserVacancyStatus[] = [
+  "published",
+  "expired",
+  "closed",
+  "unavailable",
 ];
 
 export const VACANCY_SORTS: readonly VacancySort[] = [
@@ -119,7 +130,10 @@ export interface DeadlineInfo {
   tone: DeadlineTone;
 }
 
-export function deadlineInfo(vacancy: Pick<Vacancy, "deadline" | "status">, now: number): DeadlineInfo {
+export function deadlineInfo(
+  vacancy: { deadline: string; status: VacancyStatus | UserVacancyStatus },
+  now: number,
+): DeadlineInfo {
   if (vacancy.status === "closed") return { label: "Closed", tone: "ended" };
   const deadline = Date.parse(vacancy.deadline);
   if (vacancy.status === "expired" || deadline <= now) {
@@ -166,6 +180,7 @@ export function formatDay(day: string): string {
 }
 
 export const STATUS_LABELS: Record<VacancyStatus, string> = {
+  notSubmitted: "Not submitted",
   pending: "In review",
   published: "Live",
   rejected: "Rejected",

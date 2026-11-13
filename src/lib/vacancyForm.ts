@@ -23,7 +23,8 @@ export const LIMITS = {
 export const OTHER_CATEGORY = "__other";
 
 const FIRST_DAY = 1;
-const LAST_DAY = 179;
+export const MAX_DEADLINE_DAYS = 60;
+const LAST_DAY = MAX_DEADLINE_DAYS - 1;
 
 export interface VacancyDraft {
   title: string;

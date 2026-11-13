@@ -15,7 +15,6 @@ import { formatBytes, IMAGE_ACCEPT, imageProblem, MAX_UPLOAD_LABEL } from "@/lib
 interface PhotoPanelProps {
   kind: "avatar" | "logo";
   src: string;
-  name: string;
   upload: (file: File) => Promise<unknown>;
   remove: () => Promise<unknown>;
 }
@@ -25,7 +24,7 @@ const COPY = {
   logo: { noun: "logo", choose: "Choose logo", alt: "Your company logo" },
 };
 
-export function PhotoPanel({ kind, src, name, upload, remove }: PhotoPanelProps) {
+export function PhotoPanel({ kind, src, upload, remove }: PhotoPanelProps) {
   const { refresh } = useAuth();
   const { pending, error, notice, run, fail, reset } = useAction();
   const { picked, pick } = usePickedFile();
@@ -33,6 +32,7 @@ export function PhotoPanel({ kind, src, name, upload, remove }: PhotoPanelProps)
   const hintId = useId();
   const copy = COPY[kind];
   const fit = kind === "avatar" ? "cover" : "contain";
+  const pictureKind = kind === "avatar" ? "user" : "company";
 
   function handleChoose(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
@@ -74,14 +74,14 @@ export function PhotoPanel({ kind, src, name, upload, remove }: PhotoPanelProps)
           {picked ? (
             <AccountPhoto
               src={picked.url}
-              name={name}
+              kind={pictureKind}
               alt={`Preview of your new ${copy.noun}`}
               size="lg"
               fit={fit}
               className="border-2 border-dashed border-line-cobalt"
             />
           ) : (
-            <AccountPhoto src={src} name={name} alt={copy.alt} size="lg" fit={fit} />
+            <AccountPhoto src={src} kind={pictureKind} alt={copy.alt} size="lg" fit={fit} />
           )}
         </div>
         <div className="flex min-w-0 flex-col gap-3">

@@ -24,6 +24,7 @@ import { deleteVacancy } from "@/services/vacancies.service";
 import type { OwnVacancy } from "@/types";
 
 const STATUS_COPY: Record<OwnVacancy["status"], string> = {
+  notSubmitted: "Not submitted by the company yet.",
   pending: "Waiting for review. Seekers can't see it yet.",
   published: "Live. Seekers find it in the vacancy list.",
   rejected: "Rejected. The company can edit it and send it for review again.",
@@ -177,6 +178,7 @@ export function AdminReviewScreen({ id }: { id: string }) {
         vacancy={vacancy}
         now={now}
         back={{ href: routes.adminVacancies, label: "All vacancies" }}
+        employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: vacancy.companyApproved }}
       />
     </div>
   );

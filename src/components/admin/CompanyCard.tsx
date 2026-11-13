@@ -41,7 +41,7 @@ export function CompanyCard({ companyId }: { companyId: string }) {
           <div className="flex min-w-0 items-center gap-4">
             <AccountPhoto
               src={state.data.logoUrl}
-              name={state.data.companyName || state.data.email}
+              kind="company"
               alt={`${state.data.companyName || "Company"} logo`}
               size="md"
               fit="contain"

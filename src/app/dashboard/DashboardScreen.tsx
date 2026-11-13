@@ -19,7 +19,7 @@ import { useAuth } from "@/context/AuthContext";
 import { formError } from "@/lib/errors";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { STATUS_LABELS } from "@/lib/vacancy";
+import { STATUS_LABELS, VACANCY_STATUSES } from "@/lib/vacancy";
 import {
   PAGE_SIZE,
   QUERY_MAX,
@@ -71,6 +71,7 @@ function Dashboard({ account }: { account: CurrentCompany }) {
           <CompanyStanding account={account} />
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <StatusLine
+              statuses={VACANCY_STATUSES}
               active={query.status}
               href={(status) => dashboardHref({ q: query.q, status })}
             />

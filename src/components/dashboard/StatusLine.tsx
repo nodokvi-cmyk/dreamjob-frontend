@@ -1,22 +1,22 @@
 import Link from "next/link";
 import { STATUS_DOT } from "@/components/dashboard/VacancyStatus";
 import { cn } from "@/lib/utils";
-import { STATUS_LABELS, VACANCY_STATUSES } from "@/lib/vacancy";
+import { STATUS_LABELS } from "@/lib/vacancy";
 import type { VacancyStatus } from "@/types";
 
-const STOPS: readonly (VacancyStatus | undefined)[] = [undefined, ...VACANCY_STATUSES];
-
-interface StatusLineProps {
-  active: VacancyStatus | undefined;
-  href: (status: VacancyStatus | undefined) => string;
+interface StatusLineProps<S extends VacancyStatus> {
+  statuses: readonly S[];
+  active: S | undefined;
+  href: (status: S | undefined) => string;
 }
 
-export function StatusLine({ active: current, href }: StatusLineProps) {
+export function StatusLine<S extends VacancyStatus>({ statuses, active: current, href }: StatusLineProps<S>) {
+  const stops: readonly (S | undefined)[] = [undefined, ...statuses];
   return (
     <nav aria-label="Filter by status" className="-mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
       <ul className="relative flex w-max items-center gap-2">
         <span aria-hidden className="absolute top-1/2 right-4 left-4 h-1 -translate-y-1/2 rounded-full bg-border" />
-        {STOPS.map((status) => {
+        {stops.map((status) => {
           const active = current === status;
           return (
             <li key={status ?? "all"} className="relative">

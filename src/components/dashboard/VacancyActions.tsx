@@ -10,7 +10,7 @@ import { closeVacancy, deleteVacancy } from "@/services/vacancies.service";
 import type { OwnVacancy } from "@/types";
 
 interface VacancyActionsProps {
-  vacancy: OwnVacancy;
+  vacancy: Pick<OwnVacancy, "id" | "title" | "status" | "deadline" | "photos">;
   now: number;
   approved: boolean;
   showPreview?: boolean;

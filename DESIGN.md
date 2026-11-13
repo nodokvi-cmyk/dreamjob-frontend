@@ -165,7 +165,15 @@ The search bar is one bordered field (2px ink border) holding icon-led inputs se
 
 ### Navigation
 
-Header nav items are tracked labels; the active item gets a 3px green bar on the header's bottom edge. The account menu shows initials on a porcelain tile, with an amber dot when the company profile needs attention.
+Header nav items are tracked labels; the active item gets a 3px green bar on the header's bottom edge. The account menu shows the account photo or logo, or the default picture when none is uploaded, with an amber dot when the company profile needs attention.
+
+### Pictures
+
+No initials anywhere. An empty avatar or logo outside vacancy cards and the vacancy page shows the default picture: a muted square (`bg-muted`, `text-muted-foreground`, 1px border) with a centered lucide `UserRound` for people or `Building2` for companies. Logos sit on white with `object-contain`. Vacancy cards and the vacancy page show a small logo only when one exists; otherwise nothing, so the row is thinner.
+
+### Apply and bookmark
+
+Apply is a filled button in `success-ink` (green), Reapply in `cobalt-ink` (blue), with white text in light mode and enamel text in dark mode. Applied, Reapplied and a closed Apply are muted and disabled; the reason sits in a tooltip on a wrapper (hover, focus or tap), never on the button. The bookmark is an outlined heart, filled scarlet when saved.
 
 ### Station track (signature)
 

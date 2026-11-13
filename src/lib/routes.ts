@@ -16,6 +16,10 @@ export const routes = {
   adminCompanies: "/admin/companies",
 };
 
+export function vacancyHref(id: string): string {
+  return `${routes.vacancies}/${encodeURIComponent(id)}`;
+}
+
 export function ownVacancyHref(id: string): string {
   return `${routes.dashboard}/vacancies/${encodeURIComponent(id)}`;
 }

@@ -3,6 +3,7 @@ import { STATUS_LABELS } from "@/lib/vacancy";
 import type { VacancyStatus } from "@/types";
 
 export const STATUS_RING: Record<VacancyStatus, string> = {
+  notSubmitted: "border-dashed border-foreground/35",
   pending: "border-line-amber",
   published: "border-line-green",
   rejected: "border-line-scarlet",
@@ -11,6 +12,7 @@ export const STATUS_RING: Record<VacancyStatus, string> = {
 };
 
 export const STATUS_DOT: Record<VacancyStatus, string> = {
+  notSubmitted: "border-foreground/35 bg-transparent",
   pending: "border-line-amber bg-transparent",
   published: "border-line-green bg-line-green",
   rejected: "border-line-scarlet bg-line-scarlet",
@@ -43,6 +45,12 @@ interface Stop {
 
 function stopsFor(status: VacancyStatus | "draft"): Stop[] {
   switch (status) {
+    case "notSubmitted":
+      return [
+        { name: "Not submitted", state: "here" },
+        { name: "In review", state: "next" },
+        { name: "Live", state: "next" },
+      ];
     case "draft":
       return [
         { name: "In review", state: "next" },
@@ -90,6 +98,7 @@ const SR_STATE: Record<StopState, string> = {
 };
 
 const HERE_NODE: Record<VacancyStatus | "draft", string> = {
+  notSubmitted: "border-foreground/35 bg-background",
   draft: "border-foreground/25 bg-background",
   pending: "border-line-amber bg-background",
   rejected: "border-line-scarlet bg-background",

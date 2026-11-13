@@ -2,17 +2,18 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { ResultsError } from "@/components/vacancies/ListStates";
+import { DetailActions } from "@/components/vacancies/DetailActions";
 import { VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { routes } from "@/lib/routes";
 import { openGraphFor } from "@/lib/site";
 import { EMPLOYMENT_TYPE_LABELS, formatSalary, placeLabel, summary } from "@/lib/vacancy";
 import { getVacancy } from "@/services/publicVacancies.service";
-import type { Vacancy } from "@/types";
+import type { VacancyDetail } from "@/types";
 
-type Loaded = { kind: "found"; vacancy: Vacancy; now: number } | { kind: "missing" } | { kind: "failed" };
+type Loaded = { kind: "found"; vacancy: VacancyDetail; now: number } | { kind: "missing" } | { kind: "failed" };
 
 async function load(id: string): Promise<Loaded> {
-  let vacancy: Vacancy | null;
+  let vacancy: VacancyDetail | null;
   try {
     vacancy = await getVacancy(id);
   } catch {
@@ -23,7 +24,7 @@ async function load(id: string): Promise<Loaded> {
   return { kind: "found", vacancy, now: Date.now() };
 }
 
-function metaDescription(vacancy: Vacancy): string {
+function metaDescription(vacancy: VacancyDetail): string {
   const salary = formatSalary(vacancy) ?? "Salary by agreement";
   const facts = `${placeLabel(vacancy)} · ${EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]} · ${salary}.`;
   return summary(`${facts} ${vacancy.description}`);
@@ -70,5 +71,13 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
   }
 
   const { vacancy, now } = loaded;
-  return <VacancyDetailView vacancy={vacancy} now={now} back={{ href: routes.vacancies, label: "All vacancies" }} />;
+  return (
+    <VacancyDetailView
+      vacancy={vacancy}
+      now={now}
+      back={{ href: routes.vacancies, label: "All vacancies" }}
+      employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: vacancy.companyApproved }}
+      actions={<DetailActions vacancy={vacancy} />}
+    />
+  );
 }

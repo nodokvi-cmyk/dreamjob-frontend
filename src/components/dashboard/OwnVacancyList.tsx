@@ -4,18 +4,18 @@ import { ArrowRightIcon, MapPinIcon } from "lucide-react";
 import Link from "next/link";
 import { STATUS_RING, StatusBadge } from "@/components/dashboard/VacancyStatus";
 import { VacancyActions } from "@/components/dashboard/VacancyActions";
-import { DeadlineStop } from "@/components/vacancies/VacancyList";
+import { DeadlineStop } from "@/components/vacancies/DeadlineStop";
 import { editVacancyHref, ownVacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { formatDateTime, formatSalary, placeLabel } from "@/lib/vacancy";
-import type { OwnVacancy } from "@/types";
+import type { OwnVacancyCard } from "@/types";
 
 interface OwnVacancyListProps {
-  vacancies: OwnVacancy[];
+  vacancies: OwnVacancyCard[];
   now: number;
   approved: boolean;
-  onClosed: (vacancy: OwnVacancy) => void;
-  onDeleted: (vacancy: OwnVacancy) => void;
+  onClosed: (vacancy: OwnVacancyCard) => void;
+  onDeleted: (vacancy: OwnVacancyCard) => void;
 }
 
 export function OwnVacancyList({ vacancies, now, approved, onClosed, onDeleted }: OwnVacancyListProps) {
@@ -55,7 +55,7 @@ function OwnVacancyRow({
   onClosed,
   onDeleted,
 }: {
-  vacancy: OwnVacancy;
+  vacancy: OwnVacancyCard;
   now: number;
   approved: boolean;
   onClosed: () => void;

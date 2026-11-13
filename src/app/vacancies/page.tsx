@@ -4,6 +4,7 @@ import { FilterBar, SortSelect } from "@/components/vacancies/FilterBar";
 import { EmptyResults, PastLastPage, ResultsError } from "@/components/vacancies/ListStates";
 import { Pagination } from "@/components/vacancies/Pagination";
 import { VacancyList } from "@/components/vacancies/VacancyList";
+import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { SearchResultsRegion, VacancySearchProvider } from "@/components/vacancies/VacancySearch";
 import {
   PAGE_SIZE,
@@ -14,7 +15,7 @@ import {
 } from "@/lib/vacancyQuery";
 import { openGraphFor } from "@/lib/site";
 import { listVacancies } from "@/services/publicVacancies.service";
-import type { Paginated, Vacancy, VacancyQuery } from "@/types";
+import type { Paginated, VacancyCard, VacancyQuery } from "@/types";
 
 export const metadata: Metadata = {
   title: "Vacancies",
@@ -24,12 +25,12 @@ export const metadata: Metadata = {
 };
 
 interface Loaded {
-  result: Paginated<Vacancy> | null;
+  result: Paginated<VacancyCard> | null;
   now: number;
 }
 
 async function loadPage(query: VacancyQuery): Promise<Loaded> {
-  let result: Paginated<Vacancy> | null = null;
+  let result: Paginated<VacancyCard> | null = null;
   try {
     result = await listVacancies(query, PAGE_SIZE);
   } catch {
@@ -80,7 +81,9 @@ export default async function VacanciesPage({ searchParams }: PageProps<"/vacanc
               <ResultsError />
             ) : result.items.length > 0 ? (
               <>
-                <VacancyList vacancies={result.items} now={now} />
+                <ViewerMarksProvider source={{ kind: "list", query, take: PAGE_SIZE }}>
+                  <VacancyList vacancies={result.items} now={now} />
+                </ViewerMarksProvider>
                 <Pagination
                   href={(page) => vacanciesHref({ ...query, page })}
                   total={result.total}

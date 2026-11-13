@@ -24,7 +24,7 @@ import {
 } from "@/lib/adminQuery";
 import { formError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
-import { STATUS_LABELS } from "@/lib/vacancy";
+import { ADMIN_VACANCY_STATUSES, STATUS_LABELS } from "@/lib/vacancy";
 import { countPendingVacancies, listAdminVacancies } from "@/services/admin.service";
 import type { AdminVacancyQuery } from "@/types";
 
@@ -101,6 +101,7 @@ export function AdminVacanciesScreen() {
             ) : null}
           </div>
           <StatusLine
+            statuses={ADMIN_VACANCY_STATUSES}
             active={query.status === "all" ? undefined : query.status}
             href={(status) => adminVacanciesHref({ ...query, status: status ?? "all", page: undefined })}
           />

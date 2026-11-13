@@ -4,14 +4,14 @@ import { BuildingIcon, MapPinIcon } from "lucide-react";
 import Link from "next/link";
 import { ReviewButtons } from "@/components/admin/ReviewButtons";
 import { STATUS_RING, StatusBadge } from "@/components/dashboard/VacancyStatus";
-import { DeadlineStop } from "@/components/vacancies/VacancyList";
+import { DeadlineStop } from "@/components/vacancies/DeadlineStop";
 import { adminVacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { canReview, formatDate, formatSalary, placeLabel } from "@/lib/vacancy";
-import type { OwnVacancy } from "@/types";
+import type { AdminVacancyCard } from "@/types";
 
 interface AdminVacancyListProps {
-  vacancies: OwnVacancy[];
+  vacancies: AdminVacancyCard[];
   now: number;
   companyName: (id: string) => string;
   onDone: (message: string) => void;
@@ -55,7 +55,7 @@ function AdminVacancyRow({
   onDone,
   onStale,
 }: {
-  vacancy: OwnVacancy;
+  vacancy: AdminVacancyCard;
   now: number;
   company: string;
   onDone: (message: string) => void;

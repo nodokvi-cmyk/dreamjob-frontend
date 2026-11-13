@@ -3,15 +3,18 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
 import { VacancyList } from "@/components/vacancies/VacancyList";
+import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { routes } from "@/lib/routes";
 import { listVacancies } from "@/services/publicVacancies.service";
-import type { Paginated, Vacancy } from "@/types";
+import type { Paginated, VacancyCard, VacancyQuery } from "@/types";
 
 const LATEST_COUNT = 6;
 
-async function loadLatest(): Promise<{ latest: Paginated<Vacancy>; now: number } | null> {
+const LATEST_QUERY: VacancyQuery = { sort: "-date" };
+
+async function loadLatest(): Promise<{ latest: Paginated<VacancyCard>; now: number } | null> {
   try {
-    const latest = await listVacancies({ sort: "-date" }, LATEST_COUNT);
+    const latest = await listVacancies(LATEST_QUERY, LATEST_COUNT);
     return { latest, now: Date.now() };
   } catch {
     return null;
@@ -42,7 +45,9 @@ export async function LatestVacancies() {
           </Button>
         </div>
         <div className="lg:col-span-8">
-          <VacancyList vacancies={latest.items} now={now} headingLevel="h3" />
+          <ViewerMarksProvider source={{ kind: "list", query: LATEST_QUERY, take: LATEST_COUNT }}>
+            <VacancyList vacancies={latest.items} now={now} headingLevel="h3" />
+          </ViewerMarksProvider>
         </div>
       </div>
     </section>

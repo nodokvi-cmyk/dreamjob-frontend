@@ -76,7 +76,7 @@ function ProfileHeader({
       <div className="flex min-w-0 items-center gap-4 sm:gap-5">
         <AccountPhoto
           src={photo}
-          name={name}
+          kind={company ? "company" : "user"}
           alt={company ? `${name} logo` : `${name} photo`}
           size="md"
           fit={photoFit}
@@ -149,7 +149,6 @@ function UserProfile({
           <PhotoPanel
             kind="avatar"
             src={account.avatarUrl}
-            name={displayName(session)}
             upload={(file) => uploadAvatar(accountId, file)}
             remove={() => removeAvatar(accountId)}
           />
@@ -195,7 +194,6 @@ function CompanyProfile({
           <PhotoPanel
             kind="logo"
             src={account.logoUrl}
-            name={displayName(session)}
             upload={(file) => uploadLogo(accountId, file)}
             remove={() => removeLogo(accountId)}
           />

@@ -7,15 +7,16 @@ import {
   optionalNumber,
   optionalString,
   string,
-  stringArray,
   stringOr,
 } from "@/lib/decode";
 import { api } from "@/services/api";
 import { parseMessage } from "@/services/auth.service";
 import type {
   ChangePasswordInput,
+  ContactVisibilityInput,
   CvLink,
   MessageResponse,
+  PublicUser,
   User,
   UserRole,
   UserUpdateInput,
@@ -70,13 +71,46 @@ export function getCvLink(id: string): Promise<CvLink> {
   return api(userPath(id, "cv"), parseCvLink, { cache: "no-store" });
 }
 
-export function deleteUser(id: string): Promise<User> {
-  return api(userPath(id), parseUser, { method: "DELETE" });
+export function setProfileVisibility(id: string, isProfilePublic: boolean): Promise<User> {
+  return api(userPath(id, "profile-visibility"), parseUser, {
+    method: "PATCH",
+    body: { isProfilePublic },
+  });
 }
 
-function parseCvLink(data: unknown): CvLink {
-  const source = object(data, "cv");
+export function setContactVisibility(id: string, input: ContactVisibilityInput): Promise<User> {
+  return api(userPath(id, "contact-visibility"), parseUser, { method: "PATCH", body: input });
+}
+
+export function getPublicUser(id: string, signal?: AbortSignal): Promise<PublicUser> {
+  return api(userPath(id, "public"), parsePublicUser, { signal, cache: "no-store" });
+}
+
+function parsePublicUser(data: unknown): PublicUser {
+  const source = object(data, "user");
+  const base = {
+    id: string(source, "id"),
+    firstName: string(source, "firstName"),
+    lastName: stringOr(source, "lastName", ""),
+    avatarUrl: stringOr(source, "avatarUrl", ""),
+  };
+  if (booleanOr(source, "isPrivate", false)) return { ...base, isPrivate: true };
+  return {
+    ...base,
+    isPrivate: false,
+    hasCv: booleanOr(source, "hasCv", false),
+    email: optionalString(source, "email"),
+    phone: optionalString(source, "phone"),
+  };
+}
+
+export function parseCvLink(data: unknown): CvLink {
+  const source = object(data, "link");
   return { url: string(source, "url"), expiresIn: number(source, "expiresIn") };
+}
+
+export function deleteUser(id: string): Promise<User> {
+  return api(userPath(id), parseUser, { method: "DELETE" });
 }
 
 const USER_ROLES: readonly UserRole[] = ["user", "admin"];
@@ -95,7 +129,9 @@ export function parseUser(data: unknown): User {
     phone: stringOr(source, "phone", ""),
     isVerified: boolean(source, "isVerified"),
     isCvPublic: booleanOr(source, "isCvPublic", false),
-    appliedVacancies: stringArray(source, "appliedVacancies"),
+    isProfilePublic: booleanOr(source, "isProfilePublic", true),
+    isEmailPublic: booleanOr(source, "isEmailPublic", false),
+    isPhonePublic: booleanOr(source, "isPhonePublic", false),
     avatarUrl: stringOr(source, "avatarUrl", ""),
     hasCv: booleanOr(source, "hasCv", false),
     createdAt: string(source, "createdAt"),

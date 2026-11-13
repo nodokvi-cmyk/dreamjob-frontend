@@ -19,6 +19,7 @@ export function EditVacancyScreen({ id }: { id: string }) {
 }
 
 const LEADS: Record<OwnVacancy["status"], string> = {
+  notSubmitted: "It isn't submitted yet. Save your changes, then submit it for review.",
   pending: "It's waiting for review. Changes keep it in review.",
   published: "It's live. Changing anything except the closing date sends it back to review.",
   rejected: "Fix what our team pointed out, then save to send it back for review.",

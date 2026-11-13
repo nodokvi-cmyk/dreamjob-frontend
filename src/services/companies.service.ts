@@ -3,11 +3,15 @@ import {
   booleanOr,
   isObject,
   object,
+  optionalIsoDate,
+  optionalNumber,
+  optionalOneOf,
   optionalString,
   string,
   stringArray,
   stringOr,
 } from "@/lib/decode";
+import { BILLING_PLANS } from "@/lib/billing";
 import { api } from "@/services/api";
 import { parseMessage } from "@/services/auth.service";
 import type {
@@ -16,6 +20,7 @@ import type {
   CompanyUpdateInput,
   Director,
   MessageResponse,
+  PublicCompany,
 } from "@/types";
 
 function companyPath(id: string, action?: string): string {
@@ -73,7 +78,39 @@ export function parseCompany(data: unknown): Company {
     operatingCities: stringArray(source, "operatingCities"),
     isProfileComplete: booleanOr(source, "isProfileComplete", false),
     logoUrl: stringOr(source, "logoUrl", ""),
+    plan: optionalOneOf(source, "plan", BILLING_PLANS),
+    credits: optionalNumber(source, "credits") ?? 0,
+    purchasedCredits: optionalNumber(source, "purchasedCredits") ?? 0,
+    planRenewsAt: optionalIsoDate(source, "planRenewsAt"),
+    planEndsAtPeriodEnd: booleanOr(source, "planEndsAtPeriodEnd", false),
     createdAt: string(source, "createdAt"),
     updatedAt: string(source, "updatedAt"),
+  };
+}
+
+export function choosePayAsYouPublish(id: string): Promise<Company> {
+  return api(companyPath(id, "plan"), parseCompany, {
+    method: "PATCH",
+    body: { plan: "payAsYouPublish" },
+  });
+}
+
+export function getPublicCompany(id: string, signal?: AbortSignal): Promise<PublicCompany> {
+  return api(companyPath(id, "public"), parsePublicCompany, { signal, cache: "no-store" });
+}
+
+function parsePublicCompany(data: unknown): PublicCompany {
+  const source = object(data, "company");
+  return {
+    id: string(source, "id"),
+    companyName: stringOr(source, "companyName", ""),
+    description: stringOr(source, "description", ""),
+    website: stringOr(source, "website", ""),
+    location: stringOr(source, "location", ""),
+    operatingCities: stringArray(source, "operatingCities"),
+    logoUrl: stringOr(source, "logoUrl", ""),
+    email: stringOr(source, "email", ""),
+    phone: stringOr(source, "phone", ""),
+    director: parseDirector(source.director) ?? null,
   };
 }
