@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { ResultsError } from "@/components/vacancies/ListStates";
 import { routes } from "@/lib/routes";
-import { openGraphFor } from "@/lib/site";
+import { canonicalFor, openGraphFor } from "@/lib/site";
 import { summary } from "@/lib/vacancy";
 import { getPublicCompany } from "@/services/publicCompanies.service";
 import type { PublicCompany } from "@/types";
@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: PageProps<"/companies/[id]">)
   return {
     title: companyName(company),
     description,
+    alternates: canonicalFor(`/companies/${company.id}`),
     openGraph: openGraphFor(`/companies/${company.id}`, {
       title: companyName(company),
       description,

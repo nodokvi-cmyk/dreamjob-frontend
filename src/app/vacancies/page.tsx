@@ -13,16 +13,21 @@ import {
   parseVacancyQuery,
   vacanciesHref,
 } from "@/lib/vacancyQuery";
-import { openGraphFor } from "@/lib/site";
+import { canonicalFor, openGraphFor } from "@/lib/site";
 import { listVacancies } from "@/services/publicVacancies.service";
 import type { Paginated, VacancyCard, VacancyQuery } from "@/types";
 
-export const metadata: Metadata = {
-  title: "Vacancies",
-  description:
-    "Search published vacancies across Georgia by keyword, city, category, work mode, contract type and pay.",
-  openGraph: openGraphFor("/vacancies"),
-};
+export async function generateMetadata({ searchParams }: PageProps<"/vacancies">): Promise<Metadata> {
+  const { page } = parseVacancyQuery(await searchParams);
+  const canonical = vacanciesHref({ page });
+  return {
+    title: "Vacancies",
+    description:
+      "Search published vacancies across Georgia by keyword, city, category, work mode, contract type and pay.",
+    alternates: canonicalFor(canonical),
+    openGraph: openGraphFor(canonical),
+  };
+}
 
 interface Loaded {
   result: Paginated<VacancyCard> | null;

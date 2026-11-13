@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { LatestVacancies } from "@/components/vacancies/LatestVacancies";
 import { companySignUpHref } from "@/lib/account";
 import { routes } from "@/lib/routes";
-import { openGraphFor } from "@/lib/site";
+import { canonicalFor, openGraphFor } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LOCATION_MAX, QUERY_MAX, vacanciesHref } from "@/lib/vacancyQuery";
 import type { VacancyQuery } from "@/types";
 
-export const metadata: Metadata = { openGraph: openGraphFor("/") };
+export const metadata: Metadata = { alternates: canonicalFor("/"), openGraph: openGraphFor("/") };
 
 const STATIONS = [
   {

@@ -8,7 +8,7 @@ import { VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { jobPostingJson } from "@/lib/jobPosting";
 import { companyHref, routes } from "@/lib/routes";
-import { openGraphFor } from "@/lib/site";
+import { canonicalFor, openGraphFor } from "@/lib/site";
 import { EMPLOYMENT_TYPE_LABELS, formatSalary, placeLabel, summary } from "@/lib/vacancy";
 import { getVacancy } from "@/services/publicVacancies.service";
 import type { VacancyDetail } from "@/types";
@@ -45,6 +45,7 @@ export async function generateMetadata({ params }: PageProps<"/vacancies/[id]">)
     title: vacancy.title,
     description,
     robots: { index: vacancy.status === "published", follow: true },
+    alternates: canonicalFor(`/vacancies/${vacancy.id}`),
     openGraph: openGraphFor(`/vacancies/${vacancy.id}`, {
       title: vacancy.title,
       description,

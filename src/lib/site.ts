@@ -16,6 +16,10 @@ export const SITE_URL = resolveSiteUrl();
 
 type OpenGraph = NonNullable<Metadata["openGraph"]>;
 
+export function canonicalFor(path: string): NonNullable<Metadata["alternates"]> {
+  return { canonical: path };
+}
+
 export function openGraphFor(path: string, extra: OpenGraph = {}): OpenGraph {
   return {
     type: "website",
