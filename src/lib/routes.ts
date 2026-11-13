@@ -78,3 +78,7 @@ export function userHref(id: string): string {
 export function companyHref(id: string): string {
   return `/companies/${encodeURIComponent(id)}`;
 }
+
+export function applicantsPath(vacancyId: string): string {
+  return `${ownVacancyHref(vacancyId)}/applicants`;
+}

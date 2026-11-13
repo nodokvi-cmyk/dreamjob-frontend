@@ -1,14 +1,14 @@
 "use client";
 
-import { CircleStopIcon, EyeIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { CircleStopIcon, EyeIcon, PencilIcon, Trash2Icon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
 import { ExtendVacancy } from "@/components/dashboard/ExtendVacancy";
 import { SubmitVacancy } from "@/components/dashboard/SubmitVacancy";
 import { Button } from "@/components/ui/button";
-import { editVacancyHref, ownVacancyHref } from "@/lib/routes";
+import { applicantsPath, editVacancyHref, ownVacancyHref } from "@/lib/routes";
 import { canClose, formatDay } from "@/lib/vacancy";
-import { canEdit, canExtend, canSubmit } from "@/lib/vacancyLifecycle";
+import { canEdit, canExtend, canSubmit, wasPublished } from "@/lib/vacancyLifecycle";
 import { closeVacancy, deleteVacancy } from "@/services/vacancies.service";
 import type { CurrentCompany, OwnVacancy } from "@/types";
 
@@ -50,6 +50,14 @@ export function VacancyActions({
           now={now}
           onExtended={(day) => onUpdated(`“${title}” now closes on ${formatDay(day)}.`)}
         />
+      ) : null}
+      {wasPublished(vacancy) ? (
+        <Button asChild variant="outline" size="sm">
+          <Link href={applicantsPath(vacancy.id)} aria-label={`Applicants for ${title}`}>
+            <UsersIcon aria-hidden />
+            Applicants
+          </Link>
+        </Button>
       ) : null}
       {showPreview ? (
         <Button asChild variant="outline" size="sm">

@@ -4,7 +4,7 @@ import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useTransition } from "react";
-import { APPLICATION_STATUS_DOT } from "@/components/applications/ApplicationStatusBadge";
+import { ApplicationStatusLine } from "@/components/applications/ApplicationStatusLine";
 import { MyApplicationRow } from "@/components/applications/MyApplicationRow";
 import { useLoad } from "@/components/dashboard/useLoad";
 import { Notice } from "@/components/profile/SaveRow";
@@ -14,13 +14,13 @@ import { ListMessage, PastLastPage, ResultsError, VacancyListSkeleton } from "@/
 import { Pagination } from "@/components/vacancies/Pagination";
 import { useDraft } from "@/components/vacancies/useDraft";
 import { MY_APPLICATIONS_PAGE_SIZE, myApplicationsHref, parseMyApplicationsQuery } from "@/lib/applicationQuery";
-import { APPLICATION_STATUSES, APPLICATION_STATUS_LABELS } from "@/lib/applications";
+import { APPLICATION_STATUS_LABELS } from "@/lib/applications";
 import { formError } from "@/lib/errors";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { QUERY_MAX } from "@/lib/vacancyQuery";
 import { listMyApplications } from "@/services/applications.service";
-import type { ApplicationStatus, MyApplicationSort, MyApplicationsQuery } from "@/types";
+import type { MyApplicationSort, MyApplicationsQuery } from "@/types";
 
 const SORT_LABELS: Record<MyApplicationSort, string> = { "-date": "Newest first", date: "Oldest first" };
 
@@ -50,33 +50,7 @@ export function MyApplicationsScreen() {
             My applications
           </h1>
           <div className="flex flex-col gap-4">
-            <nav aria-label="Filter by status" className="-mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-              <ul className="flex w-max items-center gap-2">
-                {[undefined, ...APPLICATION_STATUSES].map((status: ApplicationStatus | undefined) => {
-                  const active = query.status === status;
-                  return (
-                    <li key={status ?? "all"}>
-                      <Link
-                        href={myApplicationsHref({ ...query, status, page: undefined })}
-                        scroll={false}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "flex h-10 items-center gap-2 rounded-full border px-3.5 transit-label text-[0.85rem] whitespace-nowrap transition-colors duration-150",
-                          active
-                            ? "border-foreground bg-foreground text-background"
-                            : "border-border bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground",
-                        )}
-                      >
-                        {status ? (
-                          <span aria-hidden className={cn("size-3 rounded-full border-[3px]", APPLICATION_STATUS_DOT[status])} />
-                        ) : null}
-                        {status ? APPLICATION_STATUS_LABELS[status] : "All"}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
+            <ApplicationStatusLine active={query.status} href={(status) => myApplicationsHref({ ...query, status, page: undefined })} />
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <form
                 role="search"
