@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const TABS = [
   { href: routes.adminVacancies, label: "Vacancies" },
   { href: routes.adminCompanies, label: "Companies" },
+  { href: routes.adminUsers, label: "Users" },
 ] as const;
 
 export function AdminTabs() {

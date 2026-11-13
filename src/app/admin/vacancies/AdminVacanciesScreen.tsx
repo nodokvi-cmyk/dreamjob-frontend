@@ -6,7 +6,6 @@ import { useMemo, useState, useTransition } from "react";
 import { AdminFilters } from "@/components/admin/AdminFilters";
 import { StaleAlert } from "@/components/admin/StaleAlert";
 import { AdminVacancyList } from "@/components/admin/AdminVacancyList";
-import { useCompanyNames } from "@/components/admin/useCompanyNames";
 import { useRefocus } from "@/components/admin/useRefocus";
 import { StatusLine } from "@/components/dashboard/StatusLine";
 import { useLoad } from "@/components/dashboard/useLoad";
@@ -21,6 +20,7 @@ import {
   adminVacanciesHref,
   hasAdminFilters,
   parseAdminQuery,
+  shortCompanyId,
 } from "@/lib/adminQuery";
 import { formError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
@@ -45,11 +45,11 @@ export function AdminVacanciesScreen() {
   const ready = state.status === "ready" && !state.refreshing;
   const [headingRef, requestRefocus] = useRefocus(ready);
 
-  const companyIds = [
-    ...(state.status === "ready" ? state.data.result.items.map((vacancy) => vacancy.company) : []),
-    ...(query.companyId ? [query.companyId] : []),
-  ];
-  const companyName = useCompanyNames(companyIds);
+  const filteredCompany =
+    query.companyId && state.status === "ready"
+      ? state.data.result.items.find((vacancy) => vacancy.company === query.companyId)?.companyName.trim()
+      : undefined;
+  const companyLabel = query.companyId ? filteredCompany || shortCompanyId(query.companyId) : null;
 
   const navigate = (patch: Partial<AdminVacancyQuery>) => {
     startTransition(() =>
@@ -107,7 +107,7 @@ export function AdminVacanciesScreen() {
           />
           <AdminFilters
             query={query}
-            companyLabel={query.companyId ? companyName(query.companyId) : null}
+            companyLabel={companyLabel}
             navigate={navigate}
           />
         </div>
@@ -150,7 +150,6 @@ export function AdminVacanciesScreen() {
                 <AdminVacancyList
                   vacancies={state.data.result.items}
                   now={state.data.now}
-                  companyName={companyName}
                   onDone={done}
                   onStale={stale}
                 />

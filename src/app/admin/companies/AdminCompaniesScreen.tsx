@@ -55,7 +55,7 @@ export function AdminCompaniesScreen() {
             Companies
           </h1>
           <p className="max-w-[62ch] text-[1.05rem] text-muted-foreground">
-            Newest first. A company can post once you approve it and its profile is complete.
+            Newest first. A company can post once its profile is complete, it has chosen a plan, and you approve it.
           </p>
         </div>
       </div>

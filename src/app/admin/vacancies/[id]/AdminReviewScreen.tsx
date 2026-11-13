@@ -167,7 +167,12 @@ export function AdminReviewScreen({ id }: { id: string }) {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            <CompanyCard companyId={vacancy.company} />
+            <CompanyCard
+              companyId={vacancy.company}
+              companyName={vacancy.companyName}
+              logoUrl={vacancy.logoUrl}
+              approved={vacancy.companyApproved}
+            />
             <div className="rounded-[17px] border border-border bg-card p-5">
               <LifecycleTrack status={vacancy.status} />
             </div>

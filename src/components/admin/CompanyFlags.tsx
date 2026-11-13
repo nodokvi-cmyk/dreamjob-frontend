@@ -1,3 +1,4 @@
+import { PLAN_INFO } from "@/lib/billing";
 import { cn } from "@/lib/utils";
 import type { Company } from "@/types";
 
@@ -24,13 +25,14 @@ function Flag({ on, onLabel, offLabel }: { on: boolean; onLabel: string; offLabe
 export function CompanyFlags({
   company,
 }: {
-  company: Pick<Company, "approved" | "isVerified" | "isProfileComplete">;
+  company: Pick<Company, "approved" | "isVerified" | "isProfileComplete" | "plan">;
 }) {
   return (
     <ul aria-label="Company status" className="flex flex-wrap gap-2">
       <Flag on={company.approved} onLabel="Approved" offLabel="Not approved" />
       <Flag on={company.isVerified} onLabel="Email verified" offLabel="Email not verified" />
       <Flag on={company.isProfileComplete} onLabel="Profile complete" offLabel="Profile incomplete" />
+      <Flag on={company.plan !== undefined} onLabel={company.plan ? `${PLAN_INFO[company.plan].label} plan` : ""} offLabel="No plan" />
     </ul>
   );
 }

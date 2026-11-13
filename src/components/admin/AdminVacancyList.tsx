@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ReviewButtons } from "@/components/admin/ReviewButtons";
 import { STATUS_RING, StatusBadge } from "@/components/dashboard/VacancyStatus";
 import { DeadlineStop } from "@/components/vacancies/DeadlineStop";
+import { CompanyWarning } from "@/components/vacancies/VacancyEmployer";
+import { shortCompanyId } from "@/lib/adminQuery";
 import { adminVacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { canReview, formatDate, formatSalary, placeLabel } from "@/lib/vacancy";
@@ -13,12 +15,11 @@ import type { AdminVacancyCard } from "@/types";
 interface AdminVacancyListProps {
   vacancies: AdminVacancyCard[];
   now: number;
-  companyName: (id: string) => string;
   onDone: (message: string) => void;
   onStale: (message: string) => void;
 }
 
-export function AdminVacancyList({ vacancies, now, companyName, onDone, onStale }: AdminVacancyListProps) {
+export function AdminVacancyList({ vacancies, now, onDone, onStale }: AdminVacancyListProps) {
   return (
     <ol className="relative flex flex-col gap-1">
       <span
@@ -38,7 +39,6 @@ export function AdminVacancyList({ vacancies, now, companyName, onDone, onStale 
           <AdminVacancyRow
             vacancy={vacancy}
             now={now}
-            company={companyName(vacancy.company)}
             onDone={onDone}
             onStale={onStale}
           />
@@ -51,13 +51,11 @@ export function AdminVacancyList({ vacancies, now, companyName, onDone, onStale 
 function AdminVacancyRow({
   vacancy,
   now,
-  company,
   onDone,
   onStale,
 }: {
   vacancy: AdminVacancyCard;
   now: number;
-  company: string;
   onDone: (message: string) => void;
   onStale: (message: string) => void;
 }) {
@@ -73,7 +71,8 @@ function AdminVacancyRow({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <StatusBadge status={vacancy.status} />
             <span className="text-sm text-muted-foreground">
-              Submitted <time dateTime={vacancy.createdAt}>{formatDate(vacancy.createdAt)}</time>
+              Submitted{" "}
+              <time dateTime={vacancy.submittedAt ?? vacancy.createdAt}>{formatDate(vacancy.submittedAt ?? vacancy.createdAt)}</time>
             </span>
           </div>
           <h2
@@ -91,13 +90,14 @@ function AdminVacancyRow({
             <span className="inline-flex min-w-0 items-center gap-1.5">
               <BuildingIcon aria-hidden className="size-4 shrink-0" />
               <span className="sr-only">Company: </span>
-              <span className="truncate">{company}</span>
+              <span className="truncate">{vacancy.companyName.trim() || shortCompanyId(vacancy.company)}</span>
             </span>
             <span className="inline-flex items-center gap-1.5">
               <MapPinIcon aria-hidden className="size-4 shrink-0" />
               {placeLabel(vacancy)}
             </span>
           </div>
+          {vacancy.companyApproved ? null : <CompanyWarning className="relative z-10" />}
         </div>
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 sm:flex-col sm:items-end sm:justify-start sm:gap-2 sm:pt-9 sm:text-right">
           {salary ? (

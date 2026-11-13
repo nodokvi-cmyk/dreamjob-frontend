@@ -4,7 +4,7 @@ import { CheckIcon, InfoIcon, ShieldOffIcon } from "lucide-react";
 import Link from "next/link";
 import { CompanyFlags } from "@/components/admin/CompanyFlags";
 import { staleMessage } from "@/components/admin/staleError";
-import { shortCompanyId } from "@/components/admin/useCompanyNames";
+import { shortCompanyId } from "@/lib/adminQuery";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { Button } from "@/components/ui/button";
@@ -151,7 +151,9 @@ function CompanyRow({
         {!company.approved && !company.isProfileComplete ? (
           <p id={reasonId} className="flex max-w-xs items-start gap-2 text-sm text-muted-foreground md:text-right">
             <InfoIcon aria-hidden className="mt-0.5 size-4 shrink-0 md:order-2" />
-            Approval is off until the company completes its profile.
+            {company.companyName.trim() && company.description.trim() && !company.plan
+              ? "Approval is off until the company chooses a plan."
+              : "Approval is off until the company adds its name and description and chooses a plan."}
           </p>
         ) : null}
       </div>

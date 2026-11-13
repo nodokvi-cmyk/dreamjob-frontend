@@ -18,6 +18,7 @@ export const routes = {
   admin: "/admin",
   adminVacancies: "/admin/vacancies",
   adminCompanies: "/admin/companies",
+  adminUsers: "/admin/users",
 };
 
 export function vacancyHref(id: string): string {

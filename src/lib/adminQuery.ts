@@ -93,3 +93,13 @@ export function parseCompanyPage(params: RawSearchParams): number | undefined {
   const page = positiveInt(params.page, PAGE_MAX);
   return page === 1 ? undefined : page;
 }
+
+export function shortCompanyId(id: string): string {
+  return `Company ${id.slice(-6)}`;
+}
+
+export const USER_PAGE_SIZE = 10;
+
+export function usersHref(page: number | undefined): string {
+  return withQuery(routes.adminUsers, { page: page === undefined || page <= 1 ? undefined : String(page) });
+}
