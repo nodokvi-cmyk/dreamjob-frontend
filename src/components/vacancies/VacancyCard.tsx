@@ -2,8 +2,9 @@
 
 import { BriefcaseBusinessIcon, MapPinIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ApplyButton } from "@/components/vacancies/ApplyButton";
+import { useState } from "react";
+import { ApplyConfirm } from "@/components/vacancies/apply/ApplyConfirm";
+import { ApplyButton, type ApplyKind } from "@/components/vacancies/ApplyButton";
 import { BookmarkHeart } from "@/components/vacancies/BookmarkHeart";
 import { DeadlineStop, TONE_RING } from "@/components/vacancies/DeadlineStop";
 import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
@@ -22,7 +23,7 @@ interface VacancyCardRowProps {
 
 
 export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }: VacancyCardRowProps) {
-  const router = useRouter();
+  const [confirm, setConfirm] = useState<ApplyKind | null>(null);
   const { marksFor } = useViewerMarks();
   const marks = marksFor(vacancy.id, {
     companyApproved: vacancy.companyApproved,
@@ -113,11 +114,23 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
               marks={marks}
               now={now}
               detailHref={href}
-              onApply={() => router.push(href)}
+              onApply={setConfirm}
             />
           </div>
         </div>
       </div>
+      {confirm ? (
+        <ApplyConfirm
+          open
+          onOpenChange={(open) => {
+            if (!open) setConfirm(null);
+          }}
+          vacancy={vacancy}
+          kind={confirm}
+          previousStatus={marks.myApplication?.status ?? null}
+          detailHref={href}
+        />
+      ) : null}
     </article>
   );
 }

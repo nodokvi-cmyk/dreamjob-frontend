@@ -162,9 +162,10 @@ interface VacancyDetailViewProps {
   back: { href: string; label: string };
   employer: EmployerInfo;
   actions?: ReactNode;
+  apply?: ReactNode;
 }
 
-export function VacancyDetailView({ vacancy, now, back, employer, actions }: VacancyDetailViewProps) {
+export function VacancyDetailView({ vacancy, now, back, employer, actions, apply }: VacancyDetailViewProps) {
   const salary = formatSalary(vacancy);
 
   return (
@@ -267,6 +268,8 @@ export function VacancyDetailView({ vacancy, now, back, employer, actions }: Vac
               </ul>
             </section>
           ) : null}
+
+          {apply}
         </div>
       </div>
     </article>

@@ -22,7 +22,7 @@ interface ApplyButtonProps {
   className?: string;
 }
 
-const TONE = {
+export const APPLY_TONE = {
   apply:
     "bg-success-ink text-white hover:bg-[color-mix(in_oklab,var(--success-ink),black_14%)] dark:text-enamel dark:hover:bg-[color-mix(in_oklab,var(--success-ink),white_14%)]",
   reapply:
@@ -44,7 +44,7 @@ export function ApplyButton({ vacancy, marks, now, detailHref, onApply, size = "
 
   if (state.kind === "apply" && viewer === "anonymous") {
     return (
-      <Link href={signInWithNext(detailHref)} className={cn(base, TONE.apply, "relative z-10", className)}>
+      <Link href={signInWithNext(detailHref)} className={cn(base, APPLY_TONE.apply, "relative z-10", className)}>
         Apply
         {suffix}
       </Link>
@@ -57,7 +57,7 @@ export function ApplyButton({ vacancy, marks, now, detailHref, onApply, size = "
       <button
         type="button"
         onClick={() => onApply(kind)}
-        className={cn(base, TONE[kind], "relative z-10", className)}
+        className={cn(base, APPLY_TONE[kind], "relative z-10", className)}
       >
         {kind === "apply" ? "Apply" : "Reapply"}
         {suffix}
@@ -67,7 +67,7 @@ export function ApplyButton({ vacancy, marks, now, detailHref, onApply, size = "
 
   return (
     <ReasonTip reason={state.reason} className={className}>
-      <button type="button" disabled className={cn(base, TONE.off)}>
+      <button type="button" disabled className={cn(base, APPLY_TONE.off, "w-full")}>
         {state.kind === "applied" ? state.label : "Apply"}
         {suffix}
       </button>

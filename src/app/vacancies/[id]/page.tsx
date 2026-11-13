@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { ResultsError } from "@/components/vacancies/ListStates";
+import { ApplyPanel } from "@/components/vacancies/apply/ApplyPanel";
 import { DetailActions } from "@/components/vacancies/DetailActions";
 import { VacancyDetailView } from "@/components/vacancies/VacancyDetail";
+import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
+import { jobPostingJson } from "@/lib/jobPosting";
 import { routes } from "@/lib/routes";
 import { openGraphFor } from "@/lib/site";
 import { EMPLOYMENT_TYPE_LABELS, formatSalary, placeLabel, summary } from "@/lib/vacancy";
@@ -71,13 +74,18 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
   }
 
   const { vacancy, now } = loaded;
+  const jsonLd = jobPostingJson(vacancy);
   return (
-    <VacancyDetailView
-      vacancy={vacancy}
-      now={now}
-      back={{ href: routes.vacancies, label: "All vacancies" }}
-      employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: vacancy.companyApproved }}
-      actions={<DetailActions vacancy={vacancy} />}
-    />
+    <ViewerMarksProvider source={{ kind: "detail", id: vacancy.id }}>
+      {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} /> : null}
+      <VacancyDetailView
+        vacancy={vacancy}
+        now={now}
+        back={{ href: routes.vacancies, label: "All vacancies" }}
+        employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: vacancy.companyApproved }}
+        actions={<DetailActions vacancy={vacancy} now={now} />}
+        apply={<ApplyPanel vacancy={vacancy} now={now} />}
+      />
+    </ViewerMarksProvider>
   );
 }

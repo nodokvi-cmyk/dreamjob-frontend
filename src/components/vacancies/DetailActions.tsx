@@ -1,22 +1,20 @@
 "use client";
 
+import { ApplyButton } from "@/components/vacancies/ApplyButton";
+import { focusApplySection } from "@/components/vacancies/apply/ApplyPanel";
 import { BookmarkHeart } from "@/components/vacancies/BookmarkHeart";
-import { ViewerMarksProvider, useViewerMarks } from "@/components/vacancies/ViewerMarks";
+import { useViewerMarks } from "@/components/vacancies/ViewerMarks";
+import { vacancyHref } from "@/lib/routes";
 import type { VacancyDetail } from "@/types";
 
-type DetailTarget = Pick<VacancyDetail, "id" | "title" | "companyApproved" | "myApplication" | "isBookmarked">;
+type DetailTarget = Pick<
+  VacancyDetail,
+  "id" | "title" | "status" | "deadline" | "companyApproved" | "myApplication" | "isBookmarked"
+>;
 
-export function DetailActions({ vacancy }: { vacancy: DetailTarget }) {
-  return (
-    <ViewerMarksProvider source={{ kind: "detail", id: vacancy.id }}>
-      <DetailActionsInner vacancy={vacancy} />
-    </ViewerMarksProvider>
-  );
-}
-
-function DetailActionsInner({ vacancy }: { vacancy: DetailTarget }) {
-  const { viewer, ready, marksFor } = useViewerMarks();
-  if (viewer !== "user" || !ready) return null;
+export function DetailActions({ vacancy, now }: { vacancy: DetailTarget; now: number }) {
+  const { viewer, marksFor } = useViewerMarks();
+  if (viewer === "other") return null;
   const marks = marksFor(vacancy.id, {
     companyApproved: vacancy.companyApproved,
     myApplication: vacancy.myApplication,
@@ -24,11 +22,19 @@ function DetailActionsInner({ vacancy }: { vacancy: DetailTarget }) {
   });
 
   return (
-    <div className="mt-6 flex items-center justify-between gap-4 border-t border-enamel-seam pt-5">
-      <span className="text-[0.95rem] text-on-enamel-muted">
-        {marks.isBookmarked ? "Saved to your bookmarks" : "Save it for later"}
-      </span>
-      <BookmarkHeart vacancyId={vacancy.id} title={vacancy.title} bookmarked={marks.isBookmarked} tone="enamel" />
+    <div className="mt-6 border-t border-enamel-seam pt-5">
+      <div className="flex items-center gap-2.5">
+        <ApplyButton
+          vacancy={vacancy}
+          marks={marks}
+          now={now}
+          detailHref={vacancyHref(vacancy.id)}
+          onApply={focusApplySection}
+          size="default"
+          className="flex-1"
+        />
+        <BookmarkHeart vacancyId={vacancy.id} title={vacancy.title} bookmarked={marks.isBookmarked} tone="enamel" />
+      </div>
     </div>
   );
 }
