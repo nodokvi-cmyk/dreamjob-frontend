@@ -3,34 +3,54 @@
 import { CircleStopIcon, EyeIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
+import { ExtendVacancy } from "@/components/dashboard/ExtendVacancy";
+import { SubmitVacancy } from "@/components/dashboard/SubmitVacancy";
 import { Button } from "@/components/ui/button";
 import { editVacancyHref, ownVacancyHref } from "@/lib/routes";
-import { canClose, isFinal } from "@/lib/vacancy";
+import { canClose, formatDay } from "@/lib/vacancy";
+import { canEdit, canExtend, canSubmit } from "@/lib/vacancyLifecycle";
 import { closeVacancy, deleteVacancy } from "@/services/vacancies.service";
-import type { OwnVacancy } from "@/types";
+import type { CurrentCompany, OwnVacancy } from "@/types";
 
 interface VacancyActionsProps {
-  vacancy: Pick<OwnVacancy, "id" | "title" | "status" | "deadline" | "photos">;
+  vacancy: Pick<
+    OwnVacancy,
+    "id" | "title" | "status" | "deadline" | "photos" | "firstPublishedAt" | "freeWindowEndsAt"
+  >;
   now: number;
-  approved: boolean;
+  account: CurrentCompany;
   showPreview?: boolean;
   onClosed: () => void;
   onDeleted: () => void;
+  onUpdated: (message: string) => void;
 }
 
 export function VacancyActions({
   vacancy,
   now,
-  approved,
+  account,
   showPreview = true,
   onClosed,
   onDeleted,
+  onUpdated,
 }: VacancyActionsProps) {
-  const editable = !isFinal(vacancy.status);
+  const editable = canEdit(vacancy);
+  const approved = account.approved;
   const title = vacancy.title;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {canSubmit(vacancy) ? (
+        <SubmitVacancy vacancy={vacancy} account={account} onSubmitted={() => onUpdated(`“${title}” is sent for review.`)} />
+      ) : null}
+      {canExtend(vacancy) ? (
+        <ExtendVacancy
+          vacancy={vacancy}
+          account={account}
+          now={now}
+          onExtended={(day) => onUpdated(`“${title}” now closes on ${formatDay(day)}.`)}
+        />
+      ) : null}
       {showPreview ? (
         <Button asChild variant="outline" size="sm">
           <Link href={ownVacancyHref(vacancy.id)} aria-label={`Preview ${title}`}>
@@ -100,7 +120,7 @@ export function VacancyActions({
             {vacancy.photos.length > 0
               ? ` and its ${vacancy.photos.length === 1 ? "photo are" : `${vacancy.photos.length} photos are`} deleted for good.`
               : " is deleted for good."}{" "}
-            It can&apos;t be undone.
+            It can&apos;t be undone. {deleteRefund(vacancy)}
           </p>
         }
         confirmLabel="Delete for good"
@@ -115,4 +135,10 @@ export function VacancyActions({
       />
     </div>
   );
+}
+
+function deleteRefund(vacancy: Pick<OwnVacancy, "status" | "firstPublishedAt">): string {
+  if (vacancy.status === "notSubmitted") return "Deleting a draft costs nothing.";
+  if (vacancy.status === "pending" && !vacancy.firstPublishedAt) return "The credit it used comes back to you.";
+  return "No credit or payment comes back.";
 }

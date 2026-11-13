@@ -84,9 +84,10 @@ export function draftFrom(vacancy: Vacancy): VacancyDraft {
   };
 }
 
-export function deadlineBounds(now: number): { min: string; max: string } {
+export function deadlineBounds(now: number, latest?: string): { min: string; max: string } {
   const today = tbilisiDay(now);
-  return { min: addDays(today, FIRST_DAY), max: addDays(today, LAST_DAY) };
+  const max = addDays(today, LAST_DAY);
+  return { min: addDays(today, FIRST_DAY), max: latest !== undefined && latest < max ? latest : max };
 }
 
 type Amount = { kind: "empty" } | { kind: "valid"; value: number } | { kind: "invalid" };
@@ -121,6 +122,7 @@ export function validateDraft(
   draft: VacancyDraft,
   now: number,
   originalDeadline?: string,
+  latest?: string,
 ): DraftErrors {
   const errors: DraftErrors = {};
   const title = draft.title.trim();
@@ -167,7 +169,7 @@ export function validateDraft(
   if (draft.deadline === "") {
     errors.deadline = "Choose a closing date.";
   } else if (draft.deadline !== originalDeadline) {
-    const { min: first, max: last } = deadlineBounds(now);
+    const { min: first, max: last } = deadlineBounds(now, latest);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(draft.deadline) || draft.deadline < first || draft.deadline > last) {
       errors.deadline = `Choose a date from ${formatDay(first)} to ${formatDay(last)}.`;
     }

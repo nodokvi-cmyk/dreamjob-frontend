@@ -12,6 +12,8 @@ export const routes = {
   myApplications: "/applications",
   bookmarks: "/bookmarks",
   dashboard: "/dashboard",
+  billing: "/company/billing",
+  companyVacancies: "/company/vacancies",
   newVacancy: "/dashboard/vacancies/new",
   admin: "/admin",
   adminVacancies: "/admin/vacancies",

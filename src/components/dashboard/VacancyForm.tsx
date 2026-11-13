@@ -71,6 +71,16 @@ interface VacancyFormProps {
 const REVIEW_WARNING =
   "This vacancy will go back to review and leave the public site until it is approved again.";
 
+const DRAFT_WARNING =
+  "It was never published, so saving turns it back into a draft. Submit it again afterwards; that uses a credit or a payment.";
+
+type Warning = { title: string; body: string; confirm: string };
+
+const WARNINGS: Record<"review" | "draft", Warning> = {
+  review: { title: "Send it back to review?", body: REVIEW_WARNING, confirm: "Save and send to review" },
+  draft: { title: "Turn it back into a draft?", body: DRAFT_WARNING, confirm: "Save as draft" },
+};
+
 function photoNumbers(numbers: number[]): string {
   if (numbers.length === 1) return `photo ${numbers[0]}`;
   const head = numbers.slice(0, -1).join(", ");
@@ -87,7 +97,7 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [phase, setPhase] = useState<Phase>("editing");
   const [savedId, setSavedId] = useState<string | null>(vacancy?.id ?? null);
-  const [warn, setWarn] = useState(false);
+  const [warn, setWarn] = useState<Warning | null>(null);
   const { error, notice, fail, succeed, reset } = useAction();
   const photos = usePhotoItems(vacancy?.photos ?? []);
   const controller = useRef<AbortController | null>(null);
@@ -97,8 +107,9 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
   useEffect(() => () => controller.current?.abort(), []);
 
   const originalDeadline = base ? tbilisiDay(Date.parse(base.deadline)) : undefined;
-  const errors = validateDraft(draft, now, originalDeadline);
-  const bounds = deadlineBounds(now);
+  const latest = base?.firstPublishedAt ? originalDeadline : undefined;
+  const errors = validateDraft(draft, now, originalDeadline, latest);
+  const bounds = deadlineBounds(now, latest);
   const approved = account.approved;
   const locked = phase !== "editing";
 
@@ -135,8 +146,13 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
         succeed("Nothing changed.");
         return;
       }
-      if (base.status === "published" && (changesContent(input) || photoChanges)) {
-        setWarn(true);
+      const content = changesContent(input);
+      if (base.status === "published" && (content || additions.length > 0)) {
+        setWarn(WARNINGS.review);
+        return;
+      }
+      if (base.status === "rejected" && !base.firstPublishedAt && (content || photoChanges)) {
+        setWarn(WARNINGS.draft);
         return;
       }
     }
@@ -213,11 +229,11 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
   }
 
   const submitLabel = creating
-    ? "Submit for review"
-    : base?.status === "rejected"
+    ? "Create vacancy"
+    : base?.status === "rejected" && base.firstPublishedAt
       ? "Save and resubmit"
       : "Save changes";
-  const pendingLabel = creating ? "Submitting" : "Saving";
+  const pendingLabel = creating ? "Creating" : "Saving";
   const preview = formatSalary({
     salaryMin: valueOf(draft.salaryMin),
     salaryMax: valueOf(draft.salaryMax),
@@ -444,7 +460,11 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
             id={`${id}-deadline`}
             label="Applications close on"
             error={shown("deadline")}
-            hint={`They close at the end of this day, Tbilisi time. Choose a date up to ${formatDay(bounds.max)}.`}
+            hint={
+              latest
+                ? `They close at the end of this day, Tbilisi time. After a vacancy has been published, the date can only move earlier here; use Extend on its page to move it later.`
+                : `They close at the end of this day, Tbilisi time. Choose a date up to ${formatDay(bounds.max)}, at most 60 days away.`
+            }
             className="sm:max-w-xs"
           >
             <Input
@@ -464,7 +484,9 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
           </FieldFrame>
           <p id={`${id}-deadline-review`} className="max-w-[62ch] text-sm text-muted-foreground">
             Review can take a few days. Choose a deadline that leaves room for it. A vacancy that passes its
-            deadline before approval expires and cannot be approved.
+            deadline before approval expires and cannot be approved. The first approval starts a 60-day
+            window: moving the deadline later within it is free, past it an extension costs a credit or a
+            payment.{creating ? " After you create the vacancy, you submit it for review on its page." : null}
           </p>
         </ProfileSection>
       </fieldset>
@@ -546,15 +568,17 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
       )}
 
       <ConfirmDialog
-        open={warn}
-        onOpenChange={setWarn}
-        title="Send it back to review?"
-        description={<p>{REVIEW_WARNING}</p>}
-        confirmLabel="Save and send to review"
+        open={warn !== null}
+        onOpenChange={(open) => {
+          if (!open) setWarn(null);
+        }}
+        title={warn?.title ?? ""}
+        description={<p>{warn?.body}</p>}
+        confirmLabel={warn?.confirm ?? "Save"}
         pendingLabel="Saving"
         cancelLabel="Keep editing"
         onConfirm={async () => {
-          setWarn(false);
+          setWarn(null);
           void save();
         }}
       />

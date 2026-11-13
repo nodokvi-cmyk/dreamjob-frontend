@@ -11,17 +11,24 @@ import { useAuth } from "@/context/AuthContext";
 import { clearAuthDrafts } from "@/lib/authDraft";
 import { deleteCompany } from "@/services/companies.service";
 import { deleteUser } from "@/services/users.service";
-import type { AccountType } from "@/types";
+import type { AccountType, BillingPlan } from "@/types";
 
 const CONFIRM_WORD = "DELETE";
 
-export function DeleteAccount({ accountId, accountType }: { accountId: string; accountType: AccountType }) {
+interface DeleteAccountProps {
+  accountId: string;
+  accountType: AccountType;
+  plan?: BillingPlan;
+}
+
+export function DeleteAccount({ accountId, accountType, plan }: DeleteAccountProps) {
   const { signOut } = useAuth();
   const { pending, error, run, reset } = useAction();
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");
   const company = accountType === "company";
   const confirmed = typed.trim() === CONFIRM_WORD;
+  const paidPlan = company && (plan === "plus" || plan === "elite");
 
   function handleOpenChange(next: boolean) {
     if (pending) return;
@@ -48,7 +55,11 @@ export function DeleteAccount({ accountId, accountType }: { accountId: string; a
     <div className="flex flex-col gap-5">
       <ul className="flex max-w-[62ch] list-disc flex-col gap-1.5 pl-5 text-muted-foreground">
         <li>Your profile, {company ? "logo" : "photo, CV"} and sign-in are removed for good.</li>
-        {company ? <li>All your vacancies and their photos are deleted too.</li> : null}
+        {company ? <li>All your vacancies, their photos, applications and bookmarks are deleted too.</li> : null}
+        {company ? <li>Your billing account is closed at once and your saved cards are removed.</li> : null}
+        {paidPlan ? (
+          <li>Your paid plan is cancelled: no more monthly charges, no refund for the rest of the month, and unused credits are lost.</li>
+        ) : null}
         <li>You can sign up again later with the same email, but nothing comes back.</li>
       </ul>
       <AlertDialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -67,10 +78,22 @@ export function DeleteAccount({ accountId, accountType }: { accountId: string; a
                 <AlertDialog.Title className="font-display text-2xl leading-none font-bold tracking-[-0.01em] uppercase">
                   Delete your account?
                 </AlertDialog.Title>
-                <AlertDialog.Description className="text-muted-foreground">
-                  {company
-                    ? "This deletes your company profile, logo, every vacancy you posted and their photos. It can't be undone."
-                    : "This deletes your profile, photo and CV. It can't be undone."}
+                <AlertDialog.Description asChild>
+                  <div className="flex flex-col gap-2 text-muted-foreground">
+                    <p>
+                      {company
+                        ? "This deletes your company profile, logo, every vacancy you posted with its photos and applications. It can't be undone."
+                        : "This deletes your profile, photo and CV. It can't be undone."}
+                    </p>
+                    {company ? (
+                      <p className="text-foreground">
+                        Your billing account is closed at once and your saved cards are removed.
+                        {paidPlan
+                          ? " Your paid plan is cancelled: no more monthly charges, no refund for the rest of the month, and unused credits are lost."
+                          : null}
+                      </p>
+                    ) : null}
+                  </div>
                 </AlertDialog.Description>
               </div>
               <TextField

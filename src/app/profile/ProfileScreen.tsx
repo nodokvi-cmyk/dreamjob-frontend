@@ -9,7 +9,7 @@ import { ProfileSection } from "@/components/profile/ProfileSection";
 import { SectionNav, type NavSection } from "@/components/profile/SectionNav";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { displayName, roleLabel } from "@/lib/account";
+import { companyGap, displayName, roleLabel } from "@/lib/account";
 import { removeLogo, uploadLogo } from "@/services/companies.service";
 import { removeAvatar, uploadAvatar } from "@/services/users.service";
 import type { CurrentCompany, CurrentUser, Session } from "@/types";
@@ -42,6 +42,7 @@ const COMPANY_SECTIONS: readonly NavSection[] = [
 
 const APPROVAL_STATIONS = [
   { name: "Profile", detail: "" },
+  { name: "Plan", detail: "" },
   { name: "Review", detail: "" },
   { name: "Approved", detail: "" },
 ];
@@ -102,8 +103,11 @@ function ProfileHeader({
 }
 
 function ApprovalStatus({ account }: { account: CurrentCompany }) {
-  const current = !account.isProfileComplete ? 0 : account.approved ? 2 : 1;
-  const status = !account.isProfileComplete
+  const gap = companyGap(account);
+  const current = gap === "details" ? 0 : gap === "plan" ? 1 : account.approved ? 3 : 2;
+  const status = gap === "plan"
+    ? { dot: "bg-line-amber", text: "Choose a plan on the Billing page" }
+    : gap
     ? { dot: "bg-line-amber", text: "Profile incomplete" }
     : account.approved
       ? { dot: "bg-line-green", text: "Approved. You can publish vacancies." }
@@ -207,7 +211,7 @@ function CompanyProfile({
         </ProfileSection>
         <EmailAndPassword accountId={accountId} accountType="company" account={account} />
         <ProfileSection id="delete" title="Delete account" tone="danger">
-          <DeleteAccount accountId={accountId} accountType="company" />
+          <DeleteAccount accountId={accountId} accountType="company" plan={account.plan} />
         </ProfileSection>
       </Layout>
     </Frame>

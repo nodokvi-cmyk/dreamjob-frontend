@@ -12,7 +12,8 @@ import { useAction } from "@/components/profile/useAction";
 import { VacancyDetailSkeleton, VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { useAuth } from "@/context/AuthContext";
 import { companyHref, editVacancyHref, routes, vacancyHref } from "@/lib/routes";
-import { formatDateTime } from "@/lib/vacancy";
+import { formatDate, formatDateTime } from "@/lib/vacancy";
+import { canEdit, needsExtendToEdit, rejectedEditNote } from "@/lib/vacancyLifecycle";
 import type { CurrentCompany, OwnVacancy } from "@/types";
 
 const STATUS_COPY: Record<OwnVacancy["status"], string> = {
@@ -78,34 +79,58 @@ function OwnerPreview({ id, accountId, account }: { id: string; accountId: strin
                     {vacancy.rejectionReason || "No reason was given."}
                   </span>
                 </p>
+                <p className="text-sm text-muted-foreground">{rejectedEditNote(vacancy)}</p>
                 {account.approved ? (
                   <Link
                     href={editVacancyHref(vacancy.id)}
                     className="inline-flex w-fit items-center gap-1.5 rounded-md transit-label text-sm text-cobalt-ink hover:underline"
                   >
-                    Edit and resubmit
+                    {vacancy.firstPublishedAt ? "Edit and resubmit" : "Edit"}
                     <ArrowRightIcon aria-hidden className="size-4" />
                   </Link>
                 ) : null}
               </div>
             ) : null}
-            {!account.approved && vacancy.status !== "closed" && vacancy.status !== "expired" ? (
+            {vacancy.status === "notSubmitted" ? (
+              <p className="max-w-[62ch] text-[0.95rem] text-muted-foreground">
+                Submit this vacancy to send it for review. It needs a closing date in the future.
+              </p>
+            ) : null}
+            {needsExtendToEdit(vacancy) ? (
+              <p className="max-w-[62ch] text-[0.95rem] text-muted-foreground">
+                Extend it to put it back live. Editing opens again after that.
+              </p>
+            ) : null}
+            {vacancy.freeWindowEndsAt && vacancy.status !== "closed" ? (
+              <p className="text-sm text-muted-foreground">
+                Free window ends about{" "}
+                <time dateTime={vacancy.freeWindowEndsAt} className="font-medium text-foreground">
+                  {formatDate(vacancy.freeWindowEndsAt)}
+                </time>
+                . Extending past it costs a credit or a payment.
+              </p>
+            ) : null}
+            {!account.approved && canEdit(vacancy) ? (
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
                 <PencilIcon aria-hidden className="size-4 shrink-0" />
-                Editing is paused until our team approves your company.
+                Editing, submitting and extending are paused until our team approves your company.
               </p>
             ) : null}
             <div className="mt-1 flex flex-col gap-3">
               <VacancyActions
                 vacancy={vacancy}
                 now={now}
-                approved={account.approved}
+                account={account}
                 showPreview={false}
                 onClosed={() => {
                   succeed("Vacancy closed.");
                   reload();
                 }}
                 onDeleted={() => router.push(routes.dashboard)}
+                onUpdated={(message) => {
+                  succeed(message);
+                  reload();
+                }}
               />
               <Notice message={notice} />
             </div>

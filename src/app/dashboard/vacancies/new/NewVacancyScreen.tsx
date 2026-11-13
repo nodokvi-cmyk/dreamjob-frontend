@@ -20,7 +20,7 @@ function NewVacancy({ account }: { account: CurrentCompany }) {
   return (
     <EditorFrame
       title="Post a vacancy"
-      lead="Fill in the role, pay and closing date. Our team reviews it, then it goes live for seekers."
+      lead="Fill in the role, pay and closing date. Create it as a draft, then submit it for review; once approved it goes live for seekers."
       back={{ href: routes.dashboard, label: "Dashboard" }}
       status="draft"
     >

@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { CreditCardIcon, PlusIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useTransition } from "react";
@@ -16,6 +16,7 @@ import { ListMessage, PastLastPage, ResultsError, VacancyListSkeleton } from "@/
 import { Pagination } from "@/components/vacancies/Pagination";
 import { useDraft } from "@/components/vacancies/useDraft";
 import { useAuth } from "@/context/AuthContext";
+import { PLAN_INFO } from "@/lib/billing";
 import { formError } from "@/lib/errors";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -63,10 +64,27 @@ function Dashboard({ account }: { account: CurrentCompany }) {
       <div className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-7 px-4 pt-10 pb-6 sm:px-6 md:pt-12 lg:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <h1 className="font-display text-[clamp(2.5rem,6vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.02em] uppercase">
-              Your vacancies
-            </h1>
-            <PostButton approved={approved} className="w-full sm:w-auto" />
+            <div className="flex flex-col gap-3">
+              <h1 className="font-display text-[clamp(2.5rem,6vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.02em] uppercase">
+                Your vacancies
+              </h1>
+              <p className="text-[0.95rem] text-muted-foreground">
+                {account.plan ? `${PLAN_INFO[account.plan].label} plan · ` : "No plan yet · "}
+                <span className="tabular">
+                  {account.credits} plan {account.credits === 1 ? "credit" : "credits"}, {account.purchasedCredits}{" "}
+                  purchased
+                </span>
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Link href={routes.billing}>
+                  <CreditCardIcon aria-hidden />
+                  Billing
+                </Link>
+              </Button>
+              <PostButton approved={approved} className="w-full sm:w-auto" />
+            </div>
           </div>
           <CompanyStanding account={account} />
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -139,9 +157,13 @@ function Dashboard({ account }: { account: CurrentCompany }) {
                 <OwnVacancyList
                   vacancies={state.data.result.items}
                   now={state.data.now}
-                  approved={approved}
+                  account={account}
                   onClosed={(vacancy) => {
                     succeed(`“${vacancy.title}” is closed.`);
+                    reload();
+                  }}
+                  onUpdated={(message) => {
+                    succeed(message);
                     reload();
                   }}
                   onDeleted={(vacancy) => {

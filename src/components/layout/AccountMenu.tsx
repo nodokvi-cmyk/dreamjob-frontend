@@ -14,11 +14,11 @@ import {
 import {
   accountMenu,
   companyNotice,
+  companyNoticeHref,
   displayName,
   roleLabel,
 } from "@/lib/account";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
-import { routes } from "@/lib/routes";
 import type { Session } from "@/types";
 
 export function AccountMenu({
@@ -63,7 +63,7 @@ export function AccountMenu({
         </DropdownMenuLabel>
         {notice ? (
           <DropdownMenuItem asChild>
-            <Link href={routes.profile} className="text-foreground">
+            <Link href={companyNoticeHref(session)} className="text-foreground">
               <span aria-hidden className="size-2 rounded-full bg-line-amber" />
               {notice}
             </Link>

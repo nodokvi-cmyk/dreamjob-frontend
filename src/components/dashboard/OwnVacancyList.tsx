@@ -8,17 +8,19 @@ import { DeadlineStop } from "@/components/vacancies/DeadlineStop";
 import { editVacancyHref, ownVacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { formatDateTime, formatSalary, placeLabel } from "@/lib/vacancy";
-import type { OwnVacancyCard } from "@/types";
+import { needsExtendToEdit, rejectedEditNote } from "@/lib/vacancyLifecycle";
+import type { CurrentCompany, OwnVacancyCard } from "@/types";
 
 interface OwnVacancyListProps {
   vacancies: OwnVacancyCard[];
   now: number;
-  approved: boolean;
+  account: CurrentCompany;
   onClosed: (vacancy: OwnVacancyCard) => void;
   onDeleted: (vacancy: OwnVacancyCard) => void;
+  onUpdated: (message: string) => void;
 }
 
-export function OwnVacancyList({ vacancies, now, approved, onClosed, onDeleted }: OwnVacancyListProps) {
+export function OwnVacancyList({ vacancies, now, account, onClosed, onDeleted, onUpdated }: OwnVacancyListProps) {
   return (
     <ol className="relative flex flex-col gap-1">
       <span
@@ -38,9 +40,10 @@ export function OwnVacancyList({ vacancies, now, approved, onClosed, onDeleted }
           <OwnVacancyRow
             vacancy={vacancy}
             now={now}
-            approved={approved}
+            account={account}
             onClosed={() => onClosed(vacancy)}
             onDeleted={() => onDeleted(vacancy)}
+            onUpdated={onUpdated}
           />
         </li>
       ))}
@@ -51,18 +54,21 @@ export function OwnVacancyList({ vacancies, now, approved, onClosed, onDeleted }
 function OwnVacancyRow({
   vacancy,
   now,
-  approved,
+  account,
   onClosed,
   onDeleted,
+  onUpdated,
 }: {
   vacancy: OwnVacancyCard;
   now: number;
-  approved: boolean;
+  account: CurrentCompany;
   onClosed: () => void;
   onDeleted: () => void;
+  onUpdated: (message: string) => void;
 }) {
   const salary = formatSalary(vacancy);
   const rejected = vacancy.status === "rejected";
+  const approved = account.approved;
 
   return (
     <article
@@ -111,12 +117,13 @@ function OwnVacancyRow({
               {vacancy.rejectionReason || "No reason was given."}
             </span>
           </p>
+          <p className="text-sm text-muted-foreground">{rejectedEditNote(vacancy)}</p>
           {approved ? (
             <Link
               href={editVacancyHref(vacancy.id)}
               className="inline-flex w-fit items-center gap-1.5 rounded-md transit-label text-sm text-cobalt-ink hover:underline"
             >
-              Edit and resubmit
+              {vacancy.firstPublishedAt ? "Edit and resubmit" : "Edit"}
               <ArrowRightIcon aria-hidden className="size-4" />
             </Link>
           ) : (
@@ -127,12 +134,20 @@ function OwnVacancyRow({
         </div>
       ) : null}
 
+      {vacancy.status === "notSubmitted" ? (
+        <p className="text-[0.95rem] text-muted-foreground">Submit this vacancy to send it for review.</p>
+      ) : null}
+      {needsExtendToEdit(vacancy) ? (
+        <p className="text-[0.95rem] text-muted-foreground">Extend it to put it back live. Editing opens again after that.</p>
+      ) : null}
+
       <VacancyActions
         vacancy={vacancy}
         now={now}
-        approved={approved}
+        account={account}
         onClosed={onClosed}
         onDeleted={onDeleted}
+        onUpdated={onUpdated}
       />
     </article>
   );

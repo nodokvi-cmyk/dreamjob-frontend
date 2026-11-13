@@ -1,5 +1,5 @@
 import { routes, withQuery } from "@/lib/routes";
-import type { AccountType, Session } from "@/types";
+import type { AccountType, CurrentCompany, Session } from "@/types";
 
 export interface NavLink {
   href: string;
@@ -64,6 +64,7 @@ export function accountMenu(session: Session): NavLink[] {
     return [
       { href: routes.dashboard, label: "Dashboard" },
       { href: routes.profile, label: "Company profile" },
+      { href: routes.billing, label: "Billing" },
     ];
   }
   if (session.accountRole === "admin") {
@@ -81,7 +82,9 @@ export function accountMenu(session: Session): NavLink[] {
 
 export function companyNotice(session: Session): string | null {
   if (session.accountRole !== "company") return null;
-  if (!session.account.isProfileComplete) return "Complete your company profile";
+  const gap = companyGap(session.account);
+  if (gap === "plan") return "Choose a plan";
+  if (gap === "details") return "Complete your company profile";
   if (!session.account.approved) return "Awaiting admin approval";
   return null;
 }
@@ -90,4 +93,17 @@ export function isActive(pathname: string, href: string): boolean {
   const path = href.split("?")[0];
   if (path === "/") return pathname === "/";
   return pathname === path || pathname.startsWith(`${path}/`);
+}
+
+export type CompanyGap = "details" | "plan";
+
+export function companyGap(account: CurrentCompany): CompanyGap | null {
+  if (account.isProfileComplete) return null;
+  if (!account.companyName.trim() || !account.description.trim()) return "details";
+  return account.plan ? "details" : "plan";
+}
+
+export function companyNoticeHref(session: Session): string {
+  if (session.accountRole === "company" && companyGap(session.account) === "plan") return routes.billing;
+  return routes.profile;
 }
