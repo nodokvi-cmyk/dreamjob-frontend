@@ -376,6 +376,7 @@ export interface MyApplicationsQuery {
   status?: ApplicationStatus;
   sort?: MyApplicationSort;
   page?: number;
+  focus?: string;
 }
 
 export interface Applicant {

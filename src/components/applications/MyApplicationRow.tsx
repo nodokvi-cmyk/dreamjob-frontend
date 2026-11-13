@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { APPLY_TONE } from "@/components/vacancies/ApplyButton";
 import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
 import { companyHref, vacancyHref } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { formatDateTime } from "@/lib/vacancy";
 import { withdrawApplication } from "@/services/applications.service";
 import type { MyApplication } from "@/types";
@@ -31,12 +32,17 @@ function withdrawWarning(application: MyApplication): string {
   return "You can reapply only once, and only while the vacancy is open.";
 }
 
+export function myApplicationRowId(id: string): string {
+  return `my-application-${id}`;
+}
+
 interface MyApplicationRowProps {
   application: MyApplication;
   onWithdrawn: (application: MyApplication) => void;
+  focused?: boolean;
 }
 
-export function MyApplicationRow({ application, onWithdrawn }: MyApplicationRowProps) {
+export function MyApplicationRow({ application, onWithdrawn, focused = false }: MyApplicationRowProps) {
   const [fileError, setFileError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
   const { vacancy } = application;
@@ -46,7 +52,15 @@ export function MyApplicationRow({ application, onWithdrawn }: MyApplicationRowP
   const headingId = `application-${application.id}`;
 
   return (
-    <article aria-labelledby={headingId} className="flex flex-col gap-4 rounded-xl border border-border bg-card px-4 py-5 sm:px-5">
+    <article
+      id={myApplicationRowId(application.id)}
+      tabIndex={-1}
+      aria-labelledby={headingId}
+      className={cn(
+        "flex scroll-mt-28 flex-col gap-4 rounded-xl border bg-card px-4 py-5 outline-none sm:px-5",
+        focused ? "border-line-cobalt ring-3 ring-line-cobalt/30" : "border-border",
+      )}
+    >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <ApplicationStatusBadge status={application.status} />
         {note ? <span className="transit-label text-[0.8rem] text-muted-foreground">{note}</span> : null}

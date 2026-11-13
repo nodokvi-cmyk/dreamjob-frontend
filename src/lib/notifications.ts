@@ -1,0 +1,115 @@
+import { applicantsHref } from "@/lib/applicantQuery";
+import { myApplicationsHref } from "@/lib/applicationQuery";
+import { ownVacancyHref, routes } from "@/lib/routes";
+import { formatDateTime } from "@/lib/vacancy";
+import type { AppNotification } from "@/types";
+
+export type NotificationTone = "positive" | "attention" | "info";
+
+export const BADGE_REFRESH_MS = 5 * 60 * 1000;
+
+export const WARN_DAYS = 5;
+
+export function badgeLabel(count: number): string {
+  return count > 99 ? "99+" : String(count);
+}
+
+function quoted(title: string | undefined): string {
+  return title?.trim() || "your vacancy";
+}
+
+export function notificationText(notification: AppNotification): string {
+  const { data } = notification;
+  const title = quoted(data.vacancyTitle);
+  switch (notification.type) {
+    case "newApplication":
+      return data.isReapply ? `New reapplication for ${title}` : `New application for ${title}`;
+    case "applicationWithdrawn":
+      return `An applicant withdrew from ${title}`;
+    case "vacancyApproved":
+      return `${title} is published`;
+    case "vacancyRejected":
+      return data.reason ? `${title} was not approved: ${data.reason}` : `${title} was not approved`;
+    case "companyApproved":
+      return "Your company is approved";
+    case "companyRevoked":
+      return "Your company approval was revoked";
+    case "planEnded":
+      return `Your ${data.planName ?? "paid"} plan has ended`;
+    case "planPaymentActionRequired":
+      return `Your bank needs a confirmation for your ${data.planName ?? "plan"} renewal. Check your email within 5 days to keep your plan.`;
+    case "applicationStatusChanged": {
+      const company = data.companyName?.trim() || "The company";
+      const status = data.status ?? "a new status";
+      return `${company} moved your application for ${title} to ${status}`;
+    }
+    case "applicantCompanyRevoked":
+      return `${data.companyName?.trim() || "A company"} is no longer approved; your applications to it are on hold`;
+  }
+}
+
+export function notificationTone(notification: AppNotification): NotificationTone {
+  switch (notification.type) {
+    case "vacancyApproved":
+    case "companyApproved":
+      return "positive";
+    case "applicationStatusChanged":
+      return notification.data.status === "rejected" ? "attention" : "positive";
+    case "newApplication":
+    case "applicationWithdrawn":
+      return "info";
+    default:
+      return "attention";
+  }
+}
+
+export interface NotificationTarget {
+  href: string | null;
+  checkVacancyId: string | null;
+}
+
+export function notificationTarget(notification: AppNotification): NotificationTarget {
+  const { vacancyId, applicationId } = notification.target;
+  switch (notification.type) {
+    case "newApplication":
+    case "applicationWithdrawn":
+      return vacancyId
+        ? { href: applicantsHref(vacancyId, { focus: applicationId ?? undefined }), checkVacancyId: vacancyId }
+        : { href: null, checkVacancyId: null };
+    case "vacancyApproved":
+    case "vacancyRejected":
+      return vacancyId ? { href: ownVacancyHref(vacancyId), checkVacancyId: vacancyId } : { href: null, checkVacancyId: null };
+    case "companyApproved":
+    case "companyRevoked":
+      return { href: routes.dashboard, checkVacancyId: null };
+    case "planEnded":
+    case "planPaymentActionRequired":
+      return { href: routes.billing, checkVacancyId: null };
+    case "applicationStatusChanged":
+      return { href: myApplicationsHref({ focus: applicationId ?? undefined }), checkVacancyId: null };
+    case "applicantCompanyRevoked":
+      return { href: routes.myApplications, checkVacancyId: null };
+  }
+}
+
+function hoursText(hours: number | null, frozen: boolean): string {
+  if (hours === null || hours === 0) return frozen ? "less than an hour left" : "less than an hour";
+  const unit = hours === 1 ? "hour" : "hours";
+  return frozen ? `${hours} ${unit} left` : `${hours} ${unit}`;
+}
+
+export function countdownText(notification: AppNotification): string {
+  const { daysLeft, hoursLeft, locked } = notification;
+  if (locked) {
+    const left = daysLeft > 0 ? `${daysLeft} ${daysLeft === 1 ? "day" : "days"} left` : hoursText(hoursLeft, true);
+    const since = notification.lockedAt ? `, locked since ${formatDateTime(notification.lockedAt)}` : "";
+    return `Frozen, ${left}${since}`;
+  }
+  if (daysLeft > 0) return `Deleted in ${daysLeft} ${daysLeft === 1 ? "day" : "days"}`;
+  if (hoursLeft !== null && hoursLeft > 0) return `Deleted in ${hoursText(hoursLeft, false)}`;
+  return "Deleted in less than an hour";
+}
+
+export function showsExpiryWarning(notification: AppNotification): boolean {
+  return !notification.locked && notification.daysLeft <= WARN_DAYS;
+}

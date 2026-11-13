@@ -7,6 +7,7 @@ import { Suspense, useState } from "react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { Logo } from "@/components/layout/StationMark";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -82,6 +83,9 @@ function HeaderBar({ pathname }: { pathname: string }) {
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
+          {session && session.accountRole !== "admin" ? (
+            <NotificationBell key={session.accountId} accountId={session.accountId} role={session.accountRole} />
+          ) : null}
 
           <div className="hidden items-center gap-3 md:flex">
             {status === "loading" || status === "error" ? (

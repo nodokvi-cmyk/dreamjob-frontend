@@ -3,9 +3,9 @@
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useTransition } from "react";
+import { useEffect, useMemo, useRef, useTransition } from "react";
 import { ApplicationStatusLine } from "@/components/applications/ApplicationStatusLine";
-import { MyApplicationRow } from "@/components/applications/MyApplicationRow";
+import { MyApplicationRow, myApplicationRowId } from "@/components/applications/MyApplicationRow";
 import { useLoad } from "@/components/dashboard/useLoad";
 import { Notice } from "@/components/profile/SaveRow";
 import { useAction } from "@/components/profile/useAction";
@@ -30,17 +30,28 @@ export function MyApplicationsScreen() {
   const [, startTransition] = useTransition();
   const { notice, succeed } = useAction();
   const query = useMemo(() => parseMyApplicationsQuery(Object.fromEntries(searchParams)), [searchParams]);
-  const key = myApplicationsHref(query);
+  const base: MyApplicationsQuery = { ...query, focus: undefined };
+  const key = myApplicationsHref(base);
+  const scrolled = useRef<string | null>(null);
   const { state, reload } = useLoad(key, (signal) => listMyApplications(query, MY_APPLICATIONS_PAGE_SIZE, signal));
 
   const navigate = (next: MyApplicationsQuery) => {
     startTransition(() => router.push(myApplicationsHref(next), { scroll: false }));
   };
-  const search = useDraft(query.q ?? "", (value) => navigate({ ...query, q: value || undefined, page: undefined }));
+  const search = useDraft(query.q ?? "", (value) => navigate({ ...base, q: value || undefined, page: undefined }));
   const filtered = query.q !== undefined || query.status !== undefined;
   const busy = state.status !== "loading" && state.refreshing;
   const total = state.status === "ready" ? state.data.total : null;
   const sort = query.sort ?? "-date";
+
+  useEffect(() => {
+    if (state.status !== "ready" || !query.focus || scrolled.current === query.focus) return;
+    scrolled.current = query.focus;
+    const row = document.getElementById(myApplicationRowId(query.focus));
+    if (!row) return;
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    row.focus({ preventScroll: true });
+  }, [state.status, query.focus]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -50,7 +61,7 @@ export function MyApplicationsScreen() {
             My applications
           </h1>
           <div className="flex flex-col gap-4">
-            <ApplicationStatusLine active={query.status} href={(status) => myApplicationsHref({ ...query, status, page: undefined })} />
+            <ApplicationStatusLine active={query.status} href={(status) => myApplicationsHref({ ...base, status, page: undefined })} />
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <form
                 role="search"
@@ -58,7 +69,7 @@ export function MyApplicationsScreen() {
                   event.preventDefault();
                   const value = search.draft.trim();
                   search.markSent(value);
-                  navigate({ ...query, q: value || undefined, page: undefined });
+                  navigate({ ...base, q: value || undefined, page: undefined });
                 }}
                 className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 sm:max-w-sm"
               >
@@ -81,7 +92,7 @@ export function MyApplicationsScreen() {
                 {(["-date", "date"] as const).map((value) => (
                   <Link
                     key={value}
-                    href={myApplicationsHref({ ...query, sort: value, page: undefined })}
+                    href={myApplicationsHref({ ...base, sort: value, page: undefined })}
                     scroll={false}
                     aria-current={sort === value ? "true" : undefined}
                     className={cn(
@@ -135,6 +146,7 @@ export function MyApplicationsScreen() {
                     <li key={application.id}>
                       <MyApplicationRow
                         application={application}
+                        focused={application.id === query.focus}
                         onWithdrawn={(item) => {
                           succeed(`Your application for “${item.vacancy.title}” is withdrawn.`);
                           reload();
@@ -144,14 +156,14 @@ export function MyApplicationsScreen() {
                   ))}
                 </ul>
                 <Pagination
-                  href={(page) => myApplicationsHref({ ...query, page })}
+                  href={(page) => myApplicationsHref({ ...base, page })}
                   total={state.data.total}
                   page={state.data.page}
                   take={state.data.take}
                 />
               </>
             ) : state.data.total > 0 ? (
-              <PastLastPage href={myApplicationsHref({ ...query, page: undefined })} />
+              <PastLastPage href={myApplicationsHref({ ...base, page: undefined })} />
             ) : filtered ? (
               <ListMessage
                 title="Nothing on this line"
