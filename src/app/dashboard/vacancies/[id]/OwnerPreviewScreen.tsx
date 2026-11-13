@@ -11,7 +11,7 @@ import { Notice } from "@/components/profile/SaveRow";
 import { useAction } from "@/components/profile/useAction";
 import { VacancyDetailSkeleton, VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { useAuth } from "@/context/AuthContext";
-import { editVacancyHref, routes, vacancyHref } from "@/lib/routes";
+import { companyHref, editVacancyHref, routes, vacancyHref } from "@/lib/routes";
 import { formatDateTime } from "@/lib/vacancy";
 import type { CurrentCompany, OwnVacancy } from "@/types";
 
@@ -119,7 +119,12 @@ function OwnerPreview({ id, accountId, account }: { id: string; accountId: strin
         vacancy={vacancy}
         now={now}
         back={{ href: routes.dashboard, label: "Dashboard" }}
-        employer={{ companyName: account.companyName, logoUrl: account.logoUrl, approved: account.approved }}
+        employer={{
+          companyName: account.companyName,
+          logoUrl: account.logoUrl,
+          approved: account.approved,
+          href: companyHref(account._id),
+        }}
       />
     </div>
   );

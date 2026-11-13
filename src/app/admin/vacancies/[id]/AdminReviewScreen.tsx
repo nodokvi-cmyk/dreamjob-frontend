@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { ResultsError } from "@/components/vacancies/ListStates";
 import { VacancyDetailSkeleton, VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { formError } from "@/lib/errors";
-import { routes } from "@/lib/routes";
+import { companyHref, routes } from "@/lib/routes";
 import { STATUS_LABELS, canReview, formatDate, formatDateTime } from "@/lib/vacancy";
 import { ApiError } from "@/services/api";
 import { getAdminVacancy } from "@/services/admin.service";
@@ -178,7 +178,12 @@ export function AdminReviewScreen({ id }: { id: string }) {
         vacancy={vacancy}
         now={now}
         back={{ href: routes.adminVacancies, label: "All vacancies" }}
-        employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: vacancy.companyApproved }}
+        employer={{
+          companyName: vacancy.companyName,
+          logoUrl: vacancy.logoUrl,
+          approved: vacancy.companyApproved,
+          href: companyHref(vacancy.company),
+        }}
       />
     </div>
   );

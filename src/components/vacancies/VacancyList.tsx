@@ -5,9 +5,10 @@ interface VacancyListProps {
   vacancies: VacancyCard[];
   now: number;
   headingLevel?: "h2" | "h3";
+  onBookmarkChange?: (vacancyId: string, bookmarked: boolean) => void;
 }
 
-export function VacancyList({ vacancies, now, headingLevel = "h2" }: VacancyListProps) {
+export function VacancyList({ vacancies, now, headingLevel = "h2", onBookmarkChange }: VacancyListProps) {
   return (
     <ol className="relative flex flex-col">
       <span
@@ -16,7 +17,7 @@ export function VacancyList({ vacancies, now, headingLevel = "h2" }: VacancyList
       />
       {vacancies.map((vacancy) => (
         <li key={vacancy.id} className="relative">
-          <VacancyCardRow vacancy={vacancy} now={now} headingLevel={headingLevel} />
+          <VacancyCardRow vacancy={vacancy} now={now} headingLevel={headingLevel} onBookmarkChange={onBookmarkChange} />
         </li>
       ))}
     </ol>

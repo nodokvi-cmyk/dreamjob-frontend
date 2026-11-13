@@ -95,11 +95,7 @@ export function choosePayAsYouPublish(id: string): Promise<Company> {
   });
 }
 
-export function getPublicCompany(id: string, signal?: AbortSignal): Promise<PublicCompany> {
-  return api(companyPath(id, "public"), parsePublicCompany, { signal, cache: "no-store" });
-}
-
-function parsePublicCompany(data: unknown): PublicCompany {
+export function parsePublicCompany(data: unknown): PublicCompany {
   const source = object(data, "company");
   return {
     id: string(source, "id"),

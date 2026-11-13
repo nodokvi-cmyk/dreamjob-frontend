@@ -1,9 +1,10 @@
 "use client";
 
 import { ExternalLinkIcon, FileTextIcon, FileUpIcon, Trash2Icon, UploadIcon } from "lucide-react";
-import { useId, useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { FormAlert } from "@/components/form/FormAlert";
 import { Notice } from "@/components/profile/SaveRow";
+import { ToggleRow } from "@/components/profile/ToggleRow";
 import { useAction } from "@/components/profile/useAction";
 import { usePickedFile } from "@/components/profile/usePickedFile";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,6 @@ export function CvPanel({ accountId, account }: { accountId: string; account: Cu
   const { picked, pick } = usePickedFile();
   const [opening, setOpening] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const switchLabelId = useId();
-  const switchHintId = useId();
   const busy = file.pending || opening;
 
   function handleChoose(event: ChangeEvent<HTMLInputElement>) {
@@ -182,50 +181,21 @@ export function CvPanel({ accountId, account }: { accountId: string; account: Cu
         {file.error ? <FormAlert tone="error" message={file.error.message} details={file.error.details} /> : null}
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-5">
-          <div className="flex flex-col gap-1">
-            <p id={switchLabelId} className="font-semibold">
-              Show my CV to approved companies
-            </p>
-            <p id={switchHintId} className="max-w-[56ch] text-sm text-muted-foreground">
-              {account.hasCv
-                ? "When this is on, companies our team has approved can open your CV. Turn it off at any time."
-                : "Upload a CV first. When it's public, companies our team has approved can open it."}
-            </p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={account.isCvPublic}
-            aria-labelledby={switchLabelId}
-            aria-describedby={switchHintId}
-            onClick={handleVisibility}
-            disabled={!account.hasCv || visibility.pending}
-            className={cn(
-              "relative mt-0.5 inline-flex h-7 w-12 shrink-0 items-center rounded-full border-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50",
-              account.isCvPublic ? "border-line-green bg-line-green" : "border-foreground/25 bg-muted",
-            )}
-          >
-            <span
-              aria-hidden
-              className={cn(
-                "size-5 rounded-full border-[3px] bg-card shadow-[0_1px_2px_rgb(11_18_48/0.25)] transition-transform duration-200 ease-[var(--ease-out-expo)]",
-                account.isCvPublic ? "translate-x-[21px] border-white" : "translate-x-[2px] border-foreground/40",
-              )}
-            />
-          </button>
-        </div>
-        <p className="transit-label text-sm">
-          <span className={account.isCvPublic ? "text-success-ink" : "text-muted-foreground"}>
-            {account.isCvPublic ? "Public to approved companies" : "Private"}
-          </span>
-        </p>
-        <Notice message={visibility.notice} />
-        {visibility.error ? (
-          <FormAlert tone="error" message={visibility.error.message} details={visibility.error.details} />
-        ) : null}
-      </div>
+      <ToggleRow
+        label="Show my CV to approved companies"
+        hint={
+          account.hasCv
+            ? "When this is on and your profile is public, companies our team has approved can open your CV. Turn it off at any time."
+            : "Upload a CV first. When it's public and your profile is public, companies our team has approved can open it."
+        }
+        checked={account.isCvPublic}
+        disabled={!account.hasCv || visibility.pending}
+        onToggle={handleVisibility}
+        onLabel="Public to approved companies"
+        offLabel="Private"
+        notice={visibility.notice}
+        error={visibility.error}
+      />
     </div>
   );
 }

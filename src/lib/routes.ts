@@ -9,6 +9,8 @@ export const routes = {
   resetPassword: "/reset-password",
   googleComplete: "/google/complete",
   profile: "/profile",
+  myApplications: "/applications",
+  bookmarks: "/bookmarks",
   dashboard: "/dashboard",
   newVacancy: "/dashboard/vacancies/new",
   admin: "/admin",
@@ -65,4 +67,12 @@ export function withQuery(
 
 export function signInWithNext(pathname: string): string {
   return withQuery(routes.signIn, { next: safeNext(pathname) });
+}
+
+export function userHref(id: string): string {
+  return `/users/${encodeURIComponent(id)}`;
+}
+
+export function companyHref(id: string): string {
+  return `/companies/${encodeURIComponent(id)}`;
 }

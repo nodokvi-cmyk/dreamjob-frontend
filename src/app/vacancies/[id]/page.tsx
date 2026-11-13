@@ -7,7 +7,7 @@ import { DetailActions } from "@/components/vacancies/DetailActions";
 import { VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { jobPostingJson } from "@/lib/jobPosting";
-import { routes } from "@/lib/routes";
+import { companyHref, routes } from "@/lib/routes";
 import { openGraphFor } from "@/lib/site";
 import { EMPLOYMENT_TYPE_LABELS, formatSalary, placeLabel, summary } from "@/lib/vacancy";
 import { getVacancy } from "@/services/publicVacancies.service";
@@ -82,7 +82,12 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
         vacancy={vacancy}
         now={now}
         back={{ href: routes.vacancies, label: "All vacancies" }}
-        employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: vacancy.companyApproved }}
+        employer={{
+          companyName: vacancy.companyName,
+          logoUrl: vacancy.logoUrl,
+          approved: vacancy.companyApproved,
+          href: companyHref(vacancy.company),
+        }}
         actions={<DetailActions vacancy={vacancy} now={now} />}
         apply={<ApplyPanel vacancy={vacancy} now={now} />}
       />

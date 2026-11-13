@@ -52,7 +52,11 @@ export function primaryNav(session: Session | null): NavLink[] {
   if (session.accountRole === "admin") {
     return [vacancies, { href: routes.admin, label: "Admin" }];
   }
-  return [vacancies, { href: routes.profile, label: "My profile" }];
+  return [
+    vacancies,
+    { href: routes.myApplications, label: "My applications" },
+    { href: routes.bookmarks, label: "Bookmarks" },
+  ];
 }
 
 export function accountMenu(session: Session): NavLink[] {
@@ -68,7 +72,11 @@ export function accountMenu(session: Session): NavLink[] {
       { href: routes.profile, label: "Profile" },
     ];
   }
-  return [{ href: routes.profile, label: "Profile" }];
+  return [
+    { href: routes.profile, label: "Profile" },
+    { href: routes.myApplications, label: "My applications" },
+    { href: routes.bookmarks, label: "Bookmarks" },
+  ];
 }
 
 export function companyNotice(session: Session): string | null {

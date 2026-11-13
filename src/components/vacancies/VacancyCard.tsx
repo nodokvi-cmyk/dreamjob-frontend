@@ -9,7 +9,7 @@ import { BookmarkHeart } from "@/components/vacancies/BookmarkHeart";
 import { DeadlineStop, TONE_RING } from "@/components/vacancies/DeadlineStop";
 import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
 import { useViewerMarks } from "@/components/vacancies/ViewerMarks";
-import { vacancyHref } from "@/lib/routes";
+import { companyHref, vacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { EMPLOYMENT_TYPE_LABELS, deadlineInfo, formatSalary, placeLabel } from "@/lib/vacancy";
 import type { VacancyCard } from "@/types";
@@ -71,7 +71,12 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
             <p className="transit-label text-[0.8rem] text-muted-foreground">Temporarily unavailable</p>
           ) : null}
           <VacancyEmployer
-            employer={{ companyName: vacancy.companyName, logoUrl: vacancy.logoUrl, approved: marks.companyApproved }}
+            employer={{
+              companyName: vacancy.companyName,
+              logoUrl: vacancy.logoUrl,
+              approved: marks.companyApproved,
+              href: companyHref(vacancy.company),
+            }}
             size="sm"
           />
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.95rem] text-muted-foreground">

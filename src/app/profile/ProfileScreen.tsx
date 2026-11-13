@@ -19,12 +19,14 @@ import { DeleteAccount } from "./DeleteAccount";
 import { EmailChangeFlow } from "./EmailChangeFlow";
 import { PasswordForm } from "./PasswordForm";
 import { PhotoPanel } from "./PhotoPanel";
+import { PrivacyPanel } from "./PrivacyPanel";
 import { UserDetailsForm } from "./UserDetailsForm";
 
 const USER_SECTIONS: readonly NavSection[] = [
   { id: "details", label: "Details" },
   { id: "photo", label: "Photo" },
   { id: "cv", label: "CV" },
+  { id: "privacy", label: "Privacy" },
   { id: "email", label: "Email" },
   { id: "password", label: "Password" },
   { id: "delete", label: "Delete account" },
@@ -47,7 +49,9 @@ const APPROVAL_STATIONS = [
 export function ProfileScreen() {
   const { session } = useAuth();
   if (!session) return <GateSpinner />;
-  if (session.accountRole === "admin") return <AdminProfile session={session} account={session.account} />;
+  if (session.accountRole === "admin") {
+    return <AdminProfile session={session} accountId={session.accountId} account={session.account} />;
+  }
   if (session.accountRole === "company") {
     return <CompanyProfile session={session} accountId={session.accountId} account={session.account} />;
   }
@@ -156,6 +160,9 @@ function UserProfile({
         <ProfileSection id="cv" title="CV" lead="Keep one PDF on file. You decide whether approved companies can open it.">
           <CvPanel accountId={accountId} account={account} />
         </ProfileSection>
+        <ProfileSection id="privacy" title="Privacy" lead="Choose what others see on your public profile.">
+          <PrivacyPanel accountId={accountId} account={account} />
+        </ProfileSection>
         <EmailAndPassword accountId={accountId} accountType="user" account={account} />
         <ProfileSection id="delete" title="Delete account" tone="danger">
           <DeleteAccount accountId={accountId} accountType="user" />
@@ -242,7 +249,7 @@ function EmailAndPassword({
   );
 }
 
-function AdminProfile({ session, account }: { session: Session; account: CurrentUser }) {
+function AdminProfile({ session, accountId, account }: { session: Session; accountId: string; account: CurrentUser }) {
   const { signOut } = useAuth();
   const rows = [
     { label: "First name", value: account.firstName },
@@ -254,8 +261,8 @@ function AdminProfile({ session, account }: { session: Session; account: Current
   return (
     <Frame>
       <ProfileHeader session={session} photo={account.avatarUrl} photoFit="cover" />
-      <div className="max-w-2xl">
-        <ProfileSection id="details" title="Details" lead="Admin accounts are managed by the GetDreamJob team and can't be edited here.">
+      <div className="flex max-w-2xl flex-col gap-16">
+        <ProfileSection id="details" title="Details" lead="Admin details are managed by the GetDreamJob team. You can change your sign-in email below.">
           <dl className="divide-y divide-border rounded-[17px] border border-border bg-card">
             {rows.map((row) => (
               <div key={row.label} className="flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:items-baseline sm:gap-6">
@@ -268,6 +275,13 @@ function AdminProfile({ session, account }: { session: Session; account: Current
             <LogOutIcon aria-hidden />
             Sign out
           </Button>
+        </ProfileSection>
+        <ProfileSection
+          id="email"
+          title="Email"
+          lead="You sign in with this address. Changing it takes a code from both inboxes."
+        >
+          <EmailChangeFlow accountId={accountId} accountType="user" email={account.email} verified={account.isVerified} />
         </ProfileSection>
       </div>
     </Frame>
