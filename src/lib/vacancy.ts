@@ -75,28 +75,31 @@ const TIME_ZONE = "Asia/Tbilisi";
 const DAY_MS = 86_400_000;
 const SOON_DAYS = 3;
 
-function moneyFormat(currency: Currency): Intl.NumberFormat {
-  return new Intl.NumberFormat(LOCALE, {
-    style: "currency",
-    currency,
-    currencyDisplay: "narrowSymbol",
-    maximumFractionDigits: 0,
-  });
+const amountFormat = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 2 });
+
+export const NEGOTIABLE = "Negotiable";
+
+export interface SalaryRange {
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  currency: Currency;
 }
 
 export function formatMoney(amount: number, currency: Currency): string {
-  return moneyFormat(currency).format(amount);
+  return `${amountFormat.format(amount)} ${currency}`;
 }
 
-export function formatSalary(vacancy: Pick<Vacancy, "salaryMin" | "salaryMax" | "currency">): string | null {
-  const { salaryMin, salaryMax, currency } = vacancy;
-  const format = moneyFormat(currency);
-  if (salaryMin !== undefined && salaryMax !== undefined) {
-    if (salaryMin === salaryMax) return format.format(salaryMin);
-    return format.formatRange(Math.min(salaryMin, salaryMax), Math.max(salaryMin, salaryMax));
+export function formatSalary({ salaryMin, salaryMax, currency }: SalaryRange): string | null {
+  const hasMin = salaryMin !== undefined && salaryMin !== null;
+  const hasMax = salaryMax !== undefined && salaryMax !== null;
+  if (hasMin && hasMax) {
+    const low = Math.min(salaryMin, salaryMax);
+    const high = Math.max(salaryMin, salaryMax);
+    if (low === high) return formatMoney(low, currency);
+    return `${amountFormat.format(low)} - ${amountFormat.format(high)} ${currency}`;
   }
-  if (salaryMin !== undefined) return `From ${format.format(salaryMin)}`;
-  if (salaryMax !== undefined) return `Up to ${format.format(salaryMax)}`;
+  if (hasMin) return `From ${formatMoney(salaryMin, currency)}`;
+  if (hasMax) return `Up to ${formatMoney(salaryMax, currency)}`;
   return null;
 }
 

@@ -14,8 +14,19 @@ export function badgeLabel(count: number): string {
   return count > 99 ? "99+" : String(count);
 }
 
-function quoted(title: string | undefined): string {
-  return title?.trim() || "your vacancy";
+function quoted(title: string | undefined, fallback = "your vacancy"): string {
+  return title?.trim() || fallback;
+}
+
+function publicationName(title: string | undefined): string {
+  const trimmed = title?.trim();
+  return trimmed ? `Your publication ${trimmed}` : "Your publication";
+}
+
+function invitationAcceptedText(title: string, data: AppNotification["data"]): string {
+  if (data.alreadyApplied) return `Your invitation for ${title} was accepted; the applicant had already applied`;
+  if (data.isReapply) return `Your invitation was accepted: reapplication for ${title}`;
+  return `Your invitation was accepted: new application for ${title}`;
 }
 
 export function notificationText(notification: AppNotification): string {
@@ -45,6 +56,18 @@ export function notificationText(notification: AppNotification): string {
     }
     case "applicantCompanyRevoked":
       return `${data.companyName?.trim() || "A company"} is no longer approved; your applications to it are on hold`;
+    case "publicationApproved":
+      return `${publicationName(data.publicationTitle)} is published`;
+    case "publicationRejected": {
+      const base = `${publicationName(data.publicationTitle)} was not approved`;
+      return data.reason ? `${base}: ${data.reason}` : base;
+    }
+    case "invitationReceived":
+      return `${data.companyName?.trim() || "A company"} invited you to apply to ${quoted(data.vacancyTitle, "a vacancy")}`;
+    case "invitationAccepted":
+      return invitationAcceptedText(title, data);
+    case "invitationDeclined":
+      return `Your invitation for ${title} was declined`;
   }
 }
 
@@ -52,11 +75,15 @@ export function notificationTone(notification: AppNotification): NotificationTon
   switch (notification.type) {
     case "vacancyApproved":
     case "companyApproved":
+    case "publicationApproved":
+    case "invitationReceived":
+    case "invitationAccepted":
       return "positive";
     case "applicationStatusChanged":
       return notification.data.status === "rejected" ? "attention" : "positive";
     case "newApplication":
     case "applicationWithdrawn":
+    case "invitationDeclined":
       return "info";
     default:
       return "attention";
@@ -73,6 +100,7 @@ export function notificationTarget(notification: AppNotification): NotificationT
   switch (notification.type) {
     case "newApplication":
     case "applicationWithdrawn":
+    case "invitationAccepted":
       return vacancyId
         ? { href: applicantsHref(vacancyId, { focus: applicationId ?? undefined }), checkVacancyId: vacancyId }
         : { href: null, checkVacancyId: null };
@@ -89,6 +117,11 @@ export function notificationTarget(notification: AppNotification): NotificationT
       return { href: myApplicationsHref({ focus: applicationId ?? undefined }), checkVacancyId: null };
     case "applicantCompanyRevoked":
       return { href: routes.myApplications, checkVacancyId: null };
+    case "publicationApproved":
+    case "publicationRejected":
+    case "invitationReceived":
+    case "invitationDeclined":
+      return { href: null, checkVacancyId: null };
   }
 }
 

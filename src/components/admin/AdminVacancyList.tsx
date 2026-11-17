@@ -9,7 +9,8 @@ import { CompanyWarning } from "@/components/vacancies/VacancyEmployer";
 import { shortCompanyId } from "@/lib/adminQuery";
 import { adminVacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { canReview, formatDate, formatSalary, placeLabel } from "@/lib/vacancy";
+import { Salary } from "@/components/vacancies/Salary";
+import { canReview, formatDate, placeLabel } from "@/lib/vacancy";
 import type { AdminVacancyCard } from "@/types";
 
 interface AdminVacancyListProps {
@@ -59,7 +60,6 @@ function AdminVacancyRow({
   onDone: (message: string) => void;
   onStale: (message: string) => void;
 }) {
-  const salary = formatSalary(vacancy);
 
   return (
     <article
@@ -100,11 +100,7 @@ function AdminVacancyRow({
           {vacancy.companyApproved ? null : <CompanyWarning className="relative z-10" />}
         </div>
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 sm:flex-col sm:items-end sm:justify-start sm:gap-2 sm:pt-9 sm:text-right">
-          {salary ? (
-            <span className="font-display text-[1.35rem] leading-none font-bold tabular">{salary}</span>
-          ) : (
-            <span className="text-[0.95rem] text-muted-foreground">Salary by agreement</span>
-          )}
+          <Salary range={vacancy} className="text-[1.35rem]" />
           <DeadlineStop vacancy={vacancy} now={now} />
         </div>
       </div>

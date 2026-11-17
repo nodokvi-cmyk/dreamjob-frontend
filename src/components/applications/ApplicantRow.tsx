@@ -119,8 +119,13 @@ function VisibleRow({ item, frame, onStatusChanged, onStale }: VisibleRowProps) 
             </p>
           </div>
         </div>
-        <div className="flex flex-col gap-1.5 sm:items-end">
+        <div className="flex flex-wrap items-center gap-1.5 sm:flex-col sm:items-end">
           <ApplicationStatusBadge status={item.status} />
+          {item.viaInvitation ? (
+            <span className="inline-flex h-6 w-fit items-center rounded-full border border-line-green/50 px-2.5 transit-label text-[0.75rem] leading-none text-foreground">
+              Invited
+            </span>
+          ) : null}
         </div>
       </div>
 

@@ -23,13 +23,8 @@ export function Logo({ className }: { className?: string }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <StationMark />
-      <span className="flex flex-col gap-[3px]">
-        <span className="font-display pl-px text-[0.7rem] leading-none font-semibold tracking-[0.36em] text-line-scarlet uppercase">
-          Get
-        </span>
-        <span className="font-display text-[1.6rem] leading-[0.95] font-bold tracking-[0.005em]">
-          DreamJob
-        </span>
+      <span className="font-display text-[1.6rem] leading-none font-bold tracking-[0.005em] whitespace-nowrap">
+        <span className="text-line-scarlet">Get</span>DreamJob
       </span>
     </span>
   );

@@ -342,6 +342,7 @@ export interface Application {
   hasCoverLetter: boolean;
   submissions: number;
   locked: boolean;
+  viaInvitation: boolean;
   previousOutcome: PreviousOutcome | null;
   appliedAt: string;
   firstAppliedAt: string;
@@ -396,6 +397,7 @@ export interface VisibleApplicantItem {
   firstAppliedAt: string;
   hidden: false;
   isReapply: boolean;
+  viaInvitation: boolean;
   previousOutcome: PreviousOutcome | null;
   message: string;
   hasCv: boolean;
@@ -444,7 +446,12 @@ export type NotificationType =
   | "planEnded"
   | "planPaymentActionRequired"
   | "applicationStatusChanged"
-  | "applicantCompanyRevoked";
+  | "applicantCompanyRevoked"
+  | "publicationApproved"
+  | "publicationRejected"
+  | "invitationReceived"
+  | "invitationAccepted"
+  | "invitationDeclined";
 
 export interface NotificationData {
   vacancyTitle?: string;
@@ -453,11 +460,15 @@ export interface NotificationData {
   reason?: string;
   planName?: string;
   isReapply?: boolean;
+  publicationTitle?: string;
+  alreadyApplied?: boolean;
 }
 
 export interface NotificationTarget {
   vacancyId: string | null;
   applicationId: string | null;
+  publicationId: string | null;
+  invitationId: string | null;
 }
 
 export interface AppNotification {

@@ -9,7 +9,7 @@ import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { jobPostingJson } from "@/lib/jobPosting";
 import { companyHref, routes } from "@/lib/routes";
 import { canonicalFor, openGraphFor } from "@/lib/site";
-import { EMPLOYMENT_TYPE_LABELS, formatSalary, placeLabel, summary } from "@/lib/vacancy";
+import { EMPLOYMENT_TYPE_LABELS, NEGOTIABLE, formatSalary, placeLabel, summary } from "@/lib/vacancy";
 import { getVacancy } from "@/services/publicVacancies.service";
 import type { VacancyDetail } from "@/types";
 
@@ -28,7 +28,7 @@ async function load(id: string): Promise<Loaded> {
 }
 
 function metaDescription(vacancy: VacancyDetail): string {
-  const salary = formatSalary(vacancy) ?? "Salary by agreement";
+  const salary = formatSalary(vacancy) ?? NEGOTIABLE;
   const facts = `${placeLabel(vacancy)} · ${EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]} · ${salary}.`;
   return summary(`${facts} ${vacancy.description}`);
 }

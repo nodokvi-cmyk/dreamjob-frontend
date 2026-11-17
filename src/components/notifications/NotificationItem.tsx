@@ -4,10 +4,13 @@ import {
   CalendarIcon,
   CheckIcon,
   CreditCardIcon,
+  HandshakeIcon,
   InboxIcon,
   InfoIcon,
   LockIcon,
   LockOpenIcon,
+  MailIcon,
+  MailXIcon,
   ShieldOffIcon,
   TriangleAlertIcon,
   Undo2Icon,
@@ -48,9 +51,17 @@ function NotificationIcon({ item }: { item: AppNotification }) {
       return <Undo2Icon strokeWidth={2.25} />;
     case "vacancyApproved":
     case "companyApproved":
+    case "publicationApproved":
       return <CheckIcon strokeWidth={2.25} />;
     case "vacancyRejected":
+    case "publicationRejected":
       return <XIcon strokeWidth={2.25} />;
+    case "invitationReceived":
+      return <MailIcon strokeWidth={2.25} />;
+    case "invitationAccepted":
+      return <HandshakeIcon strokeWidth={2.25} />;
+    case "invitationDeclined":
+      return <MailXIcon strokeWidth={2.25} />;
     case "companyRevoked":
     case "applicantCompanyRevoked":
       return <ShieldOffIcon strokeWidth={2.25} />;

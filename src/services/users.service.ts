@@ -83,7 +83,7 @@ export function setContactVisibility(id: string, input: ContactVisibilityInput):
 }
 
 export function getPublicUser(id: string, signal?: AbortSignal): Promise<PublicUser> {
-  return api(userPath(id, "public"), parsePublicUser, { signal, cache: "no-store" });
+  return api(userPath(id, "profile"), parsePublicUser, { signal, cache: "no-store" });
 }
 
 function parsePublicUser(data: unknown): PublicUser {

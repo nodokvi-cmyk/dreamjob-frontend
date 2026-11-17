@@ -11,7 +11,8 @@ import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
 import { useViewerMarks } from "@/components/vacancies/ViewerMarks";
 import { companyHref, vacancyHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { EMPLOYMENT_TYPE_LABELS, deadlineInfo, formatSalary, placeLabel } from "@/lib/vacancy";
+import { Salary } from "@/components/vacancies/Salary";
+import { EMPLOYMENT_TYPE_LABELS, deadlineInfo, placeLabel } from "@/lib/vacancy";
 import type { VacancyCard } from "@/types";
 
 interface VacancyCardRowProps {
@@ -31,7 +32,6 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
     isBookmarked: vacancy.isBookmarked,
   });
   const Heading = headingLevel;
-  const salary = formatSalary(vacancy);
   const tone = deadlineInfo(vacancy, now).tone;
   const href = vacancyHref(vacancy.id);
   const unavailable = vacancy.status === "unavailable";
@@ -98,13 +98,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-border pt-3 sm:flex-col sm:flex-nowrap sm:items-end sm:justify-start sm:gap-2 sm:border-t-0 sm:pt-0.5 sm:text-right">
           <div className="flex flex-col gap-1.5 sm:items-end">
-            {salary ? (
-              <span className="font-display text-[1.45rem] leading-none font-bold tabular text-foreground">
-                {salary}
-              </span>
-            ) : (
-              <span className="text-[0.95rem] text-muted-foreground">Salary by agreement</span>
-            )}
+            <Salary range={vacancy} className="text-[1.45rem] text-foreground" />
             <DeadlineStop vacancy={vacancy} now={now} />
           </div>
           <div className="flex items-center gap-2 sm:mt-auto sm:pt-2">

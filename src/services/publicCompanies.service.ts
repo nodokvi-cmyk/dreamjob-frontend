@@ -8,7 +8,7 @@ async function fetchPublicCompany(id: string): Promise<PublicCompany | null> {
   "use cache";
   cacheLife("minutes");
   try {
-    return await api(`/companies/${id}/public`, parsePublicCompany, { token: null });
+    return await api(`/companies/${id}/profile`, parsePublicCompany, { token: null });
   } catch (error: unknown) {
     if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return null;
     throw error;

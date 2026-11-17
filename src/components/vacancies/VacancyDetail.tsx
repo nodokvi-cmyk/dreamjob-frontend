@@ -11,6 +11,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type EmployerInfo, VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
+import { Salary } from "@/components/vacancies/Salary";
 import { VacancyPhoto } from "@/components/vacancies/VacancyPhoto";
 import { cn } from "@/lib/utils";
 import {
@@ -18,7 +19,6 @@ import {
   WORK_MODE_LABELS,
   deadlineInfo,
   formatDate,
-  formatSalary,
   placeLabel,
 } from "@/lib/vacancy";
 import type { Vacancy } from "@/types";
@@ -166,7 +166,6 @@ interface VacancyDetailViewProps {
 }
 
 export function VacancyDetailView({ vacancy, now, back, employer, actions, apply }: VacancyDetailViewProps) {
-  const salary = formatSalary(vacancy);
 
   return (
     <article className="flex flex-1 flex-col">
@@ -211,13 +210,13 @@ export function VacancyDetailView({ vacancy, now, back, employer, actions, apply
           className="self-start rounded-2xl bg-enamel p-6 text-on-enamel sm:p-7 lg:sticky lg:top-24 lg:col-span-5 lg:col-start-8 lg:row-start-1 xl:col-span-4 xl:col-start-9 dark:ring-1 dark:ring-enamel-seam"
         >
           <p className="transit-label text-[0.85rem] text-on-enamel-muted">Salary</p>
-          {salary ? (
-            <p className="mt-2 font-display text-[2.4rem] leading-none font-bold tracking-[-0.01em] tabular">
-              {salary}
-            </p>
-          ) : (
-            <p className="mt-2 text-lg text-on-enamel-muted">Salary by agreement</p>
-          )}
+          <p className="mt-2">
+            <Salary
+              range={vacancy}
+              className="text-[2.4rem] tracking-[-0.01em]"
+              negotiableClassName="text-lg text-on-enamel-muted"
+            />
+          </p>
 
           {actions}
 

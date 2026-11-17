@@ -37,6 +37,11 @@ export const NOTIFICATION_TYPES: readonly NotificationType[] = [
   "planPaymentActionRequired",
   "applicationStatusChanged",
   "applicantCompanyRevoked",
+  "publicationApproved",
+  "publicationRejected",
+  "invitationReceived",
+  "invitationAccepted",
+  "invitationDeclined",
 ];
 
 function optionalBoolean(source: JsonObject, key: string): boolean | undefined {
@@ -54,14 +59,18 @@ function parseData(value: unknown): NotificationData {
     reason: optionalString(value, "reason"),
     planName: optionalString(value, "planName"),
     isReapply: optionalBoolean(value, "isReapply"),
+    publicationTitle: optionalString(value, "publicationTitle"),
+    alreadyApplied: optionalBoolean(value, "alreadyApplied"),
   };
 }
 
 function parseTarget(value: unknown): NotificationTarget {
-  if (!isObject(value)) return { vacancyId: null, applicationId: null };
+  if (!isObject(value)) return { vacancyId: null, applicationId: null, publicationId: null, invitationId: null };
   return {
     vacancyId: optionalString(value, "vacancyId") ?? null,
     applicationId: optionalString(value, "applicationId") ?? null,
+    publicationId: optionalString(value, "publicationId") ?? null,
+    invitationId: optionalString(value, "invitationId") ?? null,
   };
 }
 
