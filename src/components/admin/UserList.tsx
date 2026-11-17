@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { Button } from "@/components/ui/button";
+import { adminPublicationsHref } from "@/lib/publications";
 import { userHref } from "@/lib/routes";
 import { formatDate } from "@/lib/vacancy";
 import { deleteUserAsAdmin } from "@/services/admin.service";
@@ -71,6 +72,14 @@ function UserRow({ user, self, onDeleted }: { user: User; self: boolean; onDelet
             <span>
               Joined <time dateTime={user.createdAt}>{formatDate(user.createdAt)}</time>
             </span>
+            {admin ? null : (
+              <Link
+                href={adminPublicationsHref({ status: "all", userId: user._id })}
+                className="font-medium text-cobalt-ink underline-offset-4 hover:underline"
+              >
+                View publications
+              </Link>
+            )}
           </p>
         </div>
       </div>
@@ -95,7 +104,7 @@ function UserRow({ user, self, onDeleted }: { user: User; self: boolean; onDelet
                 can&apos;t be undone.
               </p>
               <p>
-                Their profile, photo, CV, bookmarks and notifications are removed. Their applications stay for companies
+                Their profile, photo, CV, bookmarks, notifications, publications and received invitations are removed. Their applications stay for companies
                 as &ldquo;Deleted user&rdquo;, with no name, files or message.
               </p>
             </div>

@@ -106,7 +106,7 @@ function AdminVacancyRow({
       </div>
       {canReview(vacancy, now) ? (
         <div className="relative z-10">
-          <ReviewButtons vacancy={vacancy} onDone={onDone} onStale={onStale} />
+          <ReviewButtons item={vacancy} onDone={onDone} onStale={onStale} />
         </div>
       ) : null}
     </article>

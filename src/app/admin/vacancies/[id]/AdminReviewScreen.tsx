@@ -100,7 +100,7 @@ export function AdminReviewScreen({ id }: { id: string }) {
             <div className="mt-1 flex flex-col gap-3">
               {reviewable ? (
                 <ReviewButtons
-                  vacancy={vacancy}
+                  item={vacancy}
                   size="default"
                   onDone={(message) => {
                     setFailure(null);

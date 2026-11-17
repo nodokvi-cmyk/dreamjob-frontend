@@ -1,7 +1,14 @@
 import { routes, withQuery } from "@/lib/routes";
 import { formatDate } from "@/lib/vacancy";
-import { PAGE_MAX, pick, positiveInt, type RawSearchParams } from "@/lib/vacancyQuery";
-import type { MyPublicationsQuery, Publication, PublicationStatus } from "@/types";
+import { PAGE_MAX, first, pick, positiveInt, type RawSearchParams } from "@/lib/vacancyQuery";
+import { OBJECT_ID } from "@/services/vacancies.service";
+import type {
+  AdminPublicationsQuery,
+  MyPublicationsQuery,
+  Publication,
+  PublicationSort,
+  PublicationStatus,
+} from "@/types";
 
 export const PUBLICATION_STATUSES: readonly PublicationStatus[] = [
   "pending",
@@ -72,7 +79,7 @@ export function publicationTiming(
   }
   if (timerPaused) return "Timer paused during review";
   if (status === "published" && expiresAt) return `Visible until ${formatDate(expiresAt)}`;
-  if (status === "pending") return "Waiting for review. Its 60 days start when our team approves it.";
+  if (status === "pending") return "Waiting for review. Its 60 days start at the first approval.";
   return "Not visible to companies until it is approved.";
 }
 
@@ -90,4 +97,36 @@ export function myPublicationsHref(query: MyPublicationsQuery): string {
     status: query.status,
     page: query.page <= 1 ? undefined : String(query.page),
   });
+}
+
+export const ADMIN_PUBLICATIONS_PAGE_SIZE = 10;
+
+export const PUBLICATION_SORTS: readonly PublicationSort[] = ["-date", "date"];
+
+export function canReviewPublication(publication: Pick<Publication, "status">): boolean {
+  return publication.status === "pending";
+}
+
+export function parseAdminPublicationsQuery(params: RawSearchParams): AdminPublicationsQuery {
+  const userId = first(params.userId).trim();
+  const sort = pick(params.sort, PUBLICATION_SORTS);
+  return {
+    status: first(params.status) === "all" ? "all" : (pick(params.status, PUBLICATION_STATUSES) ?? "pending"),
+    userId: OBJECT_ID.test(userId) ? userId : undefined,
+    sort: sort === "-date" ? undefined : sort,
+    page: positiveInt(params.page, PAGE_MAX) ?? 1,
+  };
+}
+
+export function adminPublicationsHref(query: Partial<AdminPublicationsQuery>): string {
+  return withQuery(routes.adminPublications, {
+    status: query.status ?? "pending",
+    userId: query.userId,
+    sort: query.sort === "-date" ? undefined : query.sort,
+    page: query.page === undefined || query.page <= 1 ? undefined : String(query.page),
+  });
+}
+
+export function shortUserId(id: string): string {
+  return `User ${id.slice(-6)}`;
 }

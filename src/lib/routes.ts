@@ -21,6 +21,7 @@ export const routes = {
   adminVacancies: "/admin/vacancies",
   adminCompanies: "/admin/companies",
   adminUsers: "/admin/users",
+  adminPublications: "/admin/publications",
 };
 
 export function vacancyHref(id: string): string {
@@ -37,6 +38,10 @@ export function adminVacancyHref(id: string): string {
 
 export function editVacancyHref(id: string): string {
   return `${ownVacancyHref(id)}/edit`;
+}
+
+export function adminPublicationHref(id: string): string {
+  return `${routes.adminPublications}/${encodeURIComponent(id)}`;
 }
 
 export function publicationHref(id: string): string {

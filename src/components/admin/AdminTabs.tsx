@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isActive } from "@/lib/account";
+import { adminPublicationsHref } from "@/lib/publications";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { href: routes.adminVacancies, label: "Vacancies" },
+  { href: adminPublicationsHref({}), label: "Publications" },
   { href: routes.adminCompanies, label: "Companies" },
   { href: routes.adminUsers, label: "Users" },
 ] as const;

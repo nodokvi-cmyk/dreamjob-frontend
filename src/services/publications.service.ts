@@ -20,6 +20,7 @@ import { CURRENCIES, EMPLOYMENT_TYPES, WORK_MODES } from "@/lib/vacancy";
 import { api } from "@/services/api";
 import { parseCvLink } from "@/services/users.service";
 import type {
+  AdminPublicationsQuery,
   CvLink,
   MyPublicationsQuery,
   Paginated,
@@ -159,4 +160,39 @@ export function removePublicationFile(id: string, kind: PublicationFileKind): Pr
 
 export function getPublicationFile(id: string, kind: PublicationFileKind): Promise<CvLink> {
   return api(publicationPath(id, FILE_ROUTE[kind]), parseCvLink, { cache: "no-store" });
+}
+
+export function listAdminPublications(
+  query: AdminPublicationsQuery,
+  take: number,
+  signal?: AbortSignal,
+): Promise<Paginated<Publication>> {
+  const values = {
+    status: query.status === "all" ? undefined : query.status,
+    userId: query.userId,
+    sort: query.sort,
+    page: query.page,
+    take,
+  };
+  return api(`/publications/admin?${search(values)}`, parsePublicationPage, { signal, cache: "no-store" });
+}
+
+export function countPendingPublications(signal?: AbortSignal): Promise<number> {
+  return api(`/publications/admin?${search({ status: "pending", take: 1 })}`, countOnly, {
+    signal,
+    cache: "no-store",
+  });
+}
+
+function ignore(): null {
+  return null;
+}
+
+export async function approvePublication(id: string): Promise<void> {
+  await api(publicationPath(id, "approve"), ignore, { method: "PATCH" });
+}
+
+export async function rejectPublication(id: string, reason: string): Promise<void> {
+  const body = reason ? { reason } : {};
+  await api(publicationPath(id, "reject"), ignore, { method: "PATCH", body });
 }

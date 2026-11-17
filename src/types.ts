@@ -567,6 +567,13 @@ export type PublicationUpdateInput = Partial<
   experienceYears?: number | null;
 };
 
+export interface AdminPublicationsQuery {
+  status: PublicationStatus | "all";
+  userId?: string;
+  sort?: PublicationSort;
+  page: number;
+}
+
 export interface MyPublicationsQuery {
   status?: PublicationStatus;
   page: number;
