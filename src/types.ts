@@ -578,3 +578,55 @@ export interface MyPublicationsQuery {
   status?: PublicationStatus;
   page: number;
 }
+
+export type InvitationState = "none" | "invited" | "accepted" | "declined";
+
+export interface PublicationAuthor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+}
+
+export interface PublicationCard {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  employmentTypes: EmploymentType[];
+  workModes: WorkMode[];
+  locations: string[];
+  salaryMin: number | null;
+  salaryMax: number | null;
+  currency: Currency;
+  skills: string[];
+  experienceYears: number | null;
+  hasCv: boolean;
+  hasCoverLetter: boolean;
+  expiresAt: string | null;
+  createdAt: string;
+  author: PublicationAuthor | null;
+  invitation: InvitationState;
+}
+
+export interface CompanyPublication extends Omit<Publication, "rejectionReason" | "timerPaused" | "updatedAt"> {
+  author: PublicationAuthor | null;
+  invitation: InvitationState;
+  invitationId: string | null;
+  invitedVacancyId: string | null;
+}
+
+export type BoardSort = "-date" | "date" | "salary" | "-salary" | "experience" | "-experience";
+
+export interface BoardQuery {
+  q?: string;
+  category?: string;
+  location?: string;
+  workMode?: WorkMode;
+  employmentType?: EmploymentType;
+  salaryMin?: number;
+  salaryMax?: number;
+  currency?: Currency;
+  sort?: BoardSort;
+  page: number;
+}

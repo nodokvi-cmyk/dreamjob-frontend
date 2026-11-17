@@ -47,7 +47,11 @@ export function primaryNav(session: Session | null): NavLink[] {
   const vacancies = { href: routes.vacancies, label: "Vacancies" };
   if (!session) return [vacancies, { href: companySignUpHref, label: "For companies" }];
   if (session.accountRole === "company") {
-    return [vacancies, { href: routes.dashboard, label: "Dashboard" }];
+    return [
+      vacancies,
+      { href: routes.dashboard, label: "Dashboard" },
+      { href: routes.board, label: "Job seekers" },
+    ];
   }
   if (session.accountRole === "admin") {
     return [vacancies, { href: routes.admin, label: "Admin" }];

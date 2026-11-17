@@ -7,17 +7,27 @@ import { useState } from "react";
 import { FileButtons } from "@/components/applications/ApplicationFiles";
 import { StatusBadge } from "@/components/dashboard/VacancyStatus";
 import { FormAlert } from "@/components/form/FormAlert";
+import { GateSpinner } from "@/components/guards/GateStates";
 import { Notice } from "@/components/profile/SaveRow";
 import { useAction } from "@/components/profile/useAction";
 import { InvitesSwitch, PublicationActions } from "@/components/publications/OwnerControls";
 import { PublicationLoadError, usePublication } from "@/components/publications/PublicationStates";
+import { CompanyPublicationView } from "@/components/publications/CompanyPublicationView";
 import { PublicationSkeleton, PublicationView } from "@/components/publications/PublicationView";
+import { useAuth } from "@/context/AuthContext";
 import { REJECTED_NOTE, canEditPublication, publicationTiming } from "@/lib/publications";
 import { editPublicationHref, routes } from "@/lib/routes";
 import { formatDateTime } from "@/lib/vacancy";
 import { getPublicationFile } from "@/services/publications.service";
 
 export function PublicationScreen({ id }: { id: string }) {
+  const { session } = useAuth();
+  if (!session) return <GateSpinner />;
+  if (session.accountRole === "company") return <CompanyPublicationView id={id} account={session.account} />;
+  return <OwnerPublication id={id} />;
+}
+
+function OwnerPublication({ id }: { id: string }) {
   const router = useRouter();
   const { state, reload } = usePublication(id);
   const { notice, succeed } = useAction();

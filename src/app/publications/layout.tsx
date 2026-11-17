@@ -1,11 +1,16 @@
 import { Suspense } from "react";
 import { GateSpinner } from "@/components/guards/GateStates";
-import { UserRoute } from "@/components/guards/UserRoute";
+import { ProtectedRoute } from "@/components/guards/ProtectedRoute";
+import type { AuthRole } from "@/types";
+
+const PUBLICATION_ROLES: readonly AuthRole[] = ["user", "company"];
 
 export default function Layout({ children }: LayoutProps<"/publications">) {
   return (
     <Suspense fallback={<GateSpinner />}>
-      <UserRoute>{children}</UserRoute>
+      <ProtectedRoute roles={PUBLICATION_ROLES} redirectOtherRoles>
+        {children}
+      </ProtectedRoute>
     </Suspense>
   );
 }

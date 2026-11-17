@@ -13,6 +13,7 @@ export const routes = {
   bookmarks: "/bookmarks",
   publications: "/publications",
   newPublication: "/publications/new",
+  board: "/board",
   dashboard: "/dashboard",
   billing: "/company/billing",
   companyVacancies: "/company/vacancies",

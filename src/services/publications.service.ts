@@ -19,9 +19,15 @@ import {
 import { CURRENCIES, EMPLOYMENT_TYPES, WORK_MODES } from "@/lib/vacancy";
 import { api } from "@/services/api";
 import { parseCvLink } from "@/services/users.service";
+import { boardApiSearch } from "@/lib/board";
 import type {
   AdminPublicationsQuery,
+  BoardQuery,
+  CompanyPublication,
   CvLink,
+  InvitationState,
+  PublicationAuthor,
+  PublicationCard,
   MyPublicationsQuery,
   Paginated,
   Publication,
@@ -82,6 +88,70 @@ export function parsePublication(data: unknown): Publication {
 }
 
 const parsePublicationPage = pageParser("publications", parsePublication);
+
+const INVITATION_STATES: readonly InvitationState[] = ["none", "invited", "accepted", "declined"];
+
+function parseAuthor(value: unknown): PublicationAuthor | null {
+  if (value === null || value === undefined) return null;
+  const source = object(value, "author");
+  return {
+    id: string(source, "id"),
+    firstName: stringOr(source, "firstName", ""),
+    lastName: stringOr(source, "lastName", ""),
+    avatarUrl: stringOr(source, "avatarUrl", ""),
+  };
+}
+
+function nullableString(source: JsonObject, key: string): string | null {
+  const value = source[key];
+  if (value === null || value === undefined) return null;
+  return string(source, key);
+}
+
+export function parsePublicationCard(data: unknown): PublicationCard {
+  const source = object(data, "publication");
+  return {
+    id: string(source, "id"),
+    title: string(source, "title"),
+    excerpt: stringOr(source, "excerpt", ""),
+    category: stringOr(source, "category", ""),
+    employmentTypes: enumArray(source, "employmentTypes", EMPLOYMENT_TYPES),
+    workModes: enumArray(source, "workModes", WORK_MODES),
+    locations: stringArray(source, "locations"),
+    salaryMin: nullableNumber(source, "salaryMin"),
+    salaryMax: nullableNumber(source, "salaryMax"),
+    currency: oneOf(source, "currency", CURRENCIES),
+    skills: stringArray(source, "skills"),
+    experienceYears: nullableNumber(source, "experienceYears"),
+    hasCv: booleanOr(source, "hasCv", false),
+    hasCoverLetter: booleanOr(source, "hasCoverLetter", false),
+    expiresAt: nullableIsoDate(source, "expiresAt"),
+    createdAt: isoDate(source, "createdAt"),
+    author: parseAuthor(source.author),
+    invitation: oneOf(source, "invitation", INVITATION_STATES),
+  };
+}
+
+function parseCompanyPublication(data: unknown): CompanyPublication {
+  const source = object(data, "publication");
+  return {
+    ...parsePublicationFields(source),
+    author: parseAuthor(source.author),
+    invitation: oneOf(source, "invitation", INVITATION_STATES),
+    invitationId: nullableString(source, "invitationId"),
+    invitedVacancyId: nullableString(source, "invitedVacancyId"),
+  };
+}
+
+const parseBoardPage = pageParser("board", parsePublicationCard);
+
+export function listBoard(query: BoardQuery, take: number, signal?: AbortSignal): Promise<Paginated<PublicationCard>> {
+  return api(`/publications?${boardApiSearch(query, take)}`, parseBoardPage, { signal, cache: "no-store" });
+}
+
+export function getCompanyPublication(id: string, signal?: AbortSignal): Promise<CompanyPublication> {
+  return api(publicationPath(id), parseCompanyPublication, { signal, cache: "no-store" });
+}
 
 function countOnly(data: unknown): number {
   return pageParser("publications", () => null)(data).total;
