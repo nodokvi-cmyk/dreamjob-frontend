@@ -27,3 +27,7 @@ export function problem(message: string): FormError {
 
 export const CODE_REJECTED =
   "That code is wrong or has expired. Use the newest code we sent you, or send a new one.";
+
+export function isUserGone(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404 && error.message === "User not found";
+}

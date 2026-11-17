@@ -515,3 +515,59 @@ export type PaymentConfirmation =
       credits: number;
       purchasedCredits: number;
     };
+
+export type PublicationStatus = "pending" | "published" | "rejected" | "closed" | "expired";
+
+export type PublicationSort = "-date" | "date";
+
+export interface Publication {
+  id: string;
+  user: string;
+  title: string;
+  about: string;
+  category: string;
+  employmentTypes: EmploymentType[];
+  workModes: WorkMode[];
+  locations: string[];
+  salaryMin: number | null;
+  salaryMax: number | null;
+  currency: Currency;
+  skills: string[];
+  experienceYears: number | null;
+  acceptingInvites: boolean;
+  hasCv: boolean;
+  hasCoverLetter: boolean;
+  status: PublicationStatus;
+  expiresAt: string | null;
+  createdAt: string;
+  rejectionReason: string;
+  timerPaused: boolean;
+  updatedAt: string;
+}
+
+export interface PublicationInput {
+  title: string;
+  about: string;
+  category: string;
+  employmentTypes: EmploymentType[];
+  workModes: WorkMode[];
+  locations: string[];
+  skills: string[];
+  salaryMin?: number;
+  salaryMax?: number;
+  currency: Currency;
+  experienceYears?: number;
+}
+
+export type PublicationUpdateInput = Partial<
+  Omit<PublicationInput, "salaryMin" | "salaryMax" | "experienceYears">
+> & {
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  experienceYears?: number | null;
+};
+
+export interface MyPublicationsQuery {
+  status?: PublicationStatus;
+  page: number;
+}

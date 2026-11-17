@@ -18,6 +18,7 @@ import {
   markNotificationRead,
   setNotificationLock,
 } from "@/services/notifications.service";
+import { getPublication } from "@/services/publications.service";
 import { getOwnVacancy } from "@/services/vacancies.service";
 import type { AppNotification } from "@/types";
 
@@ -66,6 +67,16 @@ export function NotificationPanel({ accountId, role, onNavigate }: NotificationP
     if (target.checkVacancyId && role === "company") {
       try {
         await getOwnVacancy(target.checkVacancyId, accountId);
+      } catch (error: unknown) {
+        if (error instanceof ApiError && (error.status === 404 || error.status === 403 || error.status === 400)) {
+          setMessage(GONE);
+          return;
+        }
+      }
+    }
+    if (target.checkPublicationId && role === "user") {
+      try {
+        await getPublication(target.checkPublicationId);
       } catch (error: unknown) {
         if (error instanceof ApiError && (error.status === 404 || error.status === 403 || error.status === 400)) {
           setMessage(GONE);

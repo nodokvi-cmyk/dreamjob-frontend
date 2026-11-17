@@ -11,6 +11,8 @@ export const routes = {
   profile: "/profile",
   myApplications: "/applications",
   bookmarks: "/bookmarks",
+  publications: "/publications",
+  newPublication: "/publications/new",
   dashboard: "/dashboard",
   billing: "/company/billing",
   companyVacancies: "/company/vacancies",
@@ -35,6 +37,14 @@ export function adminVacancyHref(id: string): string {
 
 export function editVacancyHref(id: string): string {
   return `${ownVacancyHref(id)}/edit`;
+}
+
+export function publicationHref(id: string): string {
+  return `${routes.publications}/${encodeURIComponent(id)}`;
+}
+
+export function editPublicationHref(id: string): string {
+  return `${publicationHref(id)}/edit`;
 }
 
 const AUTH_PATHS = [

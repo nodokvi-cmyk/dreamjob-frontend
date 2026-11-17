@@ -56,6 +56,7 @@ export function primaryNav(session: Session | null): NavLink[] {
     vacancies,
     { href: routes.myApplications, label: "My applications" },
     { href: routes.bookmarks, label: "Bookmarks" },
+    { href: routes.publications, label: "Publications" },
   ];
 }
 
@@ -77,6 +78,7 @@ export function accountMenu(session: Session): NavLink[] {
     { href: routes.profile, label: "Profile" },
     { href: routes.myApplications, label: "My applications" },
     { href: routes.bookmarks, label: "Bookmarks" },
+    { href: routes.publications, label: "Publications" },
   ];
 }
 

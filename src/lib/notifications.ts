@@ -1,6 +1,6 @@
 import { applicantsHref } from "@/lib/applicantQuery";
 import { myApplicationsHref } from "@/lib/applicationQuery";
-import { ownVacancyHref, routes } from "@/lib/routes";
+import { ownVacancyHref, publicationHref, routes } from "@/lib/routes";
 import { formatDateTime } from "@/lib/vacancy";
 import type { AppNotification } from "@/types";
 
@@ -93,10 +93,11 @@ export function notificationTone(notification: AppNotification): NotificationTon
 export interface NotificationTarget {
   href: string | null;
   checkVacancyId: string | null;
+  checkPublicationId?: string;
 }
 
 export function notificationTarget(notification: AppNotification): NotificationTarget {
-  const { vacancyId, applicationId } = notification.target;
+  const { vacancyId, applicationId, publicationId } = notification.target;
   switch (notification.type) {
     case "newApplication":
     case "applicationWithdrawn":
@@ -119,6 +120,9 @@ export function notificationTarget(notification: AppNotification): NotificationT
       return { href: routes.myApplications, checkVacancyId: null };
     case "publicationApproved":
     case "publicationRejected":
+      return publicationId
+        ? { href: publicationHref(publicationId), checkVacancyId: null, checkPublicationId: publicationId }
+        : { href: null, checkVacancyId: null };
     case "invitationReceived":
     case "invitationDeclined":
       return { href: null, checkVacancyId: null };
