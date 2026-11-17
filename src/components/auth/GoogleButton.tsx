@@ -7,7 +7,7 @@ import { useGoogleReturn } from "@/components/auth/useGoogleReturn";
 import { FormAlert } from "@/components/form/FormAlert";
 import { googleReturn } from "@/lib/authDraft";
 import { googleStartHref } from "@/lib/googleRedirect";
-import { safeNext } from "@/lib/routes";
+import { redirectTarget } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import type { AccountType } from "@/types";
 
@@ -25,7 +25,7 @@ export function GoogleButton({ accountType }: GoogleButtonProps) {
 }
 
 function GoogleButtonInner({ accountType }: GoogleButtonProps) {
-  const next = safeNext(useSearchParams().get("next"));
+  const next = redirectTarget(useSearchParams().get("next"));
   const returned = useGoogleReturn(accountType);
   const error = returned && returned.account === accountType ? returned.error : null;
 

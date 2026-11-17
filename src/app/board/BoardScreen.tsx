@@ -8,17 +8,22 @@ import { BoardFilters } from "@/components/board/BoardFilters";
 import { CompanyStanding } from "@/components/dashboard/CompanyStanding";
 import { useLoad } from "@/components/dashboard/useLoad";
 import { GateSpinner } from "@/components/guards/GateStates";
+import { InviteButton } from "@/components/invitations/InviteButton";
+import { Notice } from "@/components/profile/SaveRow";
+import { useAction } from "@/components/profile/useAction";
 import { Button } from "@/components/ui/button";
 import { ListMessage, PastLastPage, ResultsError } from "@/components/vacancies/ListStates";
 import { Pagination } from "@/components/vacancies/Pagination";
 import { useAuth } from "@/context/AuthContext";
 import { BOARD_PAGE_SIZE, NOT_APPROVED, boardApiSearch, boardHref, hasBoardFilters, parseBoardQuery } from "@/lib/board";
 import { formError } from "@/lib/errors";
+import { quotaText } from "@/lib/invitations";
 import { adminPublicationHref, publicationHref, routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { ApiError } from "@/services/api";
+import { getInvitationQuota } from "@/services/invitations.service";
 import { listBoard } from "@/services/publications.service";
-import type { BoardQuery, CurrentCompany } from "@/types";
+import type { BoardQuery, CurrentCompany, InvitationQuota } from "@/types";
 
 const numbers = new Intl.NumberFormat("en-GB");
 
@@ -90,6 +95,18 @@ function Board({ admin }: { admin: boolean }) {
     listBoard(query, BOARD_PAGE_SIZE, signal),
   );
 
+  const quota = useLoad(admin ? "quota:none" : "quota", async (signal): Promise<InvitationQuota | null> =>
+    admin ? null : getInvitationQuota(signal),
+  );
+  const quotaValue = quota.state.status === "ready" ? quota.state.data : null;
+  const { notice, succeed } = useAction();
+
+  const invited = (title: string) => {
+    succeed(`Invitation sent to “${title}”.`);
+    reload();
+    quota.reload();
+  };
+
   const navigate = (patch: Partial<BoardQuery>) => {
     startTransition(() => router.push(boardHref({ ...query, ...patch, page: 1 }), { scroll: false }));
   };
@@ -106,7 +123,8 @@ function Board({ admin }: { admin: boolean }) {
 
       <div className="mx-auto w-full max-w-7xl px-4 pt-6 pb-16 sm:px-6 lg:px-8">
         <div className="flex max-w-5xl flex-col gap-4">
-          <p aria-live="polite" className="min-h-9 text-[1.05rem] text-muted-foreground">
+          <div className="flex min-h-9 flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          <p aria-live="polite" className="text-[1.05rem] text-muted-foreground">
             {total === null ? (
               state.status === "loading" ? "Loading publications" : null
             ) : (
@@ -119,6 +137,15 @@ function Board({ admin }: { admin: boolean }) {
               </>
             )}
           </p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Notice message={notice} />
+            {quotaValue ? (
+              <Link href={routes.sentInvitations} className="transit-label text-[0.85rem] text-muted-foreground hover:text-foreground">
+                {quotaText(quotaValue)}
+              </Link>
+            ) : null}
+          </div>
+          </div>
 
           <div
             aria-busy={state.status === "loading" || busy}
@@ -141,6 +168,15 @@ function Board({ admin }: { admin: boolean }) {
                       key={publication.id}
                       publication={publication}
                       href={admin ? adminPublicationHref(publication.id) : publicationHref(publication.id)}
+                      action={
+                        !admin && publication.invitation === "none" ? (
+                          <InviteButton
+                            publication={publication}
+                            quota={quotaValue}
+                            onInvited={() => invited(publication.title)}
+                          />
+                        ) : undefined
+                      }
                     />
                   ))}
                 </div>

@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { emailChangeDraft } from "@/lib/authDraft";
+import { chatStore } from "@/lib/chat";
 import { decodeToken, tokenStore } from "@/lib/token";
 import { ApiError } from "@/services/api";
 import { getSession } from "@/services/auth.service";
@@ -111,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = useCallback(
     async (nextToken: string) => {
       const session = await load(nextToken);
+      chatStore.clear();
       tokenStore.set(nextToken);
       return session;
     },
@@ -119,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOutTo = useCallback((path: string) => {
     emailChangeDraft.clear();
+    chatStore.clear();
     tokenStore.clear();
     window.location.assign(new URL(path, window.location.origin).href);
   }, []);

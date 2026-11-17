@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { accountParam, accountTypeFrom } from "@/lib/account";
-import { safeNext, withQuery } from "@/lib/routes";
+import { redirectTarget, withQuery } from "@/lib/routes";
 import type { AccountType } from "@/types";
 
 export interface AuthParams {
@@ -19,7 +19,7 @@ export function useAuthParams(fallback: AccountType = "user"): AuthParams {
   const pathname = usePathname();
   const raw = params.get("account");
   const accountType = raw === null ? fallback : accountTypeFrom(raw);
-  const next = safeNext(params.get("next"));
+  const next = redirectTarget(params.get("next"));
 
   const setAccountType = useCallback(
     (type: AccountType) => {

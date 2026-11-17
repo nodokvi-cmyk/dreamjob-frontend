@@ -90,7 +90,7 @@ export function parseCompanyDisplay(source: JsonObject): CompanyDisplay {
   };
 }
 
-function parseApplicationMark(value: unknown): MyApplicationMark | null {
+export function parseApplicationMark(value: unknown): MyApplicationMark | null {
   if (value === null || value === undefined) return null;
   const source = object(value, "myApplication");
   return {

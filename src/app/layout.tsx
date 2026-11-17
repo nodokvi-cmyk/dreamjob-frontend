@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed, Noto_Sans_Georgian } from "next/font/google";
 import Script from "next/script";
 import { CompanyNotice } from "@/components/layout/CompanyNotice";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { AuthProvider } from "@/context/AuthContext";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter />
+          <ChatWidget />
         </AuthProvider>
       </body>
     </html>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { FileButtons } from "@/components/applications/ApplicationFiles";
@@ -7,14 +8,21 @@ import { InvitationLabel } from "@/components/board/BoardCard";
 import { useLoad } from "@/components/dashboard/useLoad";
 import { FormAlert } from "@/components/form/FormAlert";
 import { GateMessage } from "@/components/guards/GateStates";
+import { CancelInvitation } from "@/components/invitations/CancelInvitation";
+import { InviteButton } from "@/components/invitations/InviteButton";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
+import { Notice } from "@/components/profile/SaveRow";
+import { useAction } from "@/components/profile/useAction";
 import { PublicationSkeleton, PublicationView } from "@/components/publications/PublicationView";
 import { ResultsError } from "@/components/vacancies/ListStates";
+import { applicantsHref } from "@/lib/applicantQuery";
 import { NOT_APPROVED, authorName } from "@/lib/board";
+import { quotaText } from "@/lib/invitations";
 import { formError } from "@/lib/errors";
 import { routes, userHref } from "@/lib/routes";
 import { formatDate } from "@/lib/vacancy";
 import { ApiError } from "@/services/api";
+import { getInvitationQuota } from "@/services/invitations.service";
 import { getCompanyPublication, getPublicationFile } from "@/services/publications.service";
 import type { CurrentCompany } from "@/types";
 
@@ -37,7 +45,16 @@ export function CompanyPublicationView({ id, account }: { id: string; account: C
 
 function CompanyPublication({ id }: { id: string }) {
   const { state, reload } = useLoad(`company-publication:${id}`, (signal) => getCompanyPublication(id, signal));
+  const quota = useLoad("quota", (signal) => getInvitationQuota(signal));
+  const quotaValue = quota.state.status === "ready" ? quota.state.data : null;
   const [problem, setProblem] = useState<string | null>(null);
+  const { notice, succeed } = useAction();
+
+  const refresh = (message: string) => {
+    succeed(message);
+    reload();
+    quota.reload();
+  };
 
   if (state.status === "loading") return <PublicationSkeleton />;
   if (state.status === "failed") {
@@ -81,6 +98,46 @@ function CompanyPublication({ id }: { id: string }) {
           <InvitationLabel state={publication.invitation} />
         </div>
       }
+      panel={
+        <div className="flex flex-col gap-3">
+          {publication.invitation === "none" ? (
+            <>
+              <InviteButton
+                publication={publication}
+                quota={quotaValue}
+                size="default"
+                onInvited={() => refresh("Invitation sent.")}
+              />
+              {quotaValue ? <p className="text-sm text-on-enamel-muted">{quotaText(quotaValue)}</p> : null}
+            </>
+          ) : null}
+          {publication.invitation === "invited" && publication.invitationId ? (
+            <>
+              <p className="text-sm text-on-enamel-muted">Waiting for the job seeker to answer.</p>
+              <CancelInvitation
+                invitationId={publication.invitationId}
+                onDone={() => refresh("Invitation cancelled.")}
+                onStale={(message) => {
+                  setProblem(message);
+                  reload();
+                }}
+              />
+            </>
+          ) : null}
+          {publication.invitation === "accepted" && publication.invitedVacancyId ? (
+            <Link
+              href={applicantsHref(publication.invitedVacancyId, {})}
+              className="inline-flex items-center gap-1.5 font-semibold text-on-enamel underline-offset-4 hover:underline"
+            >
+              Accepted. Open the applicant list
+              <ArrowRightIcon aria-hidden className="size-4" />
+            </Link>
+          ) : null}
+          {publication.invitation === "declined" ? (
+            <p className="text-sm text-on-enamel-muted">The job seeker declined your invitation. You can invite a publication only once.</p>
+          ) : null}
+        </div>
+      }
       strip={
         <div className="flex max-w-3xl flex-col gap-4">
           <p className="text-[1.02rem] text-muted-foreground">
@@ -107,8 +164,10 @@ function CompanyPublication({ id }: { id: string }) {
             </div>
             {problem ? <FormAlert tone="error" message={problem} /> : null}
           </div>
+          <Notice message={notice} />
         </div>
       }
     />
   );
 }
+

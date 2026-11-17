@@ -69,6 +69,7 @@ export function accountMenu(session: Session): NavLink[] {
     return [
       { href: routes.dashboard, label: "Dashboard" },
       { href: routes.profile, label: "Company profile" },
+      { href: routes.sentInvitations, label: "Sent invitations" },
       { href: routes.billing, label: "Billing" },
     ];
   }
@@ -83,6 +84,7 @@ export function accountMenu(session: Session): NavLink[] {
     { href: routes.myApplications, label: "My applications" },
     { href: routes.bookmarks, label: "Bookmarks" },
     { href: routes.publications, label: "Publications" },
+    { href: routes.invitations, label: "Invitations" },
   ];
 }
 

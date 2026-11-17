@@ -87,6 +87,9 @@ export function MyPublicationsScreen() {
                 </>
               )}
             </div>
+            <Link href={routes.invitations} className="font-medium text-cobalt-ink underline-offset-4 hover:underline">
+              Invitations from companies
+            </Link>
           </div>
           {full ? (
             <p id="publication-limit" className="max-w-[62ch] text-[0.95rem] text-muted-foreground">

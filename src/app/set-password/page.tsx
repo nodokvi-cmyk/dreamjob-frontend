@@ -9,12 +9,12 @@ export const metadata: Metadata = { title: "Choose a password" };
 
 export default function SetPasswordPage() {
   return (
-    <ProtectedRoute allowPasswordSetup>
-      <Suspense fallback={<GateSpinner />}>
+    <Suspense fallback={<GateSpinner />}>
+      <ProtectedRoute allowPasswordSetup>
         <FreshOnReturn>
           <SetPasswordScreen />
         </FreshOnReturn>
-      </Suspense>
-    </ProtectedRoute>
+      </ProtectedRoute>
+    </Suspense>
   );
 }

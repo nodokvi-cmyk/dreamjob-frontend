@@ -630,3 +630,109 @@ export interface BoardQuery {
   sort?: BoardSort;
   page: number;
 }
+
+export type InvitationStatus = "invited" | "accepted" | "declined";
+
+export interface Invitation {
+  id: string;
+  status: InvitationStatus;
+  message: string;
+  publication: string;
+  vacancy: string;
+  company: string;
+  applicationId: string | null;
+  createdAt: string;
+  respondedAt: string | null;
+}
+
+export interface SentInvitation extends Omit<Invitation, "vacancy" | "publication"> {
+  vacancy: { id: string; title: string } | null;
+  publication: { id: string; title: string } | null;
+  publicationAvailable: boolean;
+}
+
+export interface InboxInvitation {
+  id: string;
+  status: InvitationStatus;
+  message: string;
+  createdAt: string;
+  respondedAt: string | null;
+  publication: { id: string; title: string } | null;
+  vacancy: { id: string; title: string; deadline: string; status: UserVacancyStatus } | null;
+  company: { id: string; companyName: string; logoUrl: string; approved: boolean };
+  application: MyApplicationMark | null;
+}
+
+export interface InvitationQuota {
+  used: number;
+  limit: number;
+  resetsAt: string;
+}
+
+export interface AcceptResult {
+  invitation: Invitation | null;
+  application: Application;
+}
+
+export interface SentInvitationsQuery {
+  status?: InvitationStatus;
+  vacancyId?: string;
+  page: number;
+}
+
+export interface InboxQuery {
+  status?: InvitationStatus;
+  vacancyId?: string;
+  focus?: string;
+  page: number;
+}
+
+export type ChatRole = "user" | "assistant";
+
+export interface ChatTurn {
+  role: ChatRole;
+  content: string;
+}
+
+export interface ChatVacancyCard {
+  type: "vacancy";
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
+  location: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  currency: Currency;
+  deadline: string;
+  company: string;
+  companyName: string;
+  logoUrl: string;
+}
+
+export interface ChatPublicationCard {
+  type: "publication";
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  employmentTypes: EmploymentType[];
+  workModes: WorkMode[];
+  locations: string[];
+  salaryMin: number | null;
+  salaryMax: number | null;
+  currency: Currency;
+  skills: string[];
+  experienceYears: number | null;
+  author: PublicationAuthor | null;
+  invitation: InvitationState;
+}
+
+export type ChatCard = ChatVacancyCard | ChatPublicationCard;
+
+export interface ChatReply {
+  reply: string;
+  cards: ChatCard[];
+}

@@ -14,6 +14,8 @@ export const routes = {
   publications: "/publications",
   newPublication: "/publications/new",
   board: "/board",
+  invitations: "/invitations",
+  sentInvitations: "/company/invitations",
   dashboard: "/dashboard",
   billing: "/company/billing",
   companyVacancies: "/company/vacancies",
@@ -63,13 +65,29 @@ const AUTH_PATHS = [
   routes.googleComplete,
 ];
 
+const SAME_SITE_BASE = "https://same-site.invalid";
+
+const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/;
+
 export function safeNext(value: string | null | undefined): string | null {
   if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
     return null;
   }
-  const path = value.split(/[?#]/)[0];
-  if (AUTH_PATHS.includes(path)) return null;
+  if (CONTROL_CHARACTER.test(value)) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(value, SAME_SITE_BASE);
+  } catch {
+    return null;
+  }
+  if (parsed.origin !== SAME_SITE_BASE) return null;
+  if (AUTH_PATHS.includes(parsed.pathname)) return null;
   return value;
+}
+
+export function redirectTarget(value: string | null | undefined): string | null {
+  if (value === null || value === undefined || value === "") return null;
+  return safeNext(value) ?? routes.home;
 }
 
 export function withQuery(

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { GateMessage, GateSpinner } from "@/components/guards/GateStates";
 import { useAuth } from "@/context/AuthContext";
@@ -23,6 +23,8 @@ export function ProtectedRoute({
   const { status, session, error, retry } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const search = useSearchParams().toString();
+  const here = search ? `${pathname}?${search}` : pathname;
 
   const needsPassword =
     session !== null && session.account.passwordSetupRequired && !allowPasswordSetup;
@@ -32,10 +34,10 @@ export function ProtectedRoute({
   const sendHome = session !== null && !needsPassword && !roleAllowed && redirectOtherRoles;
 
   useEffect(() => {
-    if (status === "anonymous") router.replace(signInWithNext(pathname));
+    if (status === "anonymous") router.replace(signInWithNext(here));
     else if (needsPassword) router.replace(routes.setPassword);
     else if (sendHome) router.replace(routes.home);
-  }, [status, needsPassword, sendHome, pathname, router]);
+  }, [status, needsPassword, sendHome, here, router]);
 
   if (status === "error") {
     return (

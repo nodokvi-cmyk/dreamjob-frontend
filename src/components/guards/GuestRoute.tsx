@@ -5,13 +5,13 @@ import { useEffect, type ReactNode } from "react";
 import { GateSpinner } from "@/components/guards/GateStates";
 import { useAuth } from "@/context/AuthContext";
 import { afterAuthPath } from "@/lib/account";
-import { safeNext } from "@/lib/routes";
+import { redirectTarget } from "@/lib/routes";
 
 export function GuestRoute({ children }: { children: ReactNode }) {
   const { status, session } = useAuth();
   const router = useRouter();
   const params = useSearchParams();
-  const target = session ? afterAuthPath(session, safeNext(params.get("next"))) : null;
+  const target = session ? afterAuthPath(session, redirectTarget(params.get("next"))) : null;
 
   useEffect(() => {
     if (target) router.replace(target);

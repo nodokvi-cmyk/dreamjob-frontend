@@ -41,7 +41,7 @@ function publicationPath(id: string, action?: string): string {
   return action ? `${base}/${action}` : base;
 }
 
-function enumArray<T extends string>(source: JsonObject, key: string, allowed: readonly T[]): T[] {
+export function enumArray<T extends string>(source: JsonObject, key: string, allowed: readonly T[]): T[] {
   return stringArray(source, key).map((value, index) => {
     const match = allowed.find((option) => option === value);
     if (match === undefined) throw new DecodeError(`${key}[${index}]`);
@@ -89,9 +89,9 @@ export function parsePublication(data: unknown): Publication {
 
 const parsePublicationPage = pageParser("publications", parsePublication);
 
-const INVITATION_STATES: readonly InvitationState[] = ["none", "invited", "accepted", "declined"];
+export const INVITATION_STATES: readonly InvitationState[] = ["none", "invited", "accepted", "declined"];
 
-function parseAuthor(value: unknown): PublicationAuthor | null {
+export function parseAuthor(value: unknown): PublicationAuthor | null {
   if (value === null || value === undefined) return null;
   const source = object(value, "author");
   return {

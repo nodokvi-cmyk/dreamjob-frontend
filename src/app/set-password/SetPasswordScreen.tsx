@@ -13,7 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { homeFor } from "@/lib/account";
 import { formError, problem, type FormError } from "@/lib/errors";
 import { passwordProblem } from "@/lib/password";
-import { safeNext } from "@/lib/routes";
+import { redirectTarget } from "@/lib/routes";
 import { setCompanyPassword } from "@/services/companies.service";
 import { setUserPassword } from "@/services/users.service";
 
@@ -27,7 +27,7 @@ export function SetPasswordScreen() {
   const [error, setError] = useState<FormError | null>(null);
 
   const done = session !== null && !session.account.passwordSetupRequired;
-  const target = session ? (safeNext(params.get("next")) ?? homeFor(session)) : null;
+  const target = session ? (redirectTarget(params.get("next")) ?? homeFor(session)) : null;
 
   useEffect(() => {
     if (done && target) router.replace(target);
