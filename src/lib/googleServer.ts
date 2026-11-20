@@ -98,6 +98,15 @@ function spent(response: NextResponse): NextResponse {
   return response;
 }
 
+function backendHeaders(request: NextRequest): Record<string, string> {
+  const headers: Record<string, string> = {};
+  const visitorIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
+  if (visitorIp !== "") headers["X-Visitor-IP"] = visitorIp;
+  const secret = process.env.FRONTEND_SHARED_SECRET ?? "";
+  if (secret !== "") headers["X-Frontend-Secret"] = secret;
+  return headers;
+}
+
 export function startGoogleSignIn(request: NextRequest): NextResponse {
   const raw = request.nextUrl.searchParams.get("account");
   const account = raw === "company" || raw === "user" ? raw : null;
@@ -144,7 +153,7 @@ export async function handleGoogleCallback(
   if (!sameText(nonceOf(form.idToken), saved.nonce)) return spent(fail(request, "csrf"));
 
   try {
-    const { token } = await signInWithGoogle(account, form.idToken);
+    const { token } = await signInWithGoogle(account, form.idToken, backendHeaders(request));
     return spent(redirectTo(request, `${routes.googleComplete}#token=${encodeURIComponent(token)}`));
   } catch (reason: unknown) {
     const code = reason instanceof ApiError ? googleErrorCodeForStatus(reason.status) : "failed";

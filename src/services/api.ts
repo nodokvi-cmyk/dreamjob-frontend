@@ -13,6 +13,7 @@ export interface RequestOptions {
   token?: string | null;
   signal?: AbortSignal;
   cache?: RequestCache;
+  headers?: Record<string, string>;
 }
 
 export class ApiError extends Error {
@@ -100,6 +101,7 @@ export async function api<T>(
   const token = currentToken(options.token);
   const headers = new Headers({ Accept: "application/json" });
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  for (const [name, value] of Object.entries(options.headers ?? {})) headers.set(name, value);
 
   let payload: BodyInit | undefined;
   if (body instanceof FormData) {

@@ -67,11 +67,16 @@ export function signInWithPassword(
   });
 }
 
-export function signInWithGoogle(type: AccountType, idToken: string): Promise<TokenResponse> {
+export function signInWithGoogle(
+  type: AccountType,
+  idToken: string,
+  headers: Record<string, string> = {},
+): Promise<TokenResponse> {
   return api(authPath(type, "google"), parseToken, {
     method: "POST",
     body: { idToken },
     token: null,
+    headers,
   });
 }
 
