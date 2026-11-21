@@ -87,7 +87,7 @@ export function draftFrom(vacancy: Vacancy): VacancyDraft {
 export function deadlineBounds(now: number, latest?: string): { min: string; max: string } {
   const today = tbilisiDay(now);
   const max = addDays(today, LAST_DAY);
-  return { min: addDays(today, FIRST_DAY), max: latest !== undefined && latest < max ? latest : max };
+  return { min: addDays(today, FIRST_DAY), max: latest ?? max };
 }
 
 type Amount = { kind: "empty" } | { kind: "valid"; value: number } | { kind: "invalid" };
