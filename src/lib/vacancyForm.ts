@@ -116,7 +116,10 @@ export function cleanRequirements(items: readonly string[]): string[] {
   return items.map((item) => item.trim()).filter((item) => item !== "");
 }
 
-const AMOUNT_HINT = "Enter a number from 1 to 1,000,000,000, with up to 2 decimals.";
+export const NO_EARLIER_DATE =
+  "There is no earlier date to choose. Keep the current closing date, or use Extend on the vacancy page to move it later.";
+
+const AMOUNT_HINT ="Enter a number from 1 to 1,000,000,000, with up to 2 decimals.";
 
 export function validateDraft(
   draft: VacancyDraft,
@@ -170,7 +173,9 @@ export function validateDraft(
     errors.deadline = "Choose a closing date.";
   } else if (draft.deadline !== originalDeadline) {
     const { min: first, max: last } = deadlineBounds(now, latest);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(draft.deadline) || draft.deadline < first || draft.deadline > last) {
+    if (last < first) {
+      errors.deadline = NO_EARLIER_DATE;
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(draft.deadline) || draft.deadline < first || draft.deadline > last) {
       errors.deadline = `Choose a date from ${formatDay(first)} to ${formatDay(last)}.`;
     }
   }

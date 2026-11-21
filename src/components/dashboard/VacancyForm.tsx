@@ -38,6 +38,7 @@ import {
 } from "@/lib/vacancy";
 import {
   LIMITS,
+  NO_EARLIER_DATE,
   OTHER_CATEGORY,
   changesContent,
   deadlineBounds,
@@ -461,7 +462,9 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
             label="Applications close on"
             error={shown("deadline")}
             hint={
-              latest
+              latest && bounds.max < bounds.min
+                ? NO_EARLIER_DATE
+                : latest
                 ? `They close at the end of this day, Tbilisi time. After a vacancy has been published, the date can only move earlier here; use Extend on its page to move it later.`
                 : `They close at the end of this day, Tbilisi time. Choose a date up to ${formatDay(bounds.max)}, at most 60 days away.`
             }

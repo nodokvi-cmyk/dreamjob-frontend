@@ -1,6 +1,7 @@
 "use client";
 
 import { SendIcon } from "lucide-react";
+import { useState } from "react";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
 import { usePaymentRecheck } from "@/components/dashboard/usePaymentRecheck";
 import { Button } from "@/components/ui/button";
@@ -19,8 +20,10 @@ interface SubmitVacancyProps {
 export function SubmitVacancy({ vacancy, account, onSubmitted, onPaymentProcessing }: SubmitVacancyProps) {
   const { refresh } = useAuth();
   const spend = spendFor(account);
+  const [open, setOpen] = useState(false);
   const recheck = usePaymentRecheck(() => {
     void refresh().catch(() => undefined);
+    setOpen(false);
     onPaymentProcessing();
   });
 
@@ -35,6 +38,8 @@ export function SubmitVacancy({ vacancy, account, onSubmitted, onPaymentProcessi
 
   return (
     <ConfirmDialog
+      open={open}
+      onOpenChange={setOpen}
       trigger={
         <Button size="sm" aria-label={`Submit ${vacancy.title} for review`}>
           <SendIcon aria-hidden />

@@ -125,7 +125,7 @@ function CompanyPublication({ id }: { id: string }) {
               />
             </>
           ) : null}
-          {publication.invitation === "accepted" && publication.invitedVacancyId ? (
+          {publication.invitation === "accepted" && publication.invitedVacancyId !== null ? (
             <Link
               href={applicantsHref(publication.invitedVacancyId, {})}
               className="inline-flex items-center gap-1.5 font-semibold text-on-enamel underline-offset-4 hover:underline"
@@ -134,7 +134,7 @@ function CompanyPublication({ id }: { id: string }) {
               <ArrowRightIcon aria-hidden className="size-4" />
             </Link>
           ) : null}
-          {publication.invitation === "accepted" && !publication.invitedVacancyId ? (
+          {publication.invitation === "accepted" && publication.invitedVacancyId === null ? (
             <p className="text-sm text-on-enamel-muted">The job seeker accepted, but you deleted that vacancy and its application.</p>
           ) : null}
           {publication.invitation === "declined" ? (

@@ -46,7 +46,7 @@ export function ConfirmDialog({
   function handleOpenChange(next: boolean) {
     if (pending) return;
     setOpen(next);
-    if (!next) reset();
+    reset();
   }
 
   async function confirm() {

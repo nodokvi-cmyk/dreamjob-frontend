@@ -139,9 +139,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onPasswordSetupRequired(() => {
-        if (tokenStore.get()) setRevision((value) => value + 1);
+        if (!tokenStore.get()) return;
+        refresh().catch((error: unknown) => {
+          if (error instanceof ApiError && (error.status === 401 || error.status === 404)) {
+            tokenStore.clear();
+          }
+        });
       }),
-    [],
+    [refresh],
   );
 
   const fresh = loaded !== null && loaded.token === token ? loaded : null;

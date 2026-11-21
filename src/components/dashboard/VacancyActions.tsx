@@ -37,7 +37,7 @@ export function VacancyActions({
   const editable = canEdit(vacancy);
   const approved = account.approved;
   const title = vacancy.title;
-  const paymentProcessing = () => onUpdated(`Your payment for “${title}” went through. It may take a moment to show here.`);
+  const paymentProcessing = () => onUpdated(`Your payment for “${title}” is being processed. It may take a moment to show here.`);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
