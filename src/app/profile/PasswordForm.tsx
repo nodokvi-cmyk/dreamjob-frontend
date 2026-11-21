@@ -10,6 +10,7 @@ import { emailPrefill } from "@/lib/authDraft";
 import { problem } from "@/lib/errors";
 import { passwordProblem } from "@/lib/password";
 import { routes } from "@/lib/routes";
+import { ApiError } from "@/services/api";
 import { setCompanyPassword } from "@/services/companies.service";
 import { setUserPassword } from "@/services/users.service";
 import type { AccountType, ChangePasswordInput } from "@/types";
@@ -27,7 +28,7 @@ export function PasswordForm({ accountId, accountType, email, linkedWithGoogle }
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [round, setRound] = useState(0);
-  const { signOutTo } = useAuth();
+  const { signOut, signOutTo, refresh } = useAuth();
   const forgotHintId = useId();
 
   function handleForgot() {
@@ -43,8 +44,14 @@ export function PasswordForm({ accountId, accountType, email, linkedWithGoogle }
     const input: ChangePasswordInput = { newPassword: password, confirmNewPassword: confirm };
     if (current !== "") input.currentPassword = current;
     await run(async () => {
-      if (accountType === "company") await setCompanyPassword(accountId, input);
-      else await setUserPassword(accountId, input);
+      try {
+        if (accountType === "company") await setCompanyPassword(accountId, input);
+        else await setUserPassword(accountId, input);
+      } catch (reason: unknown) {
+        if (reason instanceof ApiError && reason.status === 404) signOut();
+        if (reason instanceof ApiError && reason.status === 409) await refresh().catch(() => undefined);
+        throw reason;
+      }
       setCurrent("");
       setPassword("");
       setConfirm("");

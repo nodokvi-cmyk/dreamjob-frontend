@@ -14,7 +14,13 @@ import { ListMessage, PastLastPage, ResultsError } from "@/components/vacancies/
 import { Pagination } from "@/components/vacancies/Pagination";
 import { useAuth } from "@/context/AuthContext";
 import { formError, isUserGone } from "@/lib/errors";
-import { INVITATIONS_PAGE_SIZE, inboxHref, invitationRowId, parseInboxQuery } from "@/lib/invitations";
+import {
+  INBOX_INVITATION_STATUSES,
+  INVITATIONS_PAGE_SIZE,
+  inboxHref,
+  invitationRowId,
+  parseInboxQuery,
+} from "@/lib/invitations";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { listMyInvitations } from "@/services/invitations.service";
@@ -73,7 +79,11 @@ export function InboxScreen() {
               CV and cover letter and shares your email and phone with that company.
             </p>
           </div>
-          <InvitationStatusLine active={query.status} href={(status) => inboxHref({ ...base, status, page: 1 })} />
+          <InvitationStatusLine
+            statuses={INBOX_INVITATION_STATUSES}
+            active={query.status}
+            href={(status) => inboxHref({ ...base, status, page: 1 })}
+          />
         </div>
       </div>
 

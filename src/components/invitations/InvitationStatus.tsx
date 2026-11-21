@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { INVITATION_STATUSES, INVITATION_STATUS_LABELS } from "@/lib/invitations";
+import { INVITATION_STATUS_LABELS } from "@/lib/invitations";
 import { cn } from "@/lib/utils";
 import type { InvitationStatus } from "@/types";
 
@@ -8,6 +8,7 @@ const DOT: Record<InvitationStatus, string> = {
   invited: "border-line-cobalt bg-transparent",
   accepted: "border-line-green bg-line-green",
   declined: "border-muted-foreground/60 bg-muted-foreground/60",
+  cancelled: "border-muted-foreground/60 bg-transparent",
 };
 
 export function InvitationStatusBadge({ status }: { status: InvitationStatus }) {
@@ -20,14 +21,16 @@ export function InvitationStatusBadge({ status }: { status: InvitationStatus }) 
   );
 }
 
-export function InvitationStatusLine({
+export function InvitationStatusLine<S extends InvitationStatus>({
+  statuses,
   active,
   href,
 }: {
-  active: InvitationStatus | undefined;
-  href: (status: InvitationStatus | undefined) => string;
+  statuses: readonly S[];
+  active: S | undefined;
+  href: (status: S | undefined) => string;
 }) {
-  const stops: readonly (InvitationStatus | undefined)[] = [undefined, ...INVITATION_STATUSES];
+  const stops: readonly (S | undefined)[] = [undefined, ...statuses];
   return (
     <nav aria-label="Filter by status" className="-mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
       <ul className="relative flex w-max items-center gap-2">

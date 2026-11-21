@@ -3,6 +3,7 @@
 import { CalendarPlusIcon } from "lucide-react";
 import { AlertDialog } from "radix-ui";
 import { useId, useState } from "react";
+import { usePaymentRecheck } from "@/components/dashboard/usePaymentRecheck";
 import { FormAlert } from "@/components/form/FormAlert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { formError, type FormError } from "@/lib/errors";
 import { addDays, endOfTbilisiDay, formatDate, formatDay, tbilisiDay } from "@/lib/vacancy";
-import { NO_CASH_REFUNDS } from "@/lib/vacancyLifecycle";
+import { isPaymentProcessing, NO_CASH_REFUNDS } from "@/lib/vacancyLifecycle";
 import { extendVacancy } from "@/services/vacancies.service";
 import type { CurrentCompany, OwnVacancy } from "@/types";
 
@@ -19,9 +20,10 @@ interface ExtendVacancyProps {
   account: Pick<CurrentCompany, "approved">;
   now: number;
   onExtended: (day: string) => void;
+  onPaymentProcessing: () => void;
 }
 
-export function ExtendVacancy({ vacancy, account, now, onExtended }: ExtendVacancyProps) {
+export function ExtendVacancy({ vacancy, account, now, onExtended, onPaymentProcessing }: ExtendVacancyProps) {
   const { refresh } = useAuth();
   const id = useId();
   const today = tbilisiDay(now);
@@ -36,6 +38,12 @@ export function ExtendVacancy({ vacancy, account, now, onExtended }: ExtendVacan
   const [error, setError] = useState<FormError | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const pastWindow = freeDay !== null && day > freeDay;
+  const recheck = usePaymentRecheck(() => {
+    void refresh().catch(() => undefined);
+    setOpen(false);
+    setError(null);
+    onPaymentProcessing();
+  });
 
   if (!account.approved) {
     return (
@@ -75,6 +83,7 @@ export function ExtendVacancy({ vacancy, account, now, onExtended }: ExtendVacan
       onExtended(day);
     } catch (caught: unknown) {
       setError(formError(caught));
+      if (isPaymentProcessing(caught)) recheck();
     } finally {
       setPending(false);
     }

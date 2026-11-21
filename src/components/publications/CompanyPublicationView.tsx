@@ -100,12 +100,13 @@ function CompanyPublication({ id }: { id: string }) {
       }
       panel={
         <div className="flex flex-col gap-3">
-          {publication.invitation === "none" ? (
+          {publication.canInvite ? (
             <>
               <InviteButton
                 publication={publication}
                 quota={quotaValue}
                 size="default"
+                excludeVacancyId={publication.invitation === "declined" ? publication.invitedVacancyId : null}
                 onInvited={() => refresh("Invitation sent.")}
               />
               {quotaValue ? <p className="text-sm text-on-enamel-muted">{quotaText(quotaValue)}</p> : null}
@@ -133,8 +134,22 @@ function CompanyPublication({ id }: { id: string }) {
               <ArrowRightIcon aria-hidden className="size-4" />
             </Link>
           ) : null}
+          {publication.invitation === "accepted" && !publication.invitedVacancyId ? (
+            <p className="text-sm text-on-enamel-muted">The job seeker accepted, but you deleted that vacancy and its application.</p>
+          ) : null}
           {publication.invitation === "declined" ? (
-            <p className="text-sm text-on-enamel-muted">The job seeker declined your invitation. You can invite a publication only once.</p>
+            <p className="text-sm text-on-enamel-muted">
+              {publication.canInvite
+                ? "The job seeker declined your invitation. You can invite them once more, to a different vacancy."
+                : "The job seeker declined your invitation. You cannot invite this publication again."}
+            </p>
+          ) : null}
+          {publication.invitation === "cancelled" ? (
+            <p className="text-sm text-on-enamel-muted">
+              {publication.canInvite
+                ? "You cancelled your invitation. You can invite them once more."
+                : "You cancelled your invitation. You cannot invite this publication again."}
+            </p>
           ) : null}
         </div>
       }

@@ -12,6 +12,7 @@ interface ProtectedRouteProps {
   roles?: readonly AuthRole[];
   allowPasswordSetup?: boolean;
   redirectOtherRoles?: boolean;
+  signInAccount?: "company";
 }
 
 export function ProtectedRoute({
@@ -19,6 +20,7 @@ export function ProtectedRoute({
   roles,
   allowPasswordSetup = false,
   redirectOtherRoles = false,
+  signInAccount,
 }: ProtectedRouteProps) {
   const { status, session, error, retry } = useAuth();
   const router = useRouter();
@@ -34,10 +36,10 @@ export function ProtectedRoute({
   const sendHome = session !== null && !needsPassword && !roleAllowed && redirectOtherRoles;
 
   useEffect(() => {
-    if (status === "anonymous") router.replace(signInWithNext(here));
+    if (status === "anonymous") router.replace(signInWithNext(here, signInAccount));
     else if (needsPassword) router.replace(routes.setPassword);
     else if (sendHome) router.replace(routes.home);
-  }, [status, needsPassword, sendHome, here, router]);
+  }, [status, needsPassword, sendHome, here, signInAccount, router]);
 
   if (status === "error") {
     return (

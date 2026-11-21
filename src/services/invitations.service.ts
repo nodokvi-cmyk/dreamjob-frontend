@@ -1,4 +1,4 @@
-import { INVITATION_STATUSES } from "@/lib/invitations";
+import { INBOX_INVITATION_STATUSES, INVITATION_STATUSES } from "@/lib/invitations";
 import {
   booleanOr,
   isoDate,
@@ -6,6 +6,7 @@ import {
   number,
   object,
   oneOf,
+  optionalNumber,
   pageParser,
   string,
   stringOr,
@@ -35,21 +36,28 @@ function nullableString(source: JsonObject, key: string): string | null {
 function baseFields(source: JsonObject) {
   return {
     id: string(source, "id"),
-    status: oneOf(source, "status", INVITATION_STATUSES),
     message: stringOr(source, "message", ""),
     createdAt: isoDate(source, "createdAt"),
     respondedAt: nullableIsoDate(source, "respondedAt"),
   };
 }
 
+function companyFields(source: JsonObject) {
+  return {
+    ...baseFields(source),
+    status: oneOf(source, "status", INVITATION_STATUSES),
+    sends: optionalNumber(source, "sends") ?? 1,
+    company: string(source, "company"),
+    applicationId: nullableString(source, "applicationId"),
+  };
+}
+
 export function parseInvitation(data: unknown): Invitation {
   const source = object(data, "invitation");
   return {
-    ...baseFields(source),
+    ...companyFields(source),
     publication: string(source, "publication"),
-    vacancy: string(source, "vacancy"),
-    company: string(source, "company"),
-    applicationId: nullableString(source, "applicationId"),
+    vacancy: nullableString(source, "vacancy"),
   };
 }
 
@@ -62,9 +70,7 @@ function idTitle(value: unknown, path: string): { id: string; title: string } | 
 function parseSent(data: unknown): SentInvitation {
   const source = object(data, "invitation");
   return {
-    ...baseFields(source),
-    company: string(source, "company"),
-    applicationId: nullableString(source, "applicationId"),
+    ...companyFields(source),
     vacancy: idTitle(source.vacancy, "vacancy"),
     publication: idTitle(source.publication, "publication"),
     publicationAvailable: booleanOr(source, "publicationAvailable", false),
@@ -87,6 +93,7 @@ function parseInbox(data: unknown): InboxInvitation {
   const company = object(source.company, "company");
   return {
     ...baseFields(source),
+    status: oneOf(source, "status", INBOX_INVITATION_STATUSES),
     publication: idTitle(source.publication, "publication"),
     vacancy: parseInboxVacancy(source.vacancy),
     company: {

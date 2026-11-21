@@ -89,7 +89,7 @@ export function parsePublication(data: unknown): Publication {
 
 const parsePublicationPage = pageParser("publications", parsePublication);
 
-export const INVITATION_STATES: readonly InvitationState[] = ["none", "invited", "accepted", "declined"];
+export const INVITATION_STATES: readonly InvitationState[] = ["none", "invited", "accepted", "declined", "cancelled"];
 
 export function parseAuthor(value: unknown): PublicationAuthor | null {
   if (value === null || value === undefined) return null;
@@ -129,6 +129,7 @@ export function parsePublicationCard(data: unknown): PublicationCard {
     createdAt: isoDate(source, "createdAt"),
     author: parseAuthor(source.author),
     invitation: oneOf(source, "invitation", INVITATION_STATES),
+    canInvite: booleanOr(source, "canInvite", false),
   };
 }
 
@@ -138,6 +139,7 @@ function parseCompanyPublication(data: unknown): CompanyPublication {
     ...parsePublicationFields(source),
     author: parseAuthor(source.author),
     invitation: oneOf(source, "invitation", INVITATION_STATES),
+    canInvite: booleanOr(source, "canInvite", false),
     invitationId: nullableString(source, "invitationId"),
     invitedVacancyId: nullableString(source, "invitedVacancyId"),
   };

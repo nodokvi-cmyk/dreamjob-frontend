@@ -13,7 +13,7 @@ import {
 import { emailChangeDraft } from "@/lib/authDraft";
 import { chatStore } from "@/lib/chat";
 import { decodeToken, tokenStore } from "@/lib/token";
-import { ApiError } from "@/services/api";
+import { ApiError, onPasswordSetupRequired } from "@/services/api";
 import { getSession } from "@/services/auth.service";
 import type { Session } from "@/types";
 
@@ -135,6 +135,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [load]);
 
   const retry = useCallback(() => setRevision((value) => value + 1), []);
+
+  useEffect(
+    () =>
+      onPasswordSetupRequired(() => {
+        if (tokenStore.get()) setRevision((value) => value + 1);
+      }),
+    [],
+  );
 
   const fresh = loaded !== null && loaded.token === token ? loaded : null;
 

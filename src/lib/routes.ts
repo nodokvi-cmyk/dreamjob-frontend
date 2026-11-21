@@ -102,8 +102,8 @@ export function withQuery(
   return search ? `${path}?${search}` : path;
 }
 
-export function signInWithNext(pathname: string): string {
-  return withQuery(routes.signIn, { next: safeNext(pathname) });
+export function signInWithNext(pathname: string, account?: "company"): string {
+  return withQuery(routes.signIn, { account, next: safeNext(pathname) });
 }
 
 export function userHref(id: string): string {

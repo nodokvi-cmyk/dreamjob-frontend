@@ -1,3 +1,4 @@
+import { MAX_PDF_MB } from "@/lib/files";
 import type {
   ApplicantSort,
   ApplicationStatus,
@@ -41,7 +42,7 @@ export const MESSAGE_MAX_WORDS = 100;
 
 export const MESSAGE_MAX_CHARS = 800;
 
-export const APPLICATION_FILE_MAX_MB = 2;
+export const APPLICATION_FILE_MAX_MB = MAX_PDF_MB;
 
 export const APPLICATION_FILE_MAX_BYTES = APPLICATION_FILE_MAX_MB * 1024 * 1024;
 

@@ -1,15 +1,27 @@
 import { routes, withQuery } from "@/lib/routes";
 import { PAGE_MAX, first, pick, positiveInt, type RawSearchParams } from "@/lib/vacancyQuery";
 import { OBJECT_ID } from "@/services/vacancies.service";
-import type { InboxInvitation, InboxQuery, InvitationQuota, InvitationStatus, SentInvitationsQuery } from "@/types";
+import type {
+  InboxInvitation,
+  InboxInvitationStatus,
+  InboxQuery,
+  InvitationQuota,
+  InvitationStatus,
+  SentInvitationsQuery,
+} from "@/types";
 
-export const INVITATION_STATUSES: readonly InvitationStatus[] = ["invited", "accepted", "declined"];
+export const INVITATION_STATUSES: readonly InvitationStatus[] = ["invited", "accepted", "declined", "cancelled"];
+
+export const INBOX_INVITATION_STATUSES: readonly InboxInvitationStatus[] = ["invited", "accepted", "declined"];
 
 export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
   invited: "Waiting for answer",
   accepted: "Accepted",
   declined: "Declined",
+  cancelled: "Cancelled",
 };
+
+export const MAX_INVITATION_SENDS = 2;
 
 export const INVITATIONS_PAGE_SIZE = 10;
 
@@ -43,7 +55,7 @@ export function sentInvitationsHref(query: Partial<SentInvitationsQuery>): strin
 
 export function parseInboxQuery(params: RawSearchParams): InboxQuery {
   return {
-    status: pick(params.status, INVITATION_STATUSES),
+    status: pick(params.status, INBOX_INVITATION_STATUSES),
     vacancyId: objectId(params.vacancyId),
     focus: objectId(params.focus),
     page: positiveInt(params.page, PAGE_MAX) ?? 1,

@@ -2,9 +2,10 @@
 
 import { SendIcon } from "lucide-react";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
+import { usePaymentRecheck } from "@/components/dashboard/usePaymentRecheck";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { NO_CASH_REFUNDS, spendFor } from "@/lib/vacancyLifecycle";
+import { isPaymentProcessing, NO_CASH_REFUNDS, spendFor } from "@/lib/vacancyLifecycle";
 import { submitVacancy } from "@/services/vacancies.service";
 import type { CurrentCompany } from "@/types";
 
@@ -12,11 +13,16 @@ interface SubmitVacancyProps {
   vacancy: { id: string; title: string };
   account: Pick<CurrentCompany, "approved" | "plan" | "credits" | "purchasedCredits">;
   onSubmitted: () => void;
+  onPaymentProcessing: () => void;
 }
 
-export function SubmitVacancy({ vacancy, account, onSubmitted }: SubmitVacancyProps) {
+export function SubmitVacancy({ vacancy, account, onSubmitted, onPaymentProcessing }: SubmitVacancyProps) {
   const { refresh } = useAuth();
   const spend = spendFor(account);
+  const recheck = usePaymentRecheck(() => {
+    void refresh().catch(() => undefined);
+    onPaymentProcessing();
+  });
 
   if (!account.approved) {
     return (
@@ -57,7 +63,13 @@ export function SubmitVacancy({ vacancy, account, onSubmitted }: SubmitVacancyPr
       cancelLabel="Not yet"
       icon={<SendIcon aria-hidden />}
       onConfirm={async () => {
-        const result = await submitVacancy(vacancy.id);
+        let result: Awaited<ReturnType<typeof submitVacancy>>;
+        try {
+          result = await submitVacancy(vacancy.id);
+        } catch (caught: unknown) {
+          if (isPaymentProcessing(caught)) recheck();
+          throw caught;
+        }
         if (result.status === "paymentRequired") {
           window.location.assign(result.checkoutUrl);
           return;

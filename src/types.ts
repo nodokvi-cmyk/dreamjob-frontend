@@ -579,7 +579,7 @@ export interface MyPublicationsQuery {
   page: number;
 }
 
-export type InvitationState = "none" | "invited" | "accepted" | "declined";
+export type InvitationState = "none" | "invited" | "accepted" | "declined" | "cancelled";
 
 export interface PublicationAuthor {
   id: string;
@@ -607,11 +607,13 @@ export interface PublicationCard {
   createdAt: string;
   author: PublicationAuthor | null;
   invitation: InvitationState;
+  canInvite: boolean;
 }
 
 export interface CompanyPublication extends Omit<Publication, "rejectionReason" | "timerPaused" | "updatedAt"> {
   author: PublicationAuthor | null;
   invitation: InvitationState;
+  canInvite: boolean;
   invitationId: string | null;
   invitedVacancyId: string | null;
 }
@@ -631,14 +633,17 @@ export interface BoardQuery {
   page: number;
 }
 
-export type InvitationStatus = "invited" | "accepted" | "declined";
+export type InvitationStatus = "invited" | "accepted" | "declined" | "cancelled";
+
+export type InboxInvitationStatus = Exclude<InvitationStatus, "cancelled">;
 
 export interface Invitation {
   id: string;
   status: InvitationStatus;
+  sends: number;
   message: string;
   publication: string;
-  vacancy: string;
+  vacancy: string | null;
   company: string;
   applicationId: string | null;
   createdAt: string;
@@ -653,7 +658,7 @@ export interface SentInvitation extends Omit<Invitation, "vacancy" | "publicatio
 
 export interface InboxInvitation {
   id: string;
-  status: InvitationStatus;
+  status: InboxInvitationStatus;
   message: string;
   createdAt: string;
   respondedAt: string | null;
@@ -681,7 +686,7 @@ export interface SentInvitationsQuery {
 }
 
 export interface InboxQuery {
-  status?: InvitationStatus;
+  status?: InboxInvitationStatus;
   vacancyId?: string;
   focus?: string;
   page: number;

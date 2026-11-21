@@ -31,6 +31,7 @@ export const INVITATION_LABELS: Record<Exclude<InvitationState, "none">, string>
   invited: "Invited",
   accepted: "Accepted",
   declined: "Declined",
+  cancelled: "Cancelled",
 };
 
 export const NOT_APPROVED = "Company is not approved";

@@ -29,27 +29,31 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/vacancy";
 import { invitePublication } from "@/services/invitations.service";
 import { listMyVacancies } from "@/services/vacancies.service";
-import type { InvitationQuota } from "@/types";
+import type { InvitationQuota, InvitationState } from "@/types";
 
 const VACANCY_TAKE = 30;
 
 interface InviteButtonProps {
-  publication: { id: string; title: string };
+  publication: { id: string; title: string; invitation: InvitationState };
   quota: InvitationQuota | null;
   onInvited: () => void;
+  excludeVacancyId?: string | null;
   size?: "sm" | "default";
 }
 
-export function InviteButton({ publication, quota, onInvited, size = "sm" }: InviteButtonProps) {
+export function InviteButton({ publication, quota, onInvited, excludeVacancyId = null, size = "sm" }: InviteButtonProps) {
   const [vacancyId, setVacancyId] = useState("");
   const [message, setMessage] = useState("");
   const out = quota !== null && quotaLeft(quota) === 0;
+  const again = publication.invitation !== "none";
+  const label = again ? "Invite again" : "Invite";
+  const ariaLabel = `${label}: ${publication.title}`;
 
   if (out) {
     return (
-      <Button type="button" size={size} disabled aria-label={`Invite ${publication.title}`} title="Monthly invitation limit reached">
+      <Button type="button" size={size} disabled aria-label={ariaLabel} title="Monthly invitation limit reached">
         <MailIcon aria-hidden />
-        Invite
+        {label}
       </Button>
     );
   }
@@ -57,9 +61,9 @@ export function InviteButton({ publication, quota, onInvited, size = "sm" }: Inv
   return (
     <ConfirmDialog
       trigger={
-        <Button type="button" size={size} aria-label={`Invite ${publication.title}`}>
+        <Button type="button" size={size} aria-label={ariaLabel}>
           <MailIcon aria-hidden />
-          Invite
+          {label}
         </Button>
       }
       onOpenChange={(open) => {
@@ -67,10 +71,12 @@ export function InviteButton({ publication, quota, onInvited, size = "sm" }: Inv
         setVacancyId("");
         setMessage("");
       }}
-      title="Invite to apply"
+      title={again ? "Invite again" : "Invite to apply"}
       description={
         <InviteFields
           title={publication.title}
+          state={publication.invitation}
+          excludeVacancyId={excludeVacancyId}
           quota={quota}
           vacancyId={vacancyId}
           message={message}
@@ -96,6 +102,8 @@ export function InviteButton({ publication, quota, onInvited, size = "sm" }: Inv
 
 interface InviteFieldsProps {
   title: string;
+  state: InvitationState;
+  excludeVacancyId: string | null;
   quota: InvitationQuota | null;
   vacancyId: string;
   message: string;
@@ -103,12 +111,30 @@ interface InviteFieldsProps {
   onMessage: (text: string) => void;
 }
 
-function InviteFields({ title, quota, vacancyId, message, onVacancy, onMessage }: InviteFieldsProps) {
+function againNote(state: InvitationState): string | null {
+  if (state === "declined") {
+    return "They declined your earlier invitation, so this one must be for a different vacancy. It is the last invitation you can send to this publication.";
+  }
+  if (state === "none") return null;
+  return "This is the last invitation you can send to this publication.";
+}
+
+function InviteFields({
+  title,
+  state: invitation,
+  excludeVacancyId,
+  quota,
+  vacancyId,
+  message,
+  onVacancy,
+  onMessage,
+}: InviteFieldsProps) {
   const id = useId();
-  const { state } = useLoad("invite-vacancies", async (signal) => {
+  const { state } = useLoad(`invite-vacancies-${excludeVacancyId ?? "all"}`, async (signal) => {
     const page = await listMyVacancies({ status: "published" }, VACANCY_TAKE, signal);
-    return page.items.filter((vacancy) => vacancy.status === "published");
+    return page.items.filter((vacancy) => vacancy.status === "published" && vacancy.id !== excludeVacancyId);
   });
+  const note = againNote(invitation);
   const words = countWords(message);
   const chosen = state.status === "ready" ? state.data.find((vacancy) => vacancy.id === vacancyId) : undefined;
 
@@ -119,6 +145,7 @@ function InviteFields({ title, quota, vacancyId, message, onVacancy, onMessage }
         If they accept, their application arrives with the CV and cover letter of this publication, and you see their
         email and phone.
       </p>
+      {note ? <p>{note}</p> : null}
       {quota ? <p className="transit-label text-[0.85rem] text-foreground">{quotaText(quota)}</p> : null}
       {state.status === "loading" ? (
         <Skeleton className="h-11 w-full" />

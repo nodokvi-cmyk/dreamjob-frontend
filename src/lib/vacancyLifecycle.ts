@@ -1,9 +1,18 @@
 import { PLAN_INFO } from "@/lib/billing";
+import { ApiError } from "@/services/api";
 import type { CurrentCompany, OwnVacancy } from "@/types";
 
 type LifecycleVacancy = Pick<OwnVacancy, "status" | "firstPublishedAt">;
 
 export const NO_CASH_REFUNDS = "Credits and payments are not refunded in cash.";
+
+const PAYMENT_PROCESSING = "Payment is being processed, try again in a moment";
+
+export const PAYMENT_RECHECK_MS = 2000;
+
+export function isPaymentProcessing(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 409 && error.message === PAYMENT_PROCESSING;
+}
 
 export function wasPublished(vacancy: Pick<OwnVacancy, "firstPublishedAt">): boolean {
   return Boolean(vacancy.firstPublishedAt);

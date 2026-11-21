@@ -4,6 +4,12 @@ export const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 
 export const MAX_UPLOAD_LABEL = `${MAX_UPLOAD_MB} MB`;
 
+export const MAX_PDF_MB = 2;
+
+export const MAX_PDF_BYTES = MAX_PDF_MB * 1024 * 1024;
+
+export const MAX_PDF_LABEL = `${MAX_PDF_MB} MB`;
+
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export const IMAGE_ACCEPT = IMAGE_TYPES.join(",");
@@ -16,21 +22,21 @@ export function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function sizeProblem(file: File): string | null {
+function sizeProblem(file: File, maxBytes: number, label: string): string | null {
   if (file.size === 0) return "That file is empty. Choose another one.";
-  if (file.size > MAX_UPLOAD_BYTES) {
-    return `That file is ${formatBytes(file.size)}. The limit is ${MAX_UPLOAD_LABEL}.`;
+  if (file.size > maxBytes) {
+    return `That file is ${formatBytes(file.size)}. The limit is ${label}.`;
   }
   return null;
 }
 
 export function imageProblem(file: File): string | null {
   if (!IMAGE_TYPES.includes(file.type)) return "Choose a JPEG, PNG or WebP image.";
-  return sizeProblem(file);
+  return sizeProblem(file, MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL);
 }
 
 export function pdfProblem(file: File): string | null {
   const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
   if (!isPdf) return "Choose a PDF file.";
-  return sizeProblem(file);
+  return sizeProblem(file, MAX_PDF_BYTES, MAX_PDF_LABEL);
 }

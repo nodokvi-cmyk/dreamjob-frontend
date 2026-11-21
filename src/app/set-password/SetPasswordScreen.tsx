@@ -14,11 +14,12 @@ import { homeFor } from "@/lib/account";
 import { formError, problem, type FormError } from "@/lib/errors";
 import { passwordProblem } from "@/lib/password";
 import { redirectTarget } from "@/lib/routes";
+import { ApiError } from "@/services/api";
 import { setCompanyPassword } from "@/services/companies.service";
 import { setUserPassword } from "@/services/users.service";
 
 export function SetPasswordScreen() {
-  const { session, refresh } = useAuth();
+  const { session, refresh, signOut } = useAuth();
   const router = useRouter();
   const params = useSearchParams();
   const [password, setPassword] = useState("");
@@ -53,6 +54,11 @@ export function SetPasswordScreen() {
       else await setUserPassword(session.accountId, input);
       await refresh();
     } catch (reason: unknown) {
+      if (reason instanceof ApiError && reason.status === 404) {
+        signOut();
+        return;
+      }
+      if (reason instanceof ApiError && reason.status === 409) await refresh().catch(() => undefined);
       setPending(false);
       setError(formError(reason));
     }

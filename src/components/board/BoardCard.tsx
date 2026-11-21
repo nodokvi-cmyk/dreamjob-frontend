@@ -25,7 +25,7 @@ export function InvitationLabel({ state, className }: { state: InvitationState; 
         "inline-flex h-7 w-fit items-center gap-2 rounded-full border bg-card px-3 transit-label text-[0.8rem] leading-none",
         state === "accepted" && "border-line-green/60 text-success-ink",
         state === "invited" && "border-line-cobalt/60 text-foreground",
-        state === "declined" && "border-border text-muted-foreground",
+        (state === "declined" || state === "cancelled") && "border-border text-muted-foreground",
         className,
       )}
     >

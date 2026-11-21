@@ -169,7 +169,7 @@ function Board({ admin }: { admin: boolean }) {
                       publication={publication}
                       href={admin ? adminPublicationHref(publication.id) : publicationHref(publication.id)}
                       action={
-                        !admin && publication.invitation === "none" ? (
+                        !admin && publication.canInvite ? (
                           <InviteButton
                             publication={publication}
                             quota={quotaValue}

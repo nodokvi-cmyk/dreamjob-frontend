@@ -15,7 +15,14 @@ import { ListMessage, PastLastPage, ResultsError } from "@/components/vacancies/
 import { Pagination } from "@/components/vacancies/Pagination";
 import { applicantsHref } from "@/lib/applicantQuery";
 import { formError } from "@/lib/errors";
-import { INVITATIONS_PAGE_SIZE, parseSentQuery, quotaText, sentInvitationsHref } from "@/lib/invitations";
+import {
+  INVITATION_STATUSES,
+  INVITATIONS_PAGE_SIZE,
+  MAX_INVITATION_SENDS,
+  parseSentQuery,
+  quotaText,
+  sentInvitationsHref,
+} from "@/lib/invitations";
 import { ownVacancyHref, publicationHref, routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { formatDate, formatDateTime } from "@/lib/vacancy";
@@ -60,6 +67,7 @@ export function SentInvitationsScreen() {
             ) : null}
           </div>
           <InvitationStatusLine
+            statuses={INVITATION_STATUSES}
             active={query.status}
             href={(status) => sentInvitationsHref({ ...query, status, page: 1 })}
           />
@@ -179,6 +187,11 @@ function SentRow({
     <article className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-5 sm:px-5">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <InvitationStatusBadge status={invitation.status} />
+        {invitation.sends >= MAX_INVITATION_SENDS ? (
+          <span className="inline-flex h-7 items-center rounded-full border border-border px-2.5 transit-label text-[0.75rem] leading-none text-muted-foreground">
+            Sent again
+          </span>
+        ) : null}
         <span className="text-sm text-muted-foreground">
           Sent <time dateTime={invitation.createdAt}>{formatDateTime(invitation.createdAt)}</time>
           {invitation.respondedAt ? (

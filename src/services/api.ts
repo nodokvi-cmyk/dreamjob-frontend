@@ -49,12 +49,17 @@ function messagesFrom(data: unknown): string[] {
 
 const COOLDOWN_MESSAGE = /^Wait \d+ seconds?\b/;
 
+const DEFAULT_SERVER_ERROR = "Internal server error";
+
 function messageFrom(messages: string[], status: number): string {
   if (status === 429) {
     const cooldown = messages.find((message) => COOLDOWN_MESSAGE.test(message));
     return cooldown ? `${cooldown}.` : TOO_MANY_MESSAGE;
   }
-  if (status >= 500) return "Something went wrong on our side. Try again soon.";
+  if (status >= 500) {
+    const sentence = messages.find((message) => message !== DEFAULT_SERVER_ERROR);
+    return sentence ?? "Something went wrong on our side. Try again soon.";
+  }
   if (messages.length > 0) return messages.join(". ");
   return `Request failed (${status})`;
 }
@@ -82,10 +87,25 @@ export function networkError(): ApiError {
   return new ApiError(NETWORK_MESSAGE, 0);
 }
 
+export const PASSWORD_SETUP_REQUIRED = "PASSWORD_SETUP_REQUIRED";
+
+const passwordSetupListeners = new Set<() => void>();
+
+export function onPasswordSetupRequired(listener: () => void): () => void {
+  passwordSetupListeners.add(listener);
+  return () => {
+    passwordSetupListeners.delete(listener);
+  };
+}
+
 export function apiErrorFrom(status: number, data: unknown): ApiError {
   const messages = messagesFrom(data);
   const details = status === 400 && messages.length > 1 ? messages : [];
-  return new ApiError(messageFrom(messages, status), status, codeFrom(data), details);
+  const code = codeFrom(data);
+  if (status === 403 && code === PASSWORD_SETUP_REQUIRED) {
+    for (const listener of passwordSetupListeners) listener();
+  }
+  return new ApiError(messageFrom(messages, status), status, code, details);
 }
 
 export function currentToken(token: string | null | undefined): string | null {

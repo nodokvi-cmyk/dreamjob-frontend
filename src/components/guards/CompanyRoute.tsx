@@ -8,7 +8,7 @@ const COMPANY_ONLY: readonly AuthRole[] = ["company"];
 
 export function CompanyRoute({ children }: { children: ReactNode }) {
   return (
-    <ProtectedRoute roles={COMPANY_ONLY} redirectOtherRoles>
+    <ProtectedRoute roles={COMPANY_ONLY} redirectOtherRoles signInAccount="company">
       {children}
     </ProtectedRoute>
   );
