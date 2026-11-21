@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+*.spec.ts
+/my-pattern/
 
 # next.js
 /.next/
