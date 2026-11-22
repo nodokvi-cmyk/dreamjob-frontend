@@ -2,7 +2,7 @@
 
 import { Google_Sans } from "next/font/google";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useGoogleReturn } from "@/components/auth/useGoogleReturn";
 import { FormAlert } from "@/components/form/FormAlert";
 import { googleReturn } from "@/lib/authDraft";
@@ -29,9 +29,15 @@ function GoogleButtonInner({ accountType }: GoogleButtonProps) {
   const returned = useGoogleReturn(accountType);
   const error = returned && returned.account === accountType ? returned.error : null;
 
+  const alertRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     googleReturn.save(accountType, next);
   }, [accountType, next]);
+
+  useEffect(() => {
+    if (error) alertRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [error]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,7 +61,16 @@ function GoogleButtonInner({ accountType }: GoogleButtonProps) {
       <p className="text-center text-sm text-muted-foreground">
         Google opens its own page, then brings you back here.
       </p>
-      {error ? <FormAlert tone="error" message={error.message} details={error.details} /> : null}
+      {error ? (
+        <div ref={alertRef} className="scroll-mt-24">
+          <FormAlert
+            tone="error"
+            message={error.message}
+            details={error.details}
+            className="border-destructive bg-destructive/10"
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
