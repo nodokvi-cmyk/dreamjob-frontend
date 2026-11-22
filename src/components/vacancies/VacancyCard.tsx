@@ -3,6 +3,7 @@
 import { BriefcaseBusinessIcon, MapPinIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { ApplyConfirm } from "@/components/vacancies/apply/ApplyConfirm";
 import { ApplyButton, type ApplyKind } from "@/components/vacancies/ApplyButton";
 import { BookmarkButton } from "@/components/vacancies/BookmarkButton";
@@ -53,7 +54,9 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
           "has-[[data-stretch]:focus-visible]:border-ring has-[[data-stretch]:focus-visible]:bg-card has-[[data-stretch]:focus-visible]:ring-3 has-[[data-stretch]:focus-visible]:ring-ring/30",
         )}
       >
-        <div className="flex min-w-0 flex-col gap-2.5">
+        <div className="flex min-w-0 gap-4">
+          <AccountPhoto src={vacancy.logoUrl} kind="company" alt="" size="row" fit="contain" className="mt-0.5" />
+          <div className="flex min-w-0 flex-1 flex-col gap-2.5">
           <Heading className="font-display text-[1.5rem] leading-[1.1] font-semibold tracking-[-0.005em] break-words text-foreground">
             {unavailable ? (
               <span className="text-muted-foreground">{vacancy.title}</span>
@@ -78,6 +81,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
               href: companyHref(vacancy.company),
             }}
             size="sm"
+            logo={false}
           />
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.95rem] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
@@ -95,6 +99,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
               {vacancy.excerpt}
             </p>
           ) : null}
+          </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-border pt-3 sm:flex-col sm:flex-nowrap sm:items-end sm:justify-start sm:gap-2 sm:border-t-0 sm:pt-0.5 sm:text-right">
           <div className="flex flex-col gap-1.5 sm:items-end">

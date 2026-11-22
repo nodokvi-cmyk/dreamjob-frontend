@@ -14,6 +14,7 @@ interface VacancyEmployerProps {
   employer: EmployerInfo;
   size: "sm" | "lg";
   tone?: "surface" | "enamel";
+  logo?: boolean;
   className?: string;
 }
 
@@ -28,7 +29,7 @@ export function CompanyWarning({ tone = "surface", className }: { tone?: "surfac
   );
 }
 
-export function VacancyEmployer({ employer, size, tone = "surface", className }: VacancyEmployerProps) {
+export function VacancyEmployer({ employer, size, tone = "surface", logo = true, className }: VacancyEmployerProps) {
   const name = employer.companyName.trim() || "Company";
   const linked = employer.approved && employer.href;
   const nameClass = cn(
@@ -40,13 +41,15 @@ export function VacancyEmployer({ employer, size, tone = "surface", className }:
   return (
     <span className={cn("flex min-w-0 flex-col gap-1.5", className)}>
       <span className={cn("flex min-w-0 items-center", size === "sm" ? "gap-2" : "gap-3.5")}>
-        <AccountPhoto
-          src={employer.logoUrl}
-          kind="company"
-          alt=""
-          size={size === "sm" ? "xs" : "tile"}
-          fit="contain"
-        />
+        {logo ? (
+          <AccountPhoto
+            src={employer.logoUrl}
+            kind="company"
+            alt=""
+            size={size === "sm" ? "xs" : "md"}
+            fit="contain"
+          />
+        ) : null}
         {linked ? (
           <Link
             href={linked}
