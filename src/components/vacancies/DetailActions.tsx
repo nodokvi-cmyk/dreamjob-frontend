@@ -2,7 +2,7 @@
 
 import { ApplyButton } from "@/components/vacancies/ApplyButton";
 import { focusApplySection } from "@/components/vacancies/apply/ApplyPanel";
-import { BookmarkHeart } from "@/components/vacancies/BookmarkHeart";
+import { BookmarkButton } from "@/components/vacancies/BookmarkButton";
 import { useViewerMarks } from "@/components/vacancies/ViewerMarks";
 import { vacancyHref } from "@/lib/routes";
 import type { VacancyDetail } from "@/types";
@@ -33,7 +33,7 @@ export function DetailActions({ vacancy, now }: { vacancy: DetailTarget; now: nu
           size="default"
           className="flex-1"
         />
-        <BookmarkHeart vacancyId={vacancy.id} title={vacancy.title} bookmarked={marks.isBookmarked} tone="enamel" />
+        <BookmarkButton vacancyId={vacancy.id} title={vacancy.title} bookmarked={marks.isBookmarked} tone="enamel" />
       </div>
     </div>
   );

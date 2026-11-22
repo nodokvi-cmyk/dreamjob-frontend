@@ -92,7 +92,7 @@ export function BookmarksScreen() {
             ) : (
               <ListMessage
                 title="No bookmarks yet"
-                body="Tap the heart on any vacancy to save it here for later."
+                body="Tap the bookmark icon on any vacancy to save it here for later."
                 action={
                   <Button asChild size="lg">
                     <Link href={routes.vacancies}>Browse vacancies</Link>

@@ -8,7 +8,7 @@ import { addBookmark, removeBookmark } from "@/services/bookmarks.service";
 
 const ERROR_MS = 5000;
 
-interface BookmarkHeartProps {
+interface BookmarkButtonProps {
   vacancyId: string;
   title: string;
   bookmarked: boolean;
@@ -17,7 +17,7 @@ interface BookmarkHeartProps {
   className?: string;
 }
 
-export function BookmarkHeart({ vacancyId, title, bookmarked, onChange, tone = "surface", className }: BookmarkHeartProps) {
+export function BookmarkButton({ vacancyId, title, bookmarked, onChange, tone = "surface", className }: BookmarkButtonProps) {
   const { viewer, ready, update } = useViewerMarks();
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);

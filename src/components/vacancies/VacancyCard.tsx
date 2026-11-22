@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ApplyConfirm } from "@/components/vacancies/apply/ApplyConfirm";
 import { ApplyButton, type ApplyKind } from "@/components/vacancies/ApplyButton";
-import { BookmarkHeart } from "@/components/vacancies/BookmarkHeart";
+import { BookmarkButton } from "@/components/vacancies/BookmarkButton";
 import { DeadlineStop, TONE_RING } from "@/components/vacancies/DeadlineStop";
 import { VacancyEmployer } from "@/components/vacancies/VacancyEmployer";
 import { useViewerMarks } from "@/components/vacancies/ViewerMarks";
@@ -102,7 +102,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
             <DeadlineStop vacancy={vacancy} now={now} />
           </div>
           <div className="flex items-center gap-2 sm:mt-auto sm:pt-2">
-            <BookmarkHeart
+            <BookmarkButton
               vacancyId={vacancy.id}
               title={vacancy.title}
               bookmarked={marks.isBookmarked}
