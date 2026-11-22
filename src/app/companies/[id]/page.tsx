@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { ResultsError } from "@/components/vacancies/ListStates";
 import { VacancyList } from "@/components/vacancies/VacancyList";
 import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
-import { routes } from "@/lib/routes";
 import { canonicalFor, openGraphFor } from "@/lib/site";
 import { summary } from "@/lib/vacancy";
 import { vacanciesHref } from "@/lib/vacancyQuery";
@@ -186,40 +185,25 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
               Open vacancies
             </h2>
             {preview && preview.items.length > 0 ? (
-              <>
-                <ViewerMarksProvider source={{ kind: "list", query: previewQuery(company.id), take: PREVIEW_COUNT }}>
-                  <VacancyList vacancies={preview.items} now={preview.now} headingLevel="h3" />
-                </ViewerMarksProvider>
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild variant="outline" size="lg" className="w-fit">
-                    <Link href={vacanciesHref({ companyId: company.id })}>
-                      See all vacancies
-                      <ArrowRightIcon aria-hidden />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg" className="w-fit">
-                    <Link href={pastHref}>Past vacancies</Link>
-                  </Button>
-                </div>
-              </>
+              <ViewerMarksProvider source={{ kind: "list", query: previewQuery(company.id), take: PREVIEW_COUNT }}>
+                <VacancyList vacancies={preview.items} now={preview.now} headingLevel="h3" />
+              </ViewerMarksProvider>
             ) : (
-              <>
-                <p className="text-muted-foreground">
-                  {company.openVacancies > 0 ? "The vacancies didn't load just now." : "No open vacancies right now."}
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild variant="outline" size="lg" className="w-fit">
-                    <Link href={routes.vacancies}>
-                      Browse all vacancies
-                      <ArrowRightIcon aria-hidden />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg" className="w-fit">
-                    <Link href={pastHref}>Past vacancies</Link>
-                  </Button>
-                </div>
-              </>
+              <p className="text-muted-foreground">
+                {company.openVacancies > 0 ? "The vacancies didn't load just now." : "No open vacancies right now."}
+              </p>
             )}
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="outline" size="lg" className="w-fit">
+                <Link href={vacanciesHref({ companyId: company.id })}>
+                  See all vacancies
+                  <ArrowRightIcon aria-hidden />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="w-fit">
+                <Link href={pastHref}>Past vacancies</Link>
+              </Button>
+            </div>
           </section>
         </div>
       </div>
