@@ -33,6 +33,8 @@ import {
   CURRENCIES,
   EMPLOYMENT_TYPE_LABELS,
   EMPLOYMENT_TYPES,
+  PAST_SORT_LABELS,
+  PAST_SORTS,
   SORT_LABELS,
   VACANCY_SORTS,
   WORK_MODE_LABELS,
@@ -44,6 +46,7 @@ import {
   SALARY_MAX,
   activeFilters,
   clearedQuery,
+  isPastQuery,
   type FilterKey,
 } from "@/lib/vacancyQuery";
 import type { VacancyQuery } from "@/types";
@@ -353,6 +356,31 @@ function ClearAll({
 export function SortSelect({ query }: { query: VacancyQuery }) {
   const { apply } = useVacancySearch();
   const id = useId();
+  if (isPastQuery(query)) {
+    const current = query.sort === "-date" ? "-date" : "-deadline";
+    return (
+      <div className="flex items-center gap-2.5">
+        <label htmlFor={id} className="transit-label text-[0.8rem] whitespace-nowrap text-muted-foreground">
+          Sort
+        </label>
+        <Select
+          value={current}
+          onValueChange={(value) => apply({ sort: value === "-date" ? "-date" : undefined })}
+        >
+          <SelectTrigger id={id} size="sm" className="min-w-[10.5rem]">
+            <SelectValue>{PAST_SORT_LABELS[current]}</SelectValue>
+          </SelectTrigger>
+          <SelectContent position="popper" align="end">
+            {PAST_SORTS.map((sort) => (
+              <SelectItem key={sort} value={sort}>
+                {PAST_SORT_LABELS[sort]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
   return (
     <div className="flex items-center gap-2.5">
       <label htmlFor={id} className="transit-label text-[0.8rem] whitespace-nowrap text-muted-foreground">

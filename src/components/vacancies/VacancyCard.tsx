@@ -34,6 +34,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
   });
   const Heading = headingLevel;
   const tone = deadlineInfo(vacancy, now).tone;
+  const ended = tone === "ended";
   const href = vacancyHref(vacancy.id);
   const unavailable = vacancy.status === "unavailable";
 
@@ -104,7 +105,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-border pt-3 sm:flex-col sm:flex-nowrap sm:items-end sm:justify-start sm:gap-2 sm:border-t-0 sm:pt-0.5 sm:text-right">
           <div className="flex flex-col gap-1.5 sm:items-end">
-            <Salary range={vacancy} className="text-[1.45rem] text-foreground" />
+            <Salary range={vacancy} className={cn("text-[1.45rem]", ended ? "text-muted-foreground" : "text-foreground")} />
             <DeadlineStop vacancy={vacancy} now={now} />
           </div>
           <div className="flex items-center gap-2 sm:mt-auto sm:pt-2">
@@ -114,13 +115,15 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
               bookmarked={marks.isBookmarked}
               onChange={onBookmarkChange ? (bookmarked) => onBookmarkChange(vacancy.id, bookmarked) : undefined}
             />
-            <ApplyButton
-              vacancy={vacancy}
-              marks={marks}
-              now={now}
-              detailHref={href}
-              onApply={setConfirm}
-            />
+            {ended ? null : (
+              <ApplyButton
+                vacancy={vacancy}
+                marks={marks}
+                now={now}
+                detailHref={href}
+                onApply={setConfirm}
+              />
+            )}
           </div>
         </div>
       </div>

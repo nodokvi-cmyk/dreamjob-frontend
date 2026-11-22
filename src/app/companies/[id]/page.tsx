@@ -86,6 +86,7 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
   const name = companyName(company);
   const preview = company.openVacancies > 0 ? await loadPreview(company.id) : null;
   const website = company.website.trim();
+  const pastHref = vacanciesHref({ companyId: company.id, period: "past" });
 
   return (
     <article className="flex flex-1 flex-col">
@@ -189,24 +190,37 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
                 <ViewerMarksProvider source={{ kind: "list", query: previewQuery(company.id), take: PREVIEW_COUNT }}>
                   <VacancyList vacancies={preview.items} now={preview.now} headingLevel="h3" />
                 </ViewerMarksProvider>
-                <Button asChild variant="outline" size="lg" className="w-fit">
-                  <Link href={vacanciesHref({ companyId: company.id })}>
-                    See all vacancies
-                    <ArrowRightIcon aria-hidden />
-                  </Link>
-                </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild variant="outline" size="lg" className="w-fit">
+                    <Link href={vacanciesHref({ companyId: company.id })}>
+                      See all vacancies
+                      <ArrowRightIcon aria-hidden />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="w-fit">
+                    <Link href={pastHref}>Past vacancies</Link>
+                  </Button>
+                </div>
               </>
             ) : (
               <>
                 <p className="text-muted-foreground">
                   {company.openVacancies > 0 ? "The vacancies didn't load just now." : "No open vacancies right now."}
                 </p>
-                <Link
-                  href={routes.vacancies}
-                  className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
-                >
-                  Browse all vacancies
-                </Link>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <Link
+                    href={routes.vacancies}
+                    className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
+                  >
+                    Browse all vacancies
+                  </Link>
+                  <Link
+                    href={pastHref}
+                    className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
+                  >
+                    Past vacancies
+                  </Link>
+                </div>
               </>
             )}
           </section>

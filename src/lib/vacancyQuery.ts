@@ -5,6 +5,7 @@ import {
   DEFAULT_SORT,
   EMPLOYMENT_TYPE_LABELS,
   EMPLOYMENT_TYPES,
+  PAST_SORTS,
   VACANCY_SORTS,
   formatMoney,
   VACANCY_STATUSES,
@@ -46,13 +47,20 @@ export function positiveInt(value: string | string[] | undefined, max: number): 
   return parsed >= 1 && parsed <= max ? parsed : undefined;
 }
 
+export function isPastQuery(query: VacancyQuery): boolean {
+  return query.period === "past" && query.companyId !== undefined;
+}
+
 export function parseVacancyQuery(params: RawSearchParams): VacancyQuery {
   const category = text(params.category, CATEGORY_MAX);
-  const sort = pick(params.sort, VACANCY_SORTS);
   const page = positiveInt(params.page, PAGE_MAX);
-  const companyId = first(params.companyId).trim().toLowerCase();
+  const rawCompanyId = first(params.companyId).trim().toLowerCase();
+  const companyId = COMPANY_ID.test(rawCompanyId) ? rawCompanyId : undefined;
+  const past = companyId !== undefined && first(params.period) === "past";
+  const sort = past ? pick(params.sort, PAST_SORTS) : pick(params.sort, VACANCY_SORTS);
   return {
-    companyId: COMPANY_ID.test(companyId) ? companyId : undefined,
+    companyId,
+    period: past ? "past" : undefined,
     q: text(params.q, QUERY_MAX),
     category: category ? (matchCategory(category) ?? category) : undefined,
     location: text(params.location, LOCATION_MAX),
@@ -60,14 +68,20 @@ export function parseVacancyQuery(params: RawSearchParams): VacancyQuery {
     employmentType: pick(params.employmentType, EMPLOYMENT_TYPES),
     salaryMin: positiveInt(params.salaryMin, SALARY_MAX),
     currency: pick(params.currency, CURRENCIES),
-    sort: sort === DEFAULT_SORT ? undefined : sort,
+    sort: past ? (sort === "-date" ? sort : undefined) : sort === DEFAULT_SORT ? undefined : sort,
     page: page === 1 ? undefined : page,
   };
+}
+
+function sortParam(query: VacancyQuery): string | undefined {
+  if (isPastQuery(query)) return query.sort === "-date" ? query.sort : undefined;
+  return query.sort === DEFAULT_SORT ? undefined : query.sort;
 }
 
 export function queryParams(query: VacancyQuery): Record<string, string | undefined> {
   return {
     companyId: query.companyId,
+    period: isPastQuery(query) ? "past" : undefined,
     q: query.q,
     location: query.location,
     category: query.category,
@@ -75,7 +89,7 @@ export function queryParams(query: VacancyQuery): Record<string, string | undefi
     employmentType: query.employmentType,
     salaryMin: query.salaryMin === undefined ? undefined : String(query.salaryMin),
     currency: query.currency,
-    sort: query.sort === DEFAULT_SORT ? undefined : query.sort,
+    sort: sortParam(query),
     page: query.page === undefined || query.page <= 1 ? undefined : String(query.page),
   };
 }
@@ -89,7 +103,7 @@ export function apiSearch(query: VacancyQuery, take: number): string {
   for (const [key, value] of Object.entries(queryParams(query))) {
     if (value) params.set(key, value);
   }
-  params.set("sort", query.sort ?? DEFAULT_SORT);
+  if (!isPastQuery(query)) params.set("sort", query.sort ?? DEFAULT_SORT);
   params.set("take", String(take));
   return params.toString();
 }
@@ -187,9 +201,15 @@ export function withoutFilters(query: VacancyQuery, keys: FilterKey[]): VacancyQ
 }
 
 export function clearedQuery(query: VacancyQuery): VacancyQuery {
-  return { sort: query.sort, companyId: query.companyId };
+  return { sort: query.sort, companyId: query.companyId, period: query.period };
 }
 
 export function withoutCompany(query: VacancyQuery): VacancyQuery {
-  return { ...query, companyId: undefined, page: undefined };
+  return {
+    ...query,
+    companyId: undefined,
+    period: undefined,
+    sort: isPastQuery(query) ? undefined : query.sort,
+    page: undefined,
+  };
 }

@@ -49,7 +49,7 @@ export function Stars({ rating, size = "md", className }: StarsProps) {
     <span
       role="img"
       aria-label={ratingLabel(shown)}
-      className={cn("relative inline-flex shrink-0 align-middle", className)}
+      className={cn("relative inline-flex w-max shrink-0 align-middle", className)}
     >
       <span className="text-foreground/20">
         <Row size={size} />

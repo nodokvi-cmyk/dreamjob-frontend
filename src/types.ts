@@ -346,8 +346,11 @@ export interface OwnVacancyQuery {
   page?: number;
 }
 
+export type VacancyPeriod = "past";
+
 export interface VacancyQuery {
   companyId?: string;
+  period?: VacancyPeriod;
   q?: string;
   category?: string;
   location?: string;

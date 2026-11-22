@@ -70,6 +70,13 @@ export const SORT_LABELS: Record<VacancySort, string> = {
   "-deadline": "Closing latest",
 };
 
+export const PAST_SORTS = ["-deadline", "-date"] as const satisfies readonly VacancySort[];
+
+export const PAST_SORT_LABELS = {
+  "-deadline": "Ended recently",
+  "-date": "Posted newest",
+} as const satisfies Record<(typeof PAST_SORTS)[number], string>;
+
 const LOCALE = "en-GB";
 const TIME_ZONE = "Asia/Tbilisi";
 const DAY_MS = 86_400_000;

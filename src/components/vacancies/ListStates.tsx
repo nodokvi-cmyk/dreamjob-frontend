@@ -44,7 +44,28 @@ export function ListMessage({
   );
 }
 
-export function EmptyResults({ clearHref, filtered }: { clearHref: string; filtered: boolean }) {
+export function EmptyResults({
+  clearHref,
+  filtered,
+  past = false,
+}: {
+  clearHref: string;
+  filtered: boolean;
+  past?: boolean;
+}) {
+  if (past && !filtered) {
+    return (
+      <ListMessage
+        title="No past vacancies yet"
+        body="Closed and expired vacancies from this company appear here."
+        action={
+          <Button asChild size="lg">
+            <Link href={clearHref}>See open vacancies</Link>
+          </Button>
+        }
+      />
+    );
+  }
   return (
     <ListMessage
       title={filtered ? "No vacancies on this line" : "No vacancies yet"}
