@@ -15,9 +15,12 @@ export function OwnerBar({ vacancy, approved }: { vacancy: OwnVacancy; approved:
   const newApplicants = vacancy.newApplicants ?? 0;
 
   return (
-    <div className="border-b border-border bg-muted">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:px-6 lg:px-8">
-        <p className="transit-label text-[0.85rem] text-foreground">This is your vacancy</p>
+    <div className="border-b-2 border-line-cobalt/60 bg-line-cobalt/20">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 border-l-4 border-l-line-scarlet px-4 py-5 sm:px-6 lg:px-8">
+        <p className="flex items-center gap-3 font-display text-[1.35rem] leading-none font-bold tracking-[0.01em] text-foreground uppercase">
+          <span aria-hidden className="size-3 rounded-full bg-line-scarlet ring-4 ring-line-scarlet/30" />
+          This is your vacancy
+        </p>
         <div className="flex flex-wrap items-center gap-2">
           {wasPublished(vacancy) ? (
             <div className="flex items-center gap-1.5">
