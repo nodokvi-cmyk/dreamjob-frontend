@@ -79,7 +79,7 @@ export type BillingPlan = "payAsYouPublish" | "plus" | "elite";
 
 export type PaidPlan = Exclude<BillingPlan, "payAsYouPublish">;
 
-export type CompanySort = "vacancies" | "newest";
+export type CompanySort = "vacancies" | "fewest" | "rating" | "newest" | "oldest";
 
 export interface CompanyQuery {
   q?: string;

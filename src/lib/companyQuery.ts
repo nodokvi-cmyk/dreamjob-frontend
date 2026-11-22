@@ -12,13 +12,22 @@ import type { CompanyQuery, CompanySort } from "@/types";
 
 export const COMPANY_PAGE_SIZE = 10;
 
-export const COMPANY_SORTS = ["vacancies", "newest"] as const satisfies readonly CompanySort[];
+export const COMPANY_SORTS = [
+  "vacancies",
+  "fewest",
+  "rating",
+  "newest",
+  "oldest",
+] as const satisfies readonly CompanySort[];
 
 export const DEFAULT_COMPANY_SORT: CompanySort = "vacancies";
 
 export const COMPANY_SORT_LABELS: Record<CompanySort, string> = {
   vacancies: "Most vacancies",
+  fewest: "Fewest vacancies",
+  rating: "Top rated",
   newest: "Newest",
+  oldest: "Oldest",
 };
 
 export function parseCompanyQuery(params: RawSearchParams): CompanyQuery {

@@ -104,9 +104,9 @@ export default async function CompaniesPage({ searchParams }: PageProps<"/compan
                 </>
               )}
             </p>
-            <nav aria-label="Sort companies" className="flex items-center gap-2.5">
+            <nav aria-label="Sort companies" className="flex flex-wrap items-center gap-2.5">
               <span className="transit-label text-[0.8rem] text-muted-foreground">Sort</span>
-              <ul className="flex gap-1.5">
+              <ul className="flex flex-wrap gap-1.5">
                 {COMPANY_SORTS.map((option) => (
                   <li key={option}>
                     <Link
