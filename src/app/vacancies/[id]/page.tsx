@@ -38,8 +38,16 @@ function metaDescription(vacancy: VacancyDetail): string {
 export async function generateMetadata({ params }: PageProps<"/vacancies/[id]">): Promise<Metadata> {
   const { id } = await params;
   const loaded = await load(id);
-  if (loaded.kind === "missing") return { title: "Vacancy not found", robots: { index: false } };
-  if (loaded.kind === "failed") return { title: "Vacancy" };
+  if (loaded.kind === "missing") {
+    return {
+      title: "Vacancy not found",
+      robots: { index: false },
+      openGraph: openGraphFor(`/vacancies/${id}`, { title: "Vacancy not found" }),
+    };
+  }
+  if (loaded.kind === "failed") {
+    return { title: "Vacancy", openGraph: openGraphFor(`/vacancies/${id}`, { title: "Vacancy" }) };
+  }
   const { vacancy } = loaded;
   const description = metaDescription(vacancy);
   const photo = vacancy.photos[0];

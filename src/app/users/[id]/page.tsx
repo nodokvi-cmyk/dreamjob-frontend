@@ -8,7 +8,17 @@ import { PublicUserScreen } from "./PublicUserScreen";
 export async function generateMetadata({ params }: PageProps<"/users/[id]">): Promise<Metadata> {
   const { id } = await params;
   const user = await getPublicUserCard(id);
-  if (!user || user.isPrivate) return { title: "Profile", robots: { index: false } };
+  if (!user) {
+    return {
+      title: "Profile",
+      robots: { index: false },
+      openGraph: openGraphFor(`/users/${id}`, {
+        title: "Profile",
+        description: "A profile on GetDreamJob.",
+        images: [{ url: `/og/user/${id}`, width: 1200, height: 630, alt: "Profile on GetDreamJob" }],
+      }),
+    };
+  }
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "Profile";
   return {
     title: name,

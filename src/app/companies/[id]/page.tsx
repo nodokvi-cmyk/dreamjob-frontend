@@ -51,8 +51,16 @@ function companyName(company: PublicCompany): string {
 export async function generateMetadata({ params }: PageProps<"/companies/[id]">): Promise<Metadata> {
   const { id } = await params;
   const loaded = await load(id);
-  if (loaded.kind === "missing") return { title: "Company not found", robots: { index: false } };
-  if (loaded.kind === "failed") return { title: "Company" };
+  if (loaded.kind === "missing") {
+    return {
+      title: "Company not found",
+      robots: { index: false },
+      openGraph: openGraphFor(`/companies/${id}`, { title: "Company not found" }),
+    };
+  }
+  if (loaded.kind === "failed") {
+    return { title: "Company", openGraph: openGraphFor(`/companies/${id}`, { title: "Company" }) };
+  }
   const { company } = loaded;
   const description = company.description ? summary(company.description) : `${companyName(company)} on GetDreamJob.`;
   return {
