@@ -1,6 +1,6 @@
 "use client";
 
-import { HeartIcon } from "lucide-react";
+import { BookmarkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useViewerMarks } from "@/components/vacancies/ViewerMarks";
 import { cn } from "@/lib/utils";
@@ -67,7 +67,7 @@ export function BookmarkHeart({ vacancyId, title, bookmarked, onChange, tone = "
           bookmarked && "text-line-scarlet",
         )}
       >
-        <HeartIcon aria-hidden className={cn(bookmarked && "fill-current")} strokeWidth={2} />
+        <BookmarkIcon aria-hidden className={cn(bookmarked && "fill-current")} strokeWidth={2} />
       </button>
     </span>
   );

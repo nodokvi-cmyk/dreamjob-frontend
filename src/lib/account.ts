@@ -1,9 +1,22 @@
+import {
+  BookmarkIcon,
+  BriefcaseBusinessIcon,
+  Building2Icon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  MailIcon,
+  NewspaperIcon,
+  ShieldCheckIcon,
+  UsersIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { routes, withQuery } from "@/lib/routes";
 import type { AccountType, CurrentCompany, Session } from "@/types";
 
 export interface NavLink {
   href: string;
   label: string;
+  icon?: LucideIcon;
 }
 
 export const companySignUpHref = `${routes.signUp}?account=company`;
@@ -44,23 +57,24 @@ export function roleLabel(session: Session): string {
 }
 
 export function primaryNav(session: Session | null): NavLink[] {
-  const vacancies = { href: routes.vacancies, label: "Vacancies" };
-  if (!session) return [vacancies, { href: companySignUpHref, label: "For companies" }];
+  const vacancies = { href: routes.vacancies, label: "Vacancies", icon: BriefcaseBusinessIcon };
+  if (!session) return [vacancies, { href: companySignUpHref, label: "For companies", icon: Building2Icon }];
   if (session.accountRole === "company") {
     return [
       vacancies,
-      { href: routes.dashboard, label: "Dashboard" },
-      { href: routes.board, label: "Job seekers" },
+      { href: routes.dashboard, label: "Dashboard", icon: LayoutDashboardIcon },
+      { href: routes.board, label: "Job seekers", icon: UsersIcon },
     ];
   }
   if (session.accountRole === "admin") {
-    return [vacancies, { href: routes.admin, label: "Admin" }];
+    return [vacancies, { href: routes.admin, label: "Admin", icon: ShieldCheckIcon }];
   }
   return [
     vacancies,
-    { href: routes.myApplications, label: "My applications" },
-    { href: routes.bookmarks, label: "Bookmarks" },
-    { href: routes.publications, label: "Publications" },
+    { href: routes.myApplications, label: "My applications", icon: FileTextIcon },
+    { href: routes.bookmarks, label: "Bookmarks", icon: BookmarkIcon },
+    { href: routes.publications, label: "Publications", icon: NewspaperIcon },
+    { href: routes.invitations, label: "Invitations", icon: MailIcon },
   ];
 }
 

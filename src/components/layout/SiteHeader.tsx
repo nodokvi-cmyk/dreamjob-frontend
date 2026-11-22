@@ -26,6 +26,7 @@ import {
   isActive,
   primaryNav,
   roleLabel,
+  type NavLink,
 } from "@/lib/account";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -75,6 +76,7 @@ function HeaderBar({ pathname }: { pathname: string }) {
                   active && "text-on-enamel after:opacity-100",
                 )}
               >
+                {link.icon ? <link.icon aria-hidden className="mr-2 hidden size-4 shrink-0 lg:block" /> : null}
                 {link.label}
               </Link>
             );
@@ -131,6 +133,7 @@ function HeaderBar({ pathname }: { pathname: string }) {
                     key={link.href}
                     href={link.href}
                     label={link.label}
+                    icon={link.icon}
                     active={isActive(pathname, link.href)}
                     onNavigate={closeMenu}
                   />
@@ -195,11 +198,13 @@ function HeaderBar({ pathname }: { pathname: string }) {
 function MobileLink({
   href,
   label,
+  icon: Icon,
   active,
   onNavigate,
 }: {
   href: string;
   label: string;
+  icon?: NavLink["icon"];
   active: boolean;
   onNavigate: () => void;
 }) {
@@ -213,13 +218,17 @@ function MobileLink({
         active && "text-on-enamel",
       )}
     >
-      <span
-        aria-hidden
-        className={cn(
-          "size-3 rounded-full border-2 border-on-enamel-muted",
-          active && "border-line-green bg-line-green",
-        )}
-      />
+      {Icon ? (
+        <Icon aria-hidden className={cn("size-5 shrink-0", active && "text-line-green")} />
+      ) : (
+        <span
+          aria-hidden
+          className={cn(
+            "size-3 rounded-full border-2 border-on-enamel-muted",
+            active && "border-line-green bg-line-green",
+          )}
+        />
+      )}
       {label}
     </Link>
   );
