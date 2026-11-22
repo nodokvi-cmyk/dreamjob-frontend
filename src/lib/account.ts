@@ -58,19 +58,22 @@ export function roleLabel(session: Session): string {
 
 export function primaryNav(session: Session | null): NavLink[] {
   const vacancies = { href: routes.vacancies, label: "Vacancies", icon: BriefcaseBusinessIcon };
-  if (!session) return [vacancies, { href: companySignUpHref, label: "For companies", icon: Building2Icon }];
+  const companies = { href: routes.companies, label: "Companies", icon: Building2Icon };
+  if (!session) return [vacancies, companies];
   if (session.accountRole === "company") {
     return [
       vacancies,
+      companies,
       { href: routes.dashboard, label: "Dashboard", icon: LayoutDashboardIcon },
       { href: routes.board, label: "Job seekers", icon: UsersIcon },
     ];
   }
   if (session.accountRole === "admin") {
-    return [vacancies, { href: routes.admin, label: "Admin", icon: ShieldCheckIcon }];
+    return [vacancies, companies, { href: routes.admin, label: "Admin", icon: ShieldCheckIcon }];
   }
   return [
     vacancies,
+    companies,
     { href: routes.myApplications, label: "My applications", icon: FileTextIcon },
     { href: routes.bookmarks, label: "Bookmarks", icon: BookmarkIcon },
     { href: routes.publications, label: "Publications", icon: NewspaperIcon },

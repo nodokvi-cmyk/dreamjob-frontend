@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 import { VacancyList } from "@/components/vacancies/VacancyList";
 import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { routes } from "@/lib/routes";
-import { listVacancies } from "@/services/publicVacancies.service";
-import type { Paginated, VacancyCard, VacancyQuery } from "@/types";
+import { listLatestVacancies } from "@/services/publicVacancies.service";
+import type { VacancyCard, VacancyQuery } from "@/types";
 
-const LATEST_COUNT = 6;
+const LATEST_COUNT = 5;
 
 const LATEST_QUERY: VacancyQuery = { sort: "-date" };
 
-async function loadLatest(): Promise<{ latest: Paginated<VacancyCard>; now: number } | null> {
+async function loadLatest(): Promise<{ items: VacancyCard[]; now: number } | null> {
   try {
-    const latest = await listVacancies(LATEST_QUERY, LATEST_COUNT);
-    return { latest, now: Date.now() };
+    const items = await listLatestVacancies();
+    return { items, now: Date.now() };
   } catch {
     return null;
   }
@@ -24,8 +24,8 @@ async function loadLatest(): Promise<{ latest: Paginated<VacancyCard>; now: numb
 export async function LatestVacancies() {
   await connection();
   const loaded = await loadLatest();
-  if (!loaded || loaded.latest.items.length === 0) return null;
-  const { latest, now } = loaded;
+  if (!loaded || loaded.items.length === 0) return null;
+  const { items, now } = loaded;
 
   return (
     <section aria-labelledby="latest-title" className="border-b border-border">
@@ -46,7 +46,7 @@ export async function LatestVacancies() {
         </div>
         <div className="lg:col-span-8">
           <ViewerMarksProvider source={{ kind: "list", query: LATEST_QUERY, take: LATEST_COUNT }}>
-            <VacancyList vacancies={latest.items} now={now} headingLevel="h3" />
+            <VacancyList vacancies={items} now={now} headingLevel="h3" />
           </ViewerMarksProvider>
         </div>
       </div>

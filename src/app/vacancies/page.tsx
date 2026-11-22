@@ -1,4 +1,6 @@
+import { XIcon } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 import { FilterBar, SortSelect } from "@/components/vacancies/FilterBar";
 import { EmptyResults, PastLastPage, ResultsError } from "@/components/vacancies/ListStates";
@@ -12,8 +14,10 @@ import {
   hasFilters,
   parseVacancyQuery,
   vacanciesHref,
+  withoutCompany,
 } from "@/lib/vacancyQuery";
 import { canonicalFor, openGraphFor } from "@/lib/site";
+import { getPublicCompany } from "@/services/publicCompanies.service";
 import { listVacancies } from "@/services/publicVacancies.service";
 import type { Paginated, VacancyCard, VacancyQuery } from "@/types";
 
@@ -45,9 +49,19 @@ async function loadPage(query: VacancyQuery): Promise<Loaded> {
   return { result, now: Date.now() };
 }
 
+async function loadCompanyName(companyId: string | undefined): Promise<string | null> {
+  if (!companyId) return null;
+  try {
+    const company = await getPublicCompany(companyId);
+    return company?.companyName.trim() || "Company";
+  } catch {
+    return "Company";
+  }
+}
+
 export default async function VacanciesPage({ searchParams }: PageProps<"/vacancies">) {
   const query = parseVacancyQuery(await searchParams);
-  const { result, now } = await loadPage(query);
+  const [{ result, now }, companyName] = await Promise.all([loadPage(query), loadCompanyName(query.companyId)]);
   const total = result?.total ?? null;
 
   return (
@@ -58,6 +72,16 @@ export default async function VacanciesPage({ searchParams }: PageProps<"/vacanc
             <h1 className="font-display text-[clamp(2.5rem,6vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.02em] uppercase">
               Vacancies
             </h1>
+            {query.companyId && companyName ? (
+              <Link
+                href={vacanciesHref(withoutCompany(query))}
+                className="inline-flex h-9 w-fit max-w-full items-center gap-1.5 rounded-full border border-foreground/20 bg-card pr-2 pl-3.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/45 hover:bg-muted"
+              >
+                <span className="truncate">Company: {companyName}</span>
+                <XIcon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+                <span className="sr-only">Remove company filter</span>
+              </Link>
+            ) : null}
             <FilterBar query={query} total={total} />
           </div>
         </div>

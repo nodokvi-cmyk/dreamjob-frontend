@@ -10,6 +10,7 @@ const COLUMNS = [
     title: "Job seekers",
     links: [
       { href: routes.vacancies, label: "Browse vacancies" },
+      { href: routes.companies, label: "Browse companies" },
       { href: routes.signUp, label: "Create an account" },
       { href: routes.signIn, label: "Sign in" },
     ],

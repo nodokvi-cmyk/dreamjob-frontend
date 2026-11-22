@@ -7,6 +7,7 @@ import {
   optionalNumber,
   optionalOneOf,
   optionalString,
+  pageParser,
   string,
   stringArray,
   stringOr,
@@ -21,6 +22,7 @@ import type {
   Director,
   MessageResponse,
   PublicCompany,
+  PublicCompanyCard,
 } from "@/types";
 
 function companyPath(id: string, action?: string): string {
@@ -95,10 +97,26 @@ export function choosePayAsYouPublish(id: string): Promise<Company> {
   });
 }
 
+function parsePublicCompanyCard(data: unknown): PublicCompanyCard {
+  const source = object(data, "company");
+  return {
+    id: string(source, "id"),
+    companyName: stringOr(source, "companyName", ""),
+    logoUrl: stringOr(source, "logoUrl", ""),
+    excerpt: stringOr(source, "excerpt", ""),
+    location: stringOr(source, "location", ""),
+    operatingCities: stringArray(source, "operatingCities"),
+    openVacancies: optionalNumber(source, "openVacancies") ?? 0,
+  };
+}
+
+export const parsePublicCompanyPage = pageParser("companies", parsePublicCompanyCard);
+
 export function parsePublicCompany(data: unknown): PublicCompany {
   const source = object(data, "company");
   return {
     id: string(source, "id"),
+    openVacancies: optionalNumber(source, "openVacancies") ?? 0,
     companyName: stringOr(source, "companyName", ""),
     description: stringOr(source, "description", ""),
     website: stringOr(source, "website", ""),

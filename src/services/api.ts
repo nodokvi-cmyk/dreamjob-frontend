@@ -13,6 +13,7 @@ export interface RequestOptions {
   token?: string | null;
   signal?: AbortSignal;
   cache?: RequestCache;
+  next?: { revalidate: number };
   headers?: Record<string, string>;
 }
 
@@ -117,7 +118,7 @@ export async function api<T>(
   parse: (data: unknown) => T,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { method = "GET", body, signal, cache } = options;
+  const { method = "GET", body, signal, cache, next } = options;
   const token = currentToken(options.token);
   const headers = new Headers({ Accept: "application/json" });
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -139,6 +140,7 @@ export async function api<T>(
       body: payload,
       signal,
       cache,
+      next,
     });
   } catch (error: unknown) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;

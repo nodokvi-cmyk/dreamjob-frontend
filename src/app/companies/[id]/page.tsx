@@ -1,14 +1,21 @@
-import { ExternalLinkIcon, MailIcon, MapPinIcon, PhoneIcon, UserRoundIcon } from "lucide-react";
+import { ArrowRightIcon, ExternalLinkIcon, MailIcon, MapPinIcon, PhoneIcon, UserRoundIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
+import { openVacanciesText } from "@/components/companies/CompanyListCard";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
+import { Button } from "@/components/ui/button";
 import { ResultsError } from "@/components/vacancies/ListStates";
+import { VacancyList } from "@/components/vacancies/VacancyList";
+import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { routes } from "@/lib/routes";
 import { canonicalFor, openGraphFor } from "@/lib/site";
 import { summary } from "@/lib/vacancy";
+import { vacanciesHref } from "@/lib/vacancyQuery";
 import { getPublicCompany } from "@/services/publicCompanies.service";
-import type { PublicCompany } from "@/types";
+import { listVacancies } from "@/services/publicVacancies.service";
+import type { PublicCompany, VacancyCard, VacancyQuery } from "@/types";
 
 type Loaded = { kind: "found"; company: PublicCompany } | { kind: "missing" } | { kind: "failed" };
 
@@ -18,6 +25,22 @@ async function load(id: string): Promise<Loaded> {
     return company ? { kind: "found", company } : { kind: "missing" };
   } catch {
     return { kind: "failed" };
+  }
+}
+
+const PREVIEW_COUNT = 3;
+
+function previewQuery(companyId: string): VacancyQuery {
+  return { companyId, sort: "-date" };
+}
+
+async function loadPreview(companyId: string): Promise<{ items: VacancyCard[]; now: number } | null> {
+  try {
+    const page = await listVacancies(previewQuery(companyId), PREVIEW_COUNT);
+    await connection();
+    return { items: page.items, now: Date.now() };
+  } catch {
+    return null;
   }
 }
 
@@ -60,6 +83,7 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
   }
   const { company } = loaded;
   const name = companyName(company);
+  const preview = company.openVacancies > 0 ? await loadPreview(company.id) : null;
   const website = company.website.trim();
 
   return (
@@ -77,6 +101,7 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
                 {company.location}
               </p>
             ) : null}
+            <p className="text-[1.02rem] font-medium">{openVacanciesText(company.openVacancies)}</p>
           </div>
         </div>
       </header>
@@ -153,12 +178,36 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
               <p className="text-muted-foreground">This company hasn&apos;t added a description yet.</p>
             )}
           </section>
-          <Link
-            href={routes.vacancies}
-            className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
-          >
-            Browse all vacancies
-          </Link>
+          <section aria-labelledby="open-title" className="flex flex-col gap-5">
+            <h2 id="open-title" className="font-display text-[1.75rem] leading-none font-bold tracking-[-0.01em] uppercase">
+              Open vacancies
+            </h2>
+            {preview && preview.items.length > 0 ? (
+              <>
+                <ViewerMarksProvider source={{ kind: "list", query: previewQuery(company.id), take: PREVIEW_COUNT }}>
+                  <VacancyList vacancies={preview.items} now={preview.now} headingLevel="h3" />
+                </ViewerMarksProvider>
+                <Button asChild variant="outline" size="lg" className="w-fit">
+                  <Link href={vacanciesHref({ companyId: company.id })}>
+                    See all vacancies
+                    <ArrowRightIcon aria-hidden />
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-muted-foreground">
+                  {company.openVacancies > 0 ? "The vacancies didn't load just now." : "No open vacancies right now."}
+                </p>
+                <Link
+                  href={routes.vacancies}
+                  className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
+                >
+                  Browse all vacancies
+                </Link>
+              </>
+            )}
+          </section>
         </div>
       </div>
     </article>

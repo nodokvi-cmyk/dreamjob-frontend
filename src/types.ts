@@ -79,8 +79,28 @@ export type BillingPlan = "payAsYouPublish" | "plus" | "elite";
 
 export type PaidPlan = Exclude<BillingPlan, "payAsYouPublish">;
 
+export type CompanySort = "vacancies" | "newest";
+
+export interface CompanyQuery {
+  q?: string;
+  location?: string;
+  sort?: CompanySort;
+  page?: number;
+}
+
+export interface PublicCompanyCard {
+  id: string;
+  companyName: string;
+  logoUrl: string;
+  excerpt: string;
+  location: string;
+  operatingCities: string[];
+  openVacancies: number;
+}
+
 export interface PublicCompany {
   id: string;
+  openVacancies: number;
   companyName: string;
   description: string;
   website: string;
@@ -309,6 +329,7 @@ export interface OwnVacancyQuery {
 }
 
 export interface VacancyQuery {
+  companyId?: string;
   q?: string;
   category?: string;
   location?: string;

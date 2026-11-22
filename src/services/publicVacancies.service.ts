@@ -1,7 +1,7 @@
 import { cacheLife } from "next/cache";
 import { apiSearch } from "@/lib/vacancyQuery";
 import { ApiError, api } from "@/services/api";
-import { OBJECT_ID, parseVacancyDetail, parseVacancyPage } from "@/services/vacancies.service";
+import { OBJECT_ID, parseLatestVacancies, parseVacancyDetail, parseVacancyPage } from "@/services/vacancies.service";
 import type { Paginated, VacancyCard, VacancyDetail, VacancyQuery } from "@/types";
 
 async function fetchVacancyPage(search: string): Promise<Paginated<VacancyCard>> {
@@ -19,6 +19,10 @@ async function fetchVacancy(id: string): Promise<VacancyDetail | null> {
     if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return null;
     throw error;
   }
+}
+
+export function listLatestVacancies(): Promise<VacancyCard[]> {
+  return api("/vacancies/latest", parseLatestVacancies, { token: null, next: { revalidate: 60 } });
 }
 
 export function listVacancies(query: VacancyQuery, take: number): Promise<Paginated<VacancyCard>> {

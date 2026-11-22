@@ -20,6 +20,8 @@ export const LOCATION_MAX = 128;
 export const SALARY_MAX = 1_000_000_000;
 export const PAGE_MAX = 10_000;
 
+const COMPANY_ID = /^[a-f\d]{24}$/;
+
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 export function first(value: string | string[] | undefined): string {
@@ -48,7 +50,9 @@ export function parseVacancyQuery(params: RawSearchParams): VacancyQuery {
   const category = text(params.category, CATEGORY_MAX);
   const sort = pick(params.sort, VACANCY_SORTS);
   const page = positiveInt(params.page, PAGE_MAX);
+  const companyId = first(params.companyId).trim().toLowerCase();
   return {
+    companyId: COMPANY_ID.test(companyId) ? companyId : undefined,
     q: text(params.q, QUERY_MAX),
     category: category ? (matchCategory(category) ?? category) : undefined,
     location: text(params.location, LOCATION_MAX),
@@ -63,6 +67,7 @@ export function parseVacancyQuery(params: RawSearchParams): VacancyQuery {
 
 export function queryParams(query: VacancyQuery): Record<string, string | undefined> {
   return {
+    companyId: query.companyId,
     q: query.q,
     location: query.location,
     category: query.category,
@@ -182,5 +187,9 @@ export function withoutFilters(query: VacancyQuery, keys: FilterKey[]): VacancyQ
 }
 
 export function clearedQuery(query: VacancyQuery): VacancyQuery {
-  return { sort: query.sort };
+  return { sort: query.sort, companyId: query.companyId };
+}
+
+export function withoutCompany(query: VacancyQuery): VacancyQuery {
+  return { ...query, companyId: undefined, page: undefined };
 }
