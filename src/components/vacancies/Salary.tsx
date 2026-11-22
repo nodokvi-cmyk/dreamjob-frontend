@@ -12,7 +12,11 @@ export function Salary({
 }) {
   const salary = formatSalary(range);
   if (salary === null) {
-    return <span className={cn("text-[0.95rem] text-muted-foreground", negotiableClassName)}>{NEGOTIABLE}</span>;
+    return (
+      <span className={cn("font-display leading-none font-bold tabular text-muted-foreground", className, negotiableClassName)}>
+        {NEGOTIABLE}
+      </span>
+    );
   }
   return <span className={cn("font-display leading-none font-bold tabular", className)}>{salary}</span>;
 }
