@@ -207,19 +207,16 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
                 <p className="text-muted-foreground">
                   {company.openVacancies > 0 ? "The vacancies didn't load just now." : "No open vacancies right now."}
                 </p>
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                  <Link
-                    href={routes.vacancies}
-                    className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
-                  >
-                    Browse all vacancies
-                  </Link>
-                  <Link
-                    href={pastHref}
-                    className="inline-flex w-fit items-center gap-2 font-semibold text-cobalt-ink underline-offset-4 hover:underline"
-                  >
-                    Past vacancies
-                  </Link>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild variant="outline" size="lg" className="w-fit">
+                    <Link href={routes.vacancies}>
+                      Browse all vacancies
+                      <ArrowRightIcon aria-hidden />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="w-fit">
+                    <Link href={pastHref}>Past vacancies</Link>
+                  </Button>
                 </div>
               </>
             )}
