@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { formError, type FormError } from "@/lib/errors";
 import { addDays, endOfTbilisiDay, formatDate, formatDay, tbilisiDay } from "@/lib/vacancy";
+import { MAX_DEADLINE_DAYS } from "@/lib/vacancyForm";
 import { isPaymentProcessing, NO_CASH_REFUNDS } from "@/lib/vacancyLifecycle";
 import { extendVacancy } from "@/services/vacancies.service";
 import type { CurrentCompany, OwnVacancy } from "@/types";
@@ -32,6 +33,7 @@ export function ExtendVacancy({ vacancy, account, now, onExtended, onPaymentProc
   const dayAfter = addDays(currentDay, 1);
   const min = dayAfter > tomorrow ? dayAfter : tomorrow;
   const freeDay = vacancy.freeWindowEndsAt ? tbilisiDay(Date.parse(vacancy.freeWindowEndsAt)) : null;
+  const max = addDays(freeDay !== null && freeDay > today ? freeDay : today, MAX_DEADLINE_DAYS);
   const [open, setOpen] = useState(false);
   const [day, setDay] = useState(min);
   const [pending, setPending] = useState(false);
@@ -65,8 +67,8 @@ export function ExtendVacancy({ vacancy, account, now, onExtended, onPaymentProc
   }
 
   async function confirm() {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day < min) {
-      setFieldError(`Choose a date from ${formatDay(min)}.`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day < min || day > max) {
+      setFieldError(`Choose a date from ${formatDay(min)} to ${formatDay(max)}.`);
       return;
     }
     setFieldError(null);
@@ -122,6 +124,7 @@ export function ExtendVacancy({ vacancy, account, now, onExtended, onPaymentProc
                 id={`${id}-day`}
                 type="date"
                 min={min}
+                max={max}
                 value={day}
                 disabled={pending}
                 onChange={(event) => setDay(event.target.value)}
@@ -133,7 +136,7 @@ export function ExtendVacancy({ vacancy, account, now, onExtended, onPaymentProc
               <p id={`${id}-note`} className="text-sm text-muted-foreground">
                 {pastWindow
                   ? "This date is past the free window, so it may cost 1 credit or a payment. The answer decides; you see a Stripe page only if a payment is needed."
-                  : "Closes at the end of this day, Tbilisi time."}
+                  : `Closes at the end of this day, Tbilisi time. Choose a date up to ${formatDay(max)}.`}
               </p>
             </div>
             <p className="text-sm text-muted-foreground">A paid extension is never refunded. {NO_CASH_REFUNDS}</p>

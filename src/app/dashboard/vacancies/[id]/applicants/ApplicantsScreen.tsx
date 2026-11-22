@@ -9,6 +9,7 @@ import { ApplicationStatusLine } from "@/components/applications/ApplicationStat
 import { StaleAlert } from "@/components/admin/StaleAlert";
 import { useLoad } from "@/components/dashboard/useLoad";
 import { GateSpinner } from "@/components/guards/GateStates";
+import { ResultCount } from "@/components/layout/ResultCount";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -164,13 +165,12 @@ function Applicants({ id, accountId }: { id: string; accountId: string }) {
             {total === null ? (
               state.status === "loading" ? "Loading applicants" : null
             ) : (
-              <>
-                <span className="font-display text-[1.6rem] leading-none font-bold text-foreground tabular">
-                  {new Intl.NumberFormat("en-GB").format(total)}
-                </span>{" "}
-                {total === 1 ? "applicant" : "applicants"}
-                {query.status ? ` · ${APPLICATION_STATUS_LABELS[query.status]}` : null}
-              </>
+              <ResultCount
+                total={total}
+                singular="applicant"
+                plural="applicants"
+                filter={query.status ? APPLICATION_STATUS_LABELS[query.status] : undefined}
+              />
             )}
           </p>
           <StaleAlert message={stale} />

@@ -11,6 +11,7 @@ import { useLoad } from "@/components/dashboard/useLoad";
 import { GateSpinner } from "@/components/guards/GateStates";
 import { Notice } from "@/components/profile/SaveRow";
 import { useAction } from "@/components/profile/useAction";
+import { ResultCount } from "@/components/layout/ResultCount";
 import { Button } from "@/components/ui/button";
 import { ListMessage, PastLastPage, ResultsError, VacancyListSkeleton } from "@/components/vacancies/ListStates";
 import { Pagination } from "@/components/vacancies/Pagination";
@@ -129,13 +130,12 @@ function Dashboard({ account }: { account: CurrentCompany }) {
               {total === null ? (
                 state.status === "loading" ? "Loading your vacancies" : "Vacancy list unavailable"
               ) : (
-                <>
-                  <span className="font-display text-[1.6rem] leading-none font-bold text-foreground tabular">
-                    {new Intl.NumberFormat("en-GB").format(total)}
-                  </span>{" "}
-                  {total === 1 ? "vacancy" : "vacancies"}
-                  {query.status ? ` · ${STATUS_LABELS[query.status]}` : null}
-                </>
+                <ResultCount
+                  total={total}
+                  singular="vacancy"
+                  plural="vacancies"
+                  filter={query.status ? STATUS_LABELS[query.status] : undefined}
+                />
               )}
             </p>
             <Notice message={notice} />
