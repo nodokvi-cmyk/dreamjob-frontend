@@ -86,7 +86,7 @@ export function getPublicUser(id: string, signal?: AbortSignal): Promise<PublicU
   return api(userPath(id, "profile"), parsePublicUser, { signal, cache: "no-store" });
 }
 
-function parsePublicUser(data: unknown): PublicUser {
+export function parsePublicUser(data: unknown): PublicUser {
   const source = object(data, "user");
   const base = {
     id: string(source, "id"),

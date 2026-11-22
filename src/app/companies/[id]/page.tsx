@@ -62,7 +62,11 @@ export async function generateMetadata({ params }: PageProps<"/companies/[id]">)
     openGraph: openGraphFor(`/companies/${company.id}`, {
       title: companyName(company),
       description,
-      images: company.logoUrl ? [{ url: company.logoUrl, alt: `${companyName(company)} logo` }] : undefined,
+      images: [
+        company.logoUrl
+          ? { url: company.logoUrl, alt: `${companyName(company)} logo` }
+          : { url: `/og/company/${company.id}`, width: 1200, height: 630, alt: companyName(company) },
+      ],
     }),
   };
 }

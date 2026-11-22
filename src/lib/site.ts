@@ -26,7 +26,7 @@ export function openGraphFor(path: string, extra: OpenGraph = {}): OpenGraph {
     siteName: SITE_NAME,
     locale: "en_GB",
     url: path,
-    images: [{ url: "/og/site", width: 1200, height: 630, alt: SITE_NAME }],
     ...extra,
+    images: extra.images ?? [{ url: "/og/site", width: 1200, height: 630, alt: SITE_NAME }],
   };
 }
