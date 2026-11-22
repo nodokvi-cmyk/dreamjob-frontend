@@ -2,12 +2,11 @@ import { ArrowRightIcon, MapPinIcon, SearchIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CompanyListCard } from "@/components/companies/CompanyListCard";
+import { CompanySortSelect } from "@/components/companies/CompanySortSelect";
 import { Button } from "@/components/ui/button";
 import { ListMessage, PastLastPage, ResultsError } from "@/components/vacancies/ListStates";
 import { Pagination } from "@/components/vacancies/Pagination";
 import {
-  COMPANY_SORTS,
-  COMPANY_SORT_LABELS,
   DEFAULT_COMPANY_SORT,
   companiesHref,
   hasCompanyFilters,
@@ -104,22 +103,7 @@ export default async function CompaniesPage({ searchParams }: PageProps<"/compan
                 </>
               )}
             </p>
-            <nav aria-label="Sort companies" className="flex flex-wrap items-center gap-2.5">
-              <span className="transit-label text-[0.8rem] text-muted-foreground">Sort</span>
-              <ul className="flex flex-wrap gap-1.5">
-                {COMPANY_SORTS.map((option) => (
-                  <li key={option}>
-                    <Link
-                      href={companiesHref({ ...query, sort: option, page: undefined })}
-                      aria-current={option === sort ? "true" : undefined}
-                      className="inline-flex h-9 items-center rounded-full border border-foreground/20 px-3.5 text-sm font-medium transition-colors hover:border-foreground/45 hover:bg-muted aria-[current=true]:border-foreground aria-[current=true]:bg-foreground aria-[current=true]:text-background"
-                    >
-                      {COMPANY_SORT_LABELS[option]}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            <CompanySortSelect query={query} />
           </div>
 
           <div className="flex flex-col gap-4">
