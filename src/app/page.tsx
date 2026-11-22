@@ -60,15 +60,15 @@ export default function HomePage() {
         <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 pt-12 pb-16 sm:px-6 md:pt-16 lg:grid-cols-12 lg:gap-10 lg:px-8 lg:pt-20 lg:pb-24">
           <div className="flex flex-col gap-7 lg:col-span-7">
             <h1 className="font-display text-[clamp(2.75rem,7vw,5.25rem)] leading-[0.95] font-bold tracking-[-0.02em] uppercase">
-              Verified employers.
+              Approved employers.
               <br />
-              Pay you can see.
+              Clear pay.
               <br />
               <span className="text-line-scarlet">Your next stop.</span>
             </h1>
             <p className="max-w-[34rem] text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              Vacancies across Georgia from companies our team has approved, with the salary right
-              on the listing.
+              Vacancies across Georgia from companies our team has approved. Every listing shows
+              the salary, or says Negotiable.
             </p>
 
             <Form
