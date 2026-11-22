@@ -51,10 +51,14 @@ export async function generateMetadata({ params }: PageProps<"/vacancies/[id]">)
     openGraph: openGraphFor(`/vacancies/${vacancy.id}`, {
       title: vacancy.title,
       description,
-      images: photo ? [{ url: photo.url, alt: vacancy.title }] : undefined,
+      images: [
+        photo
+          ? { url: photo.url, alt: vacancy.title }
+          : { url: `/og/vacancy/${vacancy.id}`, width: 1200, height: 630, alt: vacancy.title },
+      ],
     }),
     twitter: {
-      card: photo ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: vacancy.title,
       description,
     },
