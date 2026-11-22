@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { ResultsError } from "@/components/vacancies/ListStates";
 import { ApplyPanel } from "@/components/vacancies/apply/ApplyPanel";
 import { DetailActions } from "@/components/vacancies/DetailActions";
+import { OwnerStrip } from "@/components/vacancies/OwnerStrip";
 import { VacancyDetailView } from "@/components/vacancies/VacancyDetail";
 import { ViewerMarksProvider } from "@/components/vacancies/ViewerMarks";
 import { jobPostingJson } from "@/lib/jobPosting";
@@ -79,6 +80,7 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
   return (
     <ViewerMarksProvider source={{ kind: "detail", id: vacancy.id }}>
       {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} /> : null}
+      <OwnerStrip vacancyId={vacancy.id} companyId={vacancy.company} />
       <VacancyDetailView
         vacancy={vacancy}
         now={now}
