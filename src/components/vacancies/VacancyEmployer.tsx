@@ -40,15 +40,13 @@ export function VacancyEmployer({ employer, size, tone = "surface", className }:
   return (
     <span className={cn("flex min-w-0 flex-col gap-1.5", className)}>
       <span className={cn("flex min-w-0 items-center", size === "sm" ? "gap-2" : "gap-3.5")}>
-        {employer.logoUrl ? (
-          <AccountPhoto
-            src={employer.logoUrl}
-            kind="company"
-            alt=""
-            size={size === "sm" ? "xs" : "tile"}
-            fit="contain"
-          />
-        ) : null}
+        <AccountPhoto
+          src={employer.logoUrl}
+          kind="company"
+          alt=""
+          size={size === "sm" ? "xs" : "tile"}
+          fit="contain"
+        />
         {linked ? (
           <Link
             href={linked}
