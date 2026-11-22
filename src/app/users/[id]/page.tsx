@@ -12,10 +12,10 @@ export async function generateMetadata({ params }: PageProps<"/users/[id]">): Pr
     return {
       title: "Profile",
       robots: { index: false },
-      openGraph: openGraphFor(`/users/${id}`, {
+      openGraph: openGraphFor(`/users/${encodeURIComponent(id)}`, {
         title: "Profile",
         description: "A profile on GetDreamJob.",
-        images: [{ url: `/og/user/${id}`, width: 1200, height: 630, alt: "Profile on GetDreamJob" }],
+        images: [{ url: `/og/user/${encodeURIComponent(id)}`, width: 1200, height: 630, alt: "Profile on GetDreamJob" }],
       }),
     };
   }

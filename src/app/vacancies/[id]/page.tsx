@@ -42,11 +42,11 @@ export async function generateMetadata({ params }: PageProps<"/vacancies/[id]">)
     return {
       title: "Vacancy not found",
       robots: { index: false },
-      openGraph: openGraphFor(`/vacancies/${id}`, { title: "Vacancy not found" }),
+      openGraph: openGraphFor(`/vacancies/${encodeURIComponent(id)}`, { title: "Vacancy not found" }),
     };
   }
   if (loaded.kind === "failed") {
-    return { title: "Vacancy", openGraph: openGraphFor(`/vacancies/${id}`, { title: "Vacancy" }) };
+    return { title: "Vacancy", openGraph: openGraphFor(`/vacancies/${encodeURIComponent(id)}`, { title: "Vacancy" }) };
   }
   const { vacancy } = loaded;
   const description = metaDescription(vacancy);

@@ -55,11 +55,11 @@ export async function generateMetadata({ params }: PageProps<"/companies/[id]">)
     return {
       title: "Company not found",
       robots: { index: false },
-      openGraph: openGraphFor(`/companies/${id}`, { title: "Company not found" }),
+      openGraph: openGraphFor(`/companies/${encodeURIComponent(id)}`, { title: "Company not found" }),
     };
   }
   if (loaded.kind === "failed") {
-    return { title: "Company", openGraph: openGraphFor(`/companies/${id}`, { title: "Company" }) };
+    return { title: "Company", openGraph: openGraphFor(`/companies/${encodeURIComponent(id)}`, { title: "Company" }) };
   }
   const { company } = loaded;
   const description = company.description ? summary(company.description) : `${companyName(company)} on GetDreamJob.`;
