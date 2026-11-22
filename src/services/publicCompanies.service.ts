@@ -1,9 +1,13 @@
 import { cacheLife } from "next/cache";
 import { COMPANY_PAGE_SIZE, companyApiSearch } from "@/lib/companyQuery";
 import { ApiError, api } from "@/services/api";
-import { parsePublicCompany, parsePublicCompanyPage } from "@/services/companies.service";
+import {
+  parsePublicCompany,
+  parsePublicCompanyPage,
+  parseTopRatedCompanies,
+} from "@/services/companies.service";
 import { OBJECT_ID } from "@/services/vacancies.service";
-import type { CompanyQuery, Paginated, PublicCompany, PublicCompanyCard } from "@/types";
+import type { CompanyQuery, Paginated, PublicCompany, PublicCompanyCard, TopRatedCompany } from "@/types";
 
 async function fetchPublicCompany(id: string): Promise<PublicCompany | null> {
   "use cache";
@@ -20,6 +24,10 @@ async function fetchCompanyPage(search: string): Promise<Paginated<PublicCompany
   "use cache";
   cacheLife("minutes");
   return api(`/companies/public?${search}`, parsePublicCompanyPage, { token: null });
+}
+
+export function listTopRatedCompanies(): Promise<TopRatedCompany[]> {
+  return api("/companies/top-rated", parseTopRatedCompanies, { token: null, next: { revalidate: 60 } });
 }
 
 export async function getPublicCompany(id: string): Promise<PublicCompany | null> {

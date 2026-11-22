@@ -1,7 +1,10 @@
 import {
+  array,
   boolean,
   booleanOr,
   isObject,
+  nullableNumber,
+  number,
   object,
   optionalIsoDate,
   optionalNumber,
@@ -23,6 +26,8 @@ import type {
   MessageResponse,
   PublicCompany,
   PublicCompanyCard,
+  RatingResult,
+  TopRatedCompany,
 } from "@/types";
 
 function companyPath(id: string, action?: string): string {
@@ -107,6 +112,7 @@ function parsePublicCompanyCard(data: unknown): PublicCompanyCard {
     location: stringOr(source, "location", ""),
     operatingCities: stringArray(source, "operatingCities"),
     openVacancies: optionalNumber(source, "openVacancies") ?? 0,
+    rating: nullableNumber(source, "rating"),
   };
 }
 
@@ -126,5 +132,43 @@ export function parsePublicCompany(data: unknown): PublicCompany {
     email: stringOr(source, "email", ""),
     phone: stringOr(source, "phone", ""),
     director: parseDirector(source.director) ?? null,
+    rating: nullableNumber(source, "rating"),
+    ratingCount: optionalNumber(source, "ratingCount") ?? 0,
+    myRating: nullableNumber(source, "myRating"),
   };
+}
+
+function parseRatingResult(data: unknown): RatingResult {
+  const source = object(data, "rating");
+  return {
+    myRating: nullableNumber(source, "myRating"),
+    rating: nullableNumber(source, "rating"),
+    ratingCount: number(source, "ratingCount"),
+  };
+}
+
+function parseTopRatedCompany(value: unknown): TopRatedCompany {
+  const source = object(value, "company");
+  return {
+    id: string(source, "id"),
+    companyName: stringOr(source, "companyName", ""),
+    logoUrl: stringOr(source, "logoUrl", ""),
+    rating: number(source, "rating"),
+  };
+}
+
+export function parseTopRatedCompanies(data: unknown): TopRatedCompany[] {
+  return array(object(data, "companies").items, "items", parseTopRatedCompany);
+}
+
+export function putRating(companyId: string, stars: number): Promise<RatingResult> {
+  return api(companyPath(companyId, "rating"), parseRatingResult, { method: "PUT", body: { stars } });
+}
+
+export function deleteRating(companyId: string): Promise<RatingResult> {
+  return api(companyPath(companyId, "rating"), parseRatingResult, { method: "DELETE" });
+}
+
+export function getMyCompanyProfile(id: string, signal?: AbortSignal): Promise<PublicCompany> {
+  return api(companyPath(id, "profile"), parsePublicCompany, { signal, cache: "no-store" });
 }

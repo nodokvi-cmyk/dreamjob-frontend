@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { openVacanciesText } from "@/components/companies/CompanyListCard";
+import { CompanyRating } from "@/components/companies/CompanyRating";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { Button } from "@/components/ui/button";
 import { ResultsError } from "@/components/vacancies/ListStates";
@@ -102,6 +103,7 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
               </p>
             ) : null}
             <p className="text-[1.02rem] font-medium">{openVacanciesText(company.openVacancies)}</p>
+            <CompanyRating companyId={company.id} rating={company.rating} ratingCount={company.ratingCount} />
           </div>
         </div>
       </header>

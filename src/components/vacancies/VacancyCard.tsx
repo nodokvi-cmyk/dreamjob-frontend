@@ -79,6 +79,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
               logoUrl: vacancy.logoUrl,
               approved: marks.companyApproved,
               href: companyHref(vacancy.company),
+              rating: vacancy.rating,
             }}
             size="sm"
             logo={false}

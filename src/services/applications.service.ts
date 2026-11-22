@@ -80,6 +80,7 @@ function parseMyApplication(value: unknown): MyApplication | null {
       company: string(vacancy, "company"),
       companyName: stringOr(vacancy, "companyName", ""),
       logoUrl: stringOr(vacancy, "logoUrl", ""),
+      rating: null,
       deadline: isoDate(vacancy, "deadline"),
       status: oneOf(vacancy, "status", USER_VACANCY_STATUSES),
     },

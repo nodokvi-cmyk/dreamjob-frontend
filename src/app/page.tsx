@@ -4,6 +4,7 @@ import Form from "next/form";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
+import { TopRatedCompanies } from "@/components/companies/TopRatedCompanies";
 import { LatestVacancies } from "@/components/vacancies/LatestVacancies";
 import { companySignUpHref } from "@/lib/account";
 import { routes } from "@/lib/routes";
@@ -179,6 +180,10 @@ export default function HomePage() {
 
       <Suspense fallback={null}>
         <LatestVacancies />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <TopRatedCompanies />
       </Suspense>
 
       <section aria-labelledby="principles-title" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">

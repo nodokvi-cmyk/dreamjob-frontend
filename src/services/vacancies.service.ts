@@ -5,6 +5,7 @@ import {
   booleanOr,
   isObject,
   isoDate,
+  nullableNumber,
   number,
   object,
   oneOf,
@@ -87,6 +88,7 @@ export function parseCompanyDisplay(source: JsonObject): CompanyDisplay {
   return {
     companyName: stringOr(source, "companyName", ""),
     logoUrl: stringOr(source, "logoUrl", ""),
+    rating: nullableNumber(source, "rating"),
   };
 }
 

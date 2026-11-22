@@ -46,6 +46,10 @@ export function optionalNumber(source: JsonObject, key: string): number | undefi
   return value;
 }
 
+export function nullableNumber(source: JsonObject, key: string): number | null {
+  return optionalNumber(source, key) ?? null;
+}
+
 export function boolean(source: JsonObject, key: string): boolean {
   const value = source[key];
   if (typeof value !== "boolean") throw new DecodeError(key);

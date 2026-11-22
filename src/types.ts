@@ -96,6 +96,7 @@ export interface PublicCompanyCard {
   location: string;
   operatingCities: string[];
   openVacancies: number;
+  rating: number | null;
 }
 
 export interface PublicCompany {
@@ -110,6 +111,22 @@ export interface PublicCompany {
   email: string;
   phone: string;
   director: Director | null;
+  rating: number | null;
+  ratingCount: number;
+  myRating: number | null;
+}
+
+export interface RatingResult {
+  myRating: number | null;
+  rating: number | null;
+  ratingCount: number;
+}
+
+export interface TopRatedCompany {
+  id: string;
+  companyName: string;
+  logoUrl: string;
+  rating: number;
 }
 
 interface PublicUserBase {
@@ -250,6 +267,7 @@ export interface VacancyBase {
 export interface CompanyDisplay {
   companyName: string;
   logoUrl: string;
+  rating: number | null;
 }
 
 export interface ViewerMarks {

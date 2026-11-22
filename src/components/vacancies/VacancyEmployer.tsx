@@ -1,5 +1,6 @@
 import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
+import { Stars } from "@/components/companies/Stars";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +9,7 @@ export interface EmployerInfo {
   logoUrl: string;
   approved: boolean;
   href?: string;
+  rating?: number | null;
 }
 
 interface VacancyEmployerProps {
@@ -63,6 +65,7 @@ export function VacancyEmployer({ employer, size, tone = "surface", logo = true,
         ) : (
           <span className={nameClass}>{name}</span>
         )}
+        <Stars rating={employer.rating ?? null} size={size === "sm" ? "sm" : "md"} />
       </span>
       {employer.approved ? null : <CompanyWarning tone={tone} />}
     </span>

@@ -1,5 +1,6 @@
 import { MapPinIcon } from "lucide-react";
 import Link from "next/link";
+import { Stars } from "@/components/companies/Stars";
 import { AccountPhoto } from "@/components/profile/AccountPhoto";
 import { companyHref } from "@/lib/routes";
 import { vacanciesHref } from "@/lib/vacancyQuery";
@@ -23,6 +24,7 @@ export function CompanyListCard({ company }: { company: PublicCompanyCard }) {
             {name}
           </Link>
         </h2>
+        <Stars rating={company.rating} size="sm" />
         {places.length > 0 ? (
           <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
             <MapPinIcon aria-hidden className="size-4 shrink-0" />

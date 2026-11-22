@@ -188,6 +188,7 @@ export function AdminReviewScreen({ id }: { id: string }) {
           logoUrl: vacancy.logoUrl,
           approved: vacancy.companyApproved,
           href: companyHref(vacancy.company),
+          rating: vacancy.rating,
         }}
       />
     </div>

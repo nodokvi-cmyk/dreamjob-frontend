@@ -88,6 +88,7 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
           logoUrl: vacancy.logoUrl,
           approved: vacancy.companyApproved,
           href: companyHref(vacancy.company),
+          rating: vacancy.rating,
         }}
         actions={<DetailActions vacancy={vacancy} now={now} />}
         apply={<ApplyPanel vacancy={vacancy} now={now} />}
