@@ -214,7 +214,7 @@ export function VacancyDetailView({ vacancy, now, back, employer, actions, apply
             <Salary
               range={vacancy}
               className="text-[2.4rem] tracking-[-0.01em]"
-              negotiableClassName="text-lg text-on-enamel-muted"
+              negotiableClassName="text-on-enamel-muted"
             />
           </p>
 

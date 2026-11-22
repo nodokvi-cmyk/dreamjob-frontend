@@ -71,7 +71,7 @@ export function PublicationView({ publication, back, status, strip, panel }: Pub
             <Salary
               range={publication}
               className="text-[2.4rem] tracking-[-0.01em]"
-              negotiableClassName="text-lg text-on-enamel-muted"
+              negotiableClassName="text-on-enamel-muted"
             />
           </p>
 
