@@ -57,7 +57,7 @@ function HeaderBar({ pathname }: { pathname: string }) {
       >
         Skip to content
       </a>
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:gap-10 lg:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Link href={routes.home} className="rounded-md text-on-enamel" aria-label="GetDreamJob home">
           <Logo />
         </Link>
@@ -71,12 +71,12 @@ function HeaderBar({ pathname }: { pathname: string }) {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex items-center px-3 transit-label text-[0.95rem] text-on-enamel-muted transition-colors hover:text-on-enamel",
-                  "after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-full after:bg-line-green after:opacity-0 after:transition-opacity",
+                  "relative flex items-center whitespace-nowrap px-2.5 transit-label text-[0.95rem] text-on-enamel-muted transition-colors hover:text-on-enamel",
+                  "after:absolute after:inset-x-2.5 after:bottom-0 after:h-[3px] after:rounded-full after:bg-line-green after:opacity-0 after:transition-opacity",
                   active && "text-on-enamel after:opacity-100",
                 )}
               >
-                {link.icon ? <link.icon aria-hidden className="mr-2 hidden size-4 shrink-0 lg:block" /> : null}
+                {link.icon ? <link.icon aria-hidden className="mr-2 hidden size-4 shrink-0 xl:block" /> : null}
                 {link.label}
               </Link>
             );
