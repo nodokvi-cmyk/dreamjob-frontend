@@ -89,7 +89,12 @@ function VisibleRow({ item, frame, onStatusChanged, onStale }: VisibleRowProps) 
   }
 
   return (
-    <article id={applicantRowId(item.id)} tabIndex={-1} aria-labelledby={headingId} className={frame}>
+    <article
+      id={applicantRowId(item.id)}
+      tabIndex={-1}
+      aria-labelledby={headingId}
+      className={cn(frame, item.status === "submitted" && "border-l-4 border-l-line-scarlet")}
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 gap-4">
           <AccountPhoto src={applicant.avatarUrl} kind="user" alt="" size="row" fit="cover" />
@@ -121,6 +126,11 @@ function VisibleRow({ item, frame, onStatusChanged, onStale }: VisibleRowProps) 
         </div>
         <div className="flex flex-wrap items-center gap-1.5 sm:flex-col sm:items-end">
           <ApplicationStatusBadge status={item.status} />
+          {item.status === "submitted" ? (
+            <span className="inline-flex h-6 w-fit items-center rounded-full bg-line-scarlet px-2.5 transit-label text-[0.75rem] leading-none text-white">
+              New
+            </span>
+          ) : null}
           {item.viaInvitation ? (
             <span className="inline-flex h-6 w-fit items-center rounded-full border border-line-green/50 px-2.5 transit-label text-[0.75rem] leading-none text-foreground">
               Invited

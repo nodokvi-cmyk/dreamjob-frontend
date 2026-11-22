@@ -121,6 +121,13 @@ function parsePrivate(source: JsonObject): PrivateVacancyFields {
   };
 }
 
+function parseApplicantNumbers(source: JsonObject): { applicantCount: number; newApplicants: number } {
+  return {
+    applicantCount: optionalNumber(source, "applicantCount") ?? 0,
+    newApplicants: optionalNumber(source, "newApplicants") ?? 0,
+  };
+}
+
 export function parseVacancyCard(data: unknown): VacancyCard {
   const source = object(data, "vacancy");
   return {
@@ -136,6 +143,7 @@ export function parseOwnVacancyCard(data: unknown): OwnVacancyCard {
   return {
     ...parseCardFields(source),
     ...parsePrivate(source),
+    ...parseApplicantNumbers(source),
     status: oneOf(source, "status", VACANCY_STATUSES),
     photos: parsePhotos(source),
   };
@@ -241,7 +249,8 @@ export function getOwnVacancy(id: string, accountId: string, signal?: AbortSigna
   if (!OBJECT_ID.test(id)) return Promise.reject(new ApiError("Vacancy not found", 404));
   const parseOwned = (data: unknown): OwnVacancy => {
     if (parseVacancy(data).company !== accountId) throw new ApiError("Vacancy not found", 404);
-    return parseOwnVacancy(data);
+    const source = object(data, "vacancy");
+    return { ...parseOwnVacancy(source), ...parseApplicantNumbers(source) };
   };
   return api(vacancyPath(id), parseOwned, { signal, cache: "no-store" });
 }

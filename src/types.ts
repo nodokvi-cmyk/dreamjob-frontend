@@ -292,7 +292,14 @@ export interface VacancyCard extends VacancyCardFields, CompanyDisplay, ViewerMa
   status: UserVacancyStatus;
 }
 
-export interface OwnVacancyCard extends VacancyCardFields, PrivateVacancyFields {
+export interface ApplicantNumbers {
+  applicantCount?: number;
+  newApplicants?: number;
+}
+
+export interface OwnVacancyCard extends VacancyCardFields, PrivateVacancyFields, ApplicantNumbers {
+  applicantCount: number;
+  newApplicants: number;
   status: VacancyStatus;
   photos: VacancyPhoto[];
 }
@@ -309,7 +316,7 @@ export interface Vacancy extends VacancyBase {
   photos: VacancyPhoto[];
 }
 
-export interface OwnVacancy extends Vacancy, PrivateVacancyFields {}
+export interface OwnVacancy extends Vacancy, PrivateVacancyFields, ApplicantNumbers {}
 
 export interface VacancyDetail extends Vacancy, CompanyDisplay, ViewerMarks {}
 

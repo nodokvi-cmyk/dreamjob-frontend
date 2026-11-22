@@ -15,7 +15,15 @@ import type { CurrentCompany, OwnVacancy } from "@/types";
 interface VacancyActionsProps {
   vacancy: Pick<
     OwnVacancy,
-    "id" | "title" | "status" | "deadline" | "photos" | "firstPublishedAt" | "freeWindowEndsAt"
+    | "id"
+    | "title"
+    | "status"
+    | "deadline"
+    | "photos"
+    | "firstPublishedAt"
+    | "freeWindowEndsAt"
+    | "applicantCount"
+    | "newApplicants"
   >;
   now: number;
   account: CurrentCompany;
@@ -37,6 +45,8 @@ export function VacancyActions({
   const editable = canEdit(vacancy);
   const approved = account.approved;
   const title = vacancy.title;
+  const applicantCount = vacancy.applicantCount ?? 0;
+  const newApplicants = vacancy.newApplicants ?? 0;
   const paymentProcessing = () => onUpdated(`Your payment for “${title}” is being processed. It may take a moment to show here.`);
 
   return (
@@ -59,12 +69,23 @@ export function VacancyActions({
         />
       ) : null}
       {wasPublished(vacancy) ? (
-        <Button asChild variant="outline" size="sm">
-          <Link href={applicantsPath(vacancy.id)} aria-label={`Applicants for ${title}`}>
-            <UsersIcon aria-hidden />
-            Applicants
-          </Link>
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <Button asChild variant="outline" size="sm">
+            <Link
+              href={applicantsPath(vacancy.id)}
+              aria-label={`Applicants for ${title}${applicantCount > 0 ? `, ${applicantCount}` : ""}`}
+            >
+              <UsersIcon aria-hidden />
+              Applicants
+              {applicantCount > 0 ? <span className="tabular font-bold">{applicantCount}</span> : null}
+            </Link>
+          </Button>
+          {newApplicants > 0 ? (
+            <span className="transit-label inline-flex h-7 items-center rounded-full bg-line-scarlet px-2.5 text-[0.8rem] text-white">
+              {newApplicants} new
+            </span>
+          ) : null}
+        </div>
       ) : null}
       {showPreview ? (
         <Button asChild variant="outline" size="sm">
