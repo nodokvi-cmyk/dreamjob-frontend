@@ -65,7 +65,8 @@ export function CompanyRating({ companyId, rating, ratingCount }: CompanyRatingP
     }
   }
 
-  const loadingMine = isUser && state.status === "loading";
+  const loadingMine =
+    isUser && (state.status === "loading" || (state.status === "ready" && state.refreshing));
   const failedMine = isUser && state.status === "failed";
   const signedOut = status === "anonymous";
 

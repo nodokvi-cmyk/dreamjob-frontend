@@ -137,6 +137,9 @@ export default async function VacanciesPage({ searchParams }: PageProps<"/vacanc
                 )}
                 filtered={hasFilters(query)}
                 past={past}
+                pastHref={
+                  query.companyId ? vacanciesHref({ companyId: query.companyId, period: "past" }) : undefined
+                }
               />
             )}
           </SearchResultsRegion>

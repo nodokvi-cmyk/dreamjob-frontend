@@ -189,8 +189,8 @@ export function InboxRow({ invitation, focused, onAccepted, onDeclined, onStale,
             title="Decline this invitation?"
             description={
               <p>
-                {companyName} can&apos;t invite this publication again. You can still apply to the vacancy the usual
-                way.
+                {companyName} can&apos;t invite you to this vacancy again, but may still invite you to a different
+                one. You can still apply to this vacancy the usual way.
               </p>
             }
             confirmLabel="Decline"

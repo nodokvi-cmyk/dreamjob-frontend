@@ -48,11 +48,26 @@ export function EmptyResults({
   clearHref,
   filtered,
   past = false,
+  pastHref,
 }: {
   clearHref: string;
   filtered: boolean;
   past?: boolean;
+  pastHref?: string;
 }) {
+  if (pastHref && !past && !filtered) {
+    return (
+      <ListMessage
+        title="No open vacancies right now"
+        body="This company has nothing open at the moment. Closed and expired vacancies are in its past list."
+        action={
+          <Button asChild size="lg">
+            <Link href={pastHref}>See past vacancies</Link>
+          </Button>
+        }
+      />
+    );
+  }
   if (past && !filtered) {
     return (
       <ListMessage

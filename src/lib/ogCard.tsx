@@ -1,4 +1,7 @@
+import { readFile } from "node:fs/promises";
 import { ImageResponse } from "next/og";
+
+type ImageResponseOptions = NonNullable<ConstructorParameters<typeof ImageResponse>[1]>;
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
@@ -14,9 +17,29 @@ function clamp(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }
 
-export function brandCard({ eyebrow, title, lines = [] }: BrandCardProps): ImageResponse {
+type OgFonts = NonNullable<ImageResponseOptions["fonts"]>;
+
+let fontsPromise: Promise<OgFonts> | null = null;
+
+function loadFonts(): Promise<OgFonts> {
+  fontsPromise ??= Promise.all([
+    readFile(new URL("../assets/fonts/NotoSansGeorgian-Regular.ttf", import.meta.url)),
+    readFile(new URL("../assets/fonts/NotoSansGeorgian-ExtraBold.ttf", import.meta.url)),
+  ]).then(([regular, bold]): OgFonts => [
+    { name: "Noto Sans Georgian", data: regular, weight: 400, style: "normal" },
+    { name: "Noto Sans Georgian", data: bold, weight: 800, style: "normal" },
+  ]);
+  return fontsPromise.catch((): OgFonts => {
+    fontsPromise = null;
+    return [];
+  });
+}
+
+export async function brandCard({ eyebrow, title, lines = [] }: BrandCardProps): Promise<ImageResponse> {
   const text = clamp(title, 90);
-  const size = text.length > 60 ? 64 : text.length > 36 ? 78 : 96;
+  const weight = /[Ⴀ-ჿ]/.test(text) ? text.length * 1.5 : text.length;
+  const size = weight > 100 ? 52 : weight > 60 ? 64 : weight > 36 ? 78 : 96;
+  const fonts = await loadFonts();
   return new ImageResponse(
     (
       <div
@@ -28,6 +51,7 @@ export function brandCard({ eyebrow, title, lines = [] }: BrandCardProps): Image
           justifyContent: "space-between",
           background: "#0b1230",
           color: "#f4f6fb",
+          ...(fonts.length > 0 ? { fontFamily: "Noto Sans Georgian" } : {}),
           padding: "64px 72px",
           borderTop: "14px solid #e21d2d",
         }}
@@ -65,6 +89,6 @@ export function brandCard({ eyebrow, title, lines = [] }: BrandCardProps): Image
         </div>
       </div>
     ),
-    { ...OG_SIZE, headers: CACHE_HEADERS },
+    { ...OG_SIZE, headers: CACHE_HEADERS, ...(fonts.length > 0 ? { fonts } : {}) },
   );
 }
