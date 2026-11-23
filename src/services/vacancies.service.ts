@@ -197,7 +197,7 @@ export function parseLatestVacancies(data: unknown): VacancyCard[] {
   return array(source.items, "items", parseVacancyCard);
 }
 
-export const parseOwnVacancyPage =pageParser("vacancies", parseOwnVacancyCard);
+export const parseOwnVacancyPage = pageParser("vacancies", parseOwnVacancyCard);
 
 export const parseAdminVacancyPage = pageParser("vacancies", parseAdminVacancyCard);
 

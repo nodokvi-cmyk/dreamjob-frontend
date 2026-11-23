@@ -92,25 +92,25 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
   const jsonLd = jobPostingJson(vacancy);
   return (
     <>
-    <ViewerMarksProvider source={{ kind: "detail", id: vacancy.id }}>
-      {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} /> : null}
-      <OwnerStrip vacancyId={vacancy.id} companyId={vacancy.company} />
-      <VacancyDetailView
-        vacancy={vacancy}
-        now={now}
-        back={{ href: routes.vacancies, label: "All vacancies" }}
-        employer={{
-          companyName: vacancy.companyName,
-          logoUrl: vacancy.logoUrl,
-          approved: vacancy.companyApproved,
-          href: companyHref(vacancy.company),
-          rating: vacancy.rating,
-        }}
-        actions={<DetailActions vacancy={vacancy} now={now} />}
-        apply={<ApplyPanel vacancy={vacancy} now={now} />}
-      />
-    </ViewerMarksProvider>
-    <SimilarVacancies id={vacancy.id} category={vacancy.category} now={now} />
+      <ViewerMarksProvider source={{ kind: "detail", id: vacancy.id }}>
+        {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} /> : null}
+        <OwnerStrip vacancyId={vacancy.id} companyId={vacancy.company} />
+        <VacancyDetailView
+          vacancy={vacancy}
+          now={now}
+          back={{ href: routes.vacancies, label: "All vacancies" }}
+          employer={{
+            companyName: vacancy.companyName,
+            logoUrl: vacancy.logoUrl,
+            approved: vacancy.companyApproved,
+            href: companyHref(vacancy.company),
+            rating: vacancy.rating,
+          }}
+          actions={<DetailActions vacancy={vacancy} now={now} />}
+          apply={<ApplyPanel vacancy={vacancy} now={now} />}
+        />
+      </ViewerMarksProvider>
+      <SimilarVacancies id={vacancy.id} category={vacancy.category} now={now} />
     </>
   );
 }
