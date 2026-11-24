@@ -1,20 +1,17 @@
-import { ArrowRightIcon, MapPinIcon, SearchIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CompanyListCard } from "@/components/companies/CompanyListCard";
+import { CompanySearch } from "@/components/companies/CompanySearch";
 import { CompanySortSelect } from "@/components/companies/CompanySortSelect";
 import { Button } from "@/components/ui/button";
 import { ListMessage, PastLastPage, ResultsError } from "@/components/vacancies/ListStates";
 import { Pagination } from "@/components/vacancies/Pagination";
 import {
-  DEFAULT_COMPANY_SORT,
   companiesHref,
   hasCompanyFilters,
   parseCompanyQuery,
 } from "@/lib/companyQuery";
-import { routes } from "@/lib/routes";
 import { canonicalFor, openGraphFor } from "@/lib/site";
-import { LOCATION_MAX, QUERY_MAX } from "@/lib/vacancyQuery";
 import { listPublicCompanies } from "@/services/publicCompanies.service";
 import type { Paginated, PublicCompanyCard } from "@/types";
 
@@ -37,7 +34,6 @@ export default async function CompaniesPage({ searchParams }: PageProps<"/compan
   } catch {
     result = null;
   }
-  const sort = query.sort ?? DEFAULT_COMPANY_SORT;
 
   return (
     <>
@@ -47,43 +43,7 @@ export default async function CompaniesPage({ searchParams }: PageProps<"/compan
             <h1 className="font-display text-[clamp(2.5rem,6vw,3.75rem)] leading-[0.95] font-bold tracking-[-0.02em] uppercase">
               Companies
             </h1>
-            <form
-              role="search"
-              action={routes.companies}
-              className="flex w-full flex-col gap-1 rounded-xl border-2 border-foreground bg-card p-1.5 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 sm:flex-row sm:items-center sm:gap-0"
-            >
-              {sort !== DEFAULT_COMPANY_SORT ? <input type="hidden" name="sort" value={sort} /> : null}
-              <label className="flex flex-1 items-center gap-3 px-3">
-                <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />
-                <span className="sr-only">Company name</span>
-                <input
-                  name="q"
-                  type="search"
-                  defaultValue={query.q ?? ""}
-                  maxLength={QUERY_MAX}
-                  placeholder="Company name"
-                  autoComplete="off"
-                  className="h-11 w-full min-w-0 bg-transparent text-[1.05rem] outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
-                />
-              </label>
-              <span aria-hidden className="hidden h-7 w-px bg-border sm:block" />
-              <label className="flex items-center gap-3 border-t border-border px-3 sm:w-56 sm:border-t-0">
-                <MapPinIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />
-                <span className="sr-only">City</span>
-                <input
-                  name="location"
-                  defaultValue={query.location ?? ""}
-                  maxLength={LOCATION_MAX}
-                  placeholder="City"
-                  autoComplete="address-level2"
-                  className="h-11 w-full min-w-0 bg-transparent text-[1.05rem] outline-none placeholder:text-muted-foreground"
-                />
-              </label>
-              <Button type="submit" className="h-11 sm:ml-1">
-                Search
-                <ArrowRightIcon aria-hidden />
-              </Button>
-            </form>
+            <CompanySearch query={query} />
           </div>
         </div>
       </div>
