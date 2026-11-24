@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { accountParam } from "@/lib/account";
-import { googleReturn } from "@/lib/authDraft";
+import { googlePending, googleReturn } from "@/lib/authDraft";
 import { problem, type FormError } from "@/lib/errors";
 import { GOOGLE_ERROR_PARAM, googleErrorMessage, parseGoogleErrorCode } from "@/lib/googleRedirect";
 import { routes, withQuery } from "@/lib/routes";
@@ -31,7 +31,9 @@ export function useGoogleReturn(fallback: AccountType): GoogleReturnError | null
   });
 
   useEffect(() => {
-    if (returned) router.replace(returned.target, { scroll: false });
+    if (!returned) return;
+    googlePending.clear();
+    router.replace(returned.target, { scroll: false });
   }, [returned, router]);
 
   return returned;

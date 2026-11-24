@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useGoogleReturn } from "@/components/auth/useGoogleReturn";
 import { FormAlert } from "@/components/form/FormAlert";
-import { googleReturn } from "@/lib/authDraft";
+import { googlePending, googleReturn } from "@/lib/authDraft";
 import { googleStartHref } from "@/lib/googleRedirect";
 import { redirectTarget } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,7 @@ function GoogleButtonInner({ accountType }: GoogleButtonProps) {
       </div>
       <a
         href={googleStartHref(accountType)}
+        onClick={() => googlePending.mark()}
         className={cn(
           googleSans.className,
           "flex h-12 w-full items-center justify-center gap-2.5 rounded-[4px] border border-[#747775] bg-white px-3 text-sm leading-5 font-medium text-[#1F1F1F] transition-[filter] hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:border-[#8E918F] dark:bg-[#131314] dark:text-[#E3E3E3] dark:hover:brightness-125",

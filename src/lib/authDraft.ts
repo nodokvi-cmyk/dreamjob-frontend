@@ -137,8 +137,25 @@ export const googleReturn = {
   },
 };
 
+const GOOGLE_PENDING_KEY = "dreamjob.googlePending";
+
+export const googlePending = {
+  mark() {
+    writeJson(GOOGLE_PENDING_KEY, { startedAt: Date.now() });
+  },
+  take(): boolean {
+    const waiting = isObject(readJson(GOOGLE_PENDING_KEY));
+    remove(GOOGLE_PENDING_KEY);
+    return waiting;
+  },
+  clear() {
+    remove(GOOGLE_PENDING_KEY);
+  },
+};
+
 export function clearAuthDrafts() {
   codeDraft.clear();
   emailPrefill.clear();
   googleReturn.clear();
+  googlePending.clear();
 }

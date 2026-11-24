@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { GateSpinner } from "@/components/guards/GateStates";
 import { useAuth } from "@/context/AuthContext";
 import { afterAuthPath } from "@/lib/account";
-import { clearAuthDrafts, googleReturn } from "@/lib/authDraft";
+import { clearAuthDrafts, googlePending, googleReturn } from "@/lib/authDraft";
 import { GOOGLE_ERROR_PARAM, tokenFromFragment, type GoogleErrorCode } from "@/lib/googleRedirect";
 import { routes, withQuery } from "@/lib/routes";
 
@@ -17,6 +17,7 @@ export function GoogleCompleteScreen() {
   useEffect(() => {
     if (started.current) return;
     started.current = true;
+    const requested = googlePending.take();
     const token = tokenFromFragment(window.location.hash);
     window.history.replaceState(null, "", window.location.pathname);
     const saved = googleReturn.read();
@@ -25,7 +26,7 @@ export function GoogleCompleteScreen() {
       router.replace(withQuery(routes.signIn, { [GOOGLE_ERROR_PARAM]: code }));
     }
 
-    if (token === null) {
+    if (token === null || !requested) {
       fail("missing");
       return;
     }
