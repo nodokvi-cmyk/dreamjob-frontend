@@ -26,7 +26,7 @@ export function applyState(vacancy: ApplyTarget, marks: ViewerMarks, now: number
   const closed = closedReason(vacancy, marks.companyApproved, now);
   const application = marks.myApplication;
   if (!application) return closed ? { kind: "unavailable", reason: closed } : { kind: "apply" };
-  if (application.canReapply) return { kind: "reapply" };
+  if (application.canReapply && !closed) return { kind: "reapply" };
   const label = application.submissions >= 2 ? "Reapplied" : "Applied";
   if (ACTIVE.has(application.status)) {
     return { kind: "applied", label, reason: "You already applied. Your application is with the employer." };

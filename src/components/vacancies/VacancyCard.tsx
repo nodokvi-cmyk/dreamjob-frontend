@@ -115,7 +115,7 @@ export function VacancyCardRow({ vacancy, now, headingLevel, onBookmarkChange }:
               bookmarked={marks.isBookmarked}
               onChange={onBookmarkChange ? (bookmarked) => onBookmarkChange(vacancy.id, bookmarked) : undefined}
             />
-            {ended ? null : (
+            {ended && !marks.myApplication ? null : (
               <ApplyButton
                 vacancy={vacancy}
                 marks={marks}
