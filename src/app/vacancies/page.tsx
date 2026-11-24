@@ -23,15 +23,27 @@ import { getPublicCompany } from "@/services/publicCompanies.service";
 import { listVacancies } from "@/services/publicVacancies.service";
 import type { Paginated, VacancyCard, VacancyQuery } from "@/types";
 
+async function isEmptyCompanyList(query: VacancyQuery): Promise<boolean> {
+  try {
+    const result = await listVacancies(query, PAGE_SIZE);
+    return result.total === 0;
+  } catch {
+    return false;
+  }
+}
+
 export async function generateMetadata({ searchParams }: PageProps<"/vacancies">): Promise<Metadata> {
-  const { page } = parseVacancyQuery(await searchParams);
-  const canonical = vacanciesHref({ page });
+  const { page, companyId, period } = parseVacancyQuery(await searchParams);
+  const scoped: VacancyQuery = { page, companyId, period };
+  const canonical = vacanciesHref(scoped);
+  const empty = companyId ? await isEmptyCompanyList(scoped) : false;
   return {
     title: "Vacancies",
     description:
       "Search published vacancies across Georgia by keyword, city, category, work mode, contract type and pay.",
     alternates: canonicalFor(canonical),
     openGraph: openGraphFor(canonical),
+    robots: empty ? { index: false, follow: true } : undefined,
   };
 }
 
