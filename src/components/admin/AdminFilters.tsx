@@ -59,7 +59,7 @@ export function AdminFilters({ query, companyLabel, navigate }: AdminFiltersProp
           search.markSent(value);
           navigate({ q: value || undefined });
         }}
-        className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 lg:max-w-md"
+        className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 lg:max-w-md"
       >
         <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />
         <label htmlFor={`${id}-q`} className="sr-only">

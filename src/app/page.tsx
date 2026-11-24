@@ -75,7 +75,7 @@ export default function HomePage() {
             <Form
               action={routes.vacancies}
               role="search"
-              className="flex w-full max-w-2xl flex-col gap-2 rounded-xl border-2 border-foreground bg-card p-2 shadow-[0_18px_40px_-24px_rgb(11_18_48/0.45)] sm:flex-row sm:items-center sm:gap-0"
+              className="flex w-full max-w-2xl flex-col gap-2 rounded-xl border-2 border-foreground bg-card p-2 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 shadow-[0_18px_40px_-24px_rgb(11_18_48/0.45)] sm:flex-row sm:items-center sm:gap-0"
             >
               <label className="flex flex-1 items-center gap-3 px-3">
                 <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />

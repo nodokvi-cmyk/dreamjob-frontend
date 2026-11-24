@@ -114,7 +114,7 @@ function Applicants({ id, accountId }: { id: string; accountId: string }) {
                   search.markSent(value);
                   navigate({ ...query, q: value || undefined, page: undefined, focus: undefined });
                 }}
-                className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 sm:max-w-sm"
+                className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 sm:max-w-sm"
               >
                 <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />
                 <label htmlFor="applicants-search" className="sr-only">

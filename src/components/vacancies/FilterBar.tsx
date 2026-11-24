@@ -81,7 +81,7 @@ export function FilterBar({ query, total }: { query: VacancyQuery; total: number
       <form
         role="search"
         onSubmit={submit}
-        className="flex w-full flex-col gap-1 rounded-xl border-2 border-foreground bg-card p-1.5 sm:flex-row sm:items-center sm:gap-0"
+        className="flex w-full flex-col gap-1 rounded-xl border-2 border-foreground bg-card p-1.5 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 sm:flex-row sm:items-center sm:gap-0"
       >
         <label className="flex flex-1 items-center gap-3 px-3">
           <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />

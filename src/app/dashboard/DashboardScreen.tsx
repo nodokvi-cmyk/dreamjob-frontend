@@ -102,7 +102,7 @@ function Dashboard({ account }: { account: CurrentCompany }) {
                 search.markSent(value);
                 navigate({ status: query.status, q: value || undefined });
               }}
-              className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 lg:max-w-sm"
+              className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 lg:max-w-sm"
             >
               <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />
               <label htmlFor="dashboard-search" className="sr-only">

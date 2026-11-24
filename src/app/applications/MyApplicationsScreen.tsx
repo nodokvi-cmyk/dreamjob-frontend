@@ -71,7 +71,7 @@ export function MyApplicationsScreen() {
                   search.markSent(value);
                   navigate({ ...base, q: value || undefined, page: undefined });
                 }}
-                className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 sm:max-w-sm"
+                className="flex h-12 w-full items-center gap-3 rounded-xl border-2 border-foreground bg-card px-3 has-[input:focus-visible]:ring-3 has-[input:focus-visible]:ring-ring/40 sm:max-w-sm"
               >
                 <SearchIcon aria-hidden className="size-5 shrink-0 text-muted-foreground" />
                 <label htmlFor="applications-search" className="sr-only">
