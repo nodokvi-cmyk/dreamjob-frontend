@@ -58,7 +58,13 @@ export function ApplyForm({ vacancy, kind, previousStatus, hasProfileCv, onSent 
   const keptLetter = keep && letter === null && (previous?.hasCoverLetter ?? false);
   const keptMessage = keep && !newMessage && (previous?.message.trim() ?? "") !== "";
   const sendsCv = newCv || keptCv;
-  const sendsWords = newMessage || letter !== null || keptLetter || keptMessage;
+  const sendsLetter = letter !== null || keptLetter;
+  const sendsMessage = newMessage || keptMessage;
+  const missing = [
+    sendsCv ? null : "CV",
+    sendsLetter ? null : "cover letter",
+    sendsMessage ? null : "message",
+  ].filter((item): item is string => item !== null);
   const reapply = kind === "reapply";
 
   function validate(): Errors {
@@ -203,17 +209,8 @@ export function ApplyForm({ vacancy, kind, previousStatus, hasProfileCv, onSent 
         </label>
       ) : null}
 
-      {!sendsCv || !sendsWords ? (
-        <FormAlert
-          tone="attention"
-          message={
-            !sendsCv && !sendsWords
-              ? "You are sending no CV, cover letter or message."
-              : !sendsCv
-                ? "You are sending no CV."
-                : "You are sending no cover letter or message."
-          }
-        >
+      {missing.length > 0 ? (
+        <FormAlert tone="attention" message={`You are sending no ${joinList(missing, "or")}.`}>
           <p className="text-muted-foreground">You can still send it. Employers decide faster with more to go on.</p>
         </FormAlert>
       ) : null}
@@ -250,8 +247,12 @@ function describe(previous: { message: string; hasCv: boolean; hasCoverLetter: b
     previous.hasCoverLetter ? "your cover letter" : null,
   ].filter((part): part is string => part !== null);
   if (parts.length === 0) return "nothing, your earlier application was empty";
+  return joinList(parts, "and");
+}
+
+function joinList(parts: string[], word: "and" | "or"): string {
   if (parts.length === 1) return parts[0];
-  return `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+  return `${parts.slice(0, -1).join(", ")} ${word} ${parts[parts.length - 1]}`;
 }
 
 interface CvOptionProps {
