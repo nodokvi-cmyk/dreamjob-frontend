@@ -8,7 +8,7 @@ import { routes } from "@/lib/routes";
 import { listLatestVacancies } from "@/services/publicVacancies.service";
 import type { VacancyCard, VacancyQuery } from "@/types";
 
-const LATEST_COUNT = 5;
+const MARKS_COUNT = 10;
 
 const LATEST_QUERY: VacancyQuery = { sort: "-date" };
 
@@ -45,7 +45,7 @@ export async function LatestVacancies() {
           </Button>
         </div>
         <div className="lg:col-span-8">
-          <ViewerMarksProvider source={{ kind: "list", query: LATEST_QUERY, take: LATEST_COUNT }}>
+          <ViewerMarksProvider source={{ kind: "list", query: LATEST_QUERY, take: MARKS_COUNT }}>
             <VacancyList vacancies={items} now={now} headingLevel="h3" />
           </ViewerMarksProvider>
         </div>
