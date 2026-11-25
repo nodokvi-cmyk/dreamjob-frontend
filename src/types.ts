@@ -262,6 +262,7 @@ export interface VacancyBase {
   deadline: string;
   company: string;
   createdAt: string;
+  firstPublishedAt?: string;
 }
 
 export interface CompanyDisplay {
@@ -279,7 +280,6 @@ export interface ViewerMarks {
 export interface PrivateVacancyFields {
   rejectionReason: string;
   submittedAt?: string;
-  firstPublishedAt?: string;
   freeWindowEndsAt?: string;
   updatedAt: string;
 }

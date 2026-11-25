@@ -47,7 +47,7 @@ export function jobPostingJson(vacancy: VacancyDetail): string | null {
     "@type": "JobPosting",
     title: vacancy.title,
     description: vacancy.description,
-    datePosted: vacancy.createdAt,
+    datePosted: vacancy.firstPublishedAt,
     validThrough: vacancy.deadline,
     employmentType: EMPLOYMENT_TYPES[vacancy.employmentType],
     hiringOrganization: organization,

@@ -77,6 +77,7 @@ function parseBase(source: JsonObject): VacancyBase {
     deadline: isoDate(source, "deadline"),
     company: string(source, "company"),
     createdAt: isoDate(source, "createdAt"),
+    firstPublishedAt: optionalIsoDate(source, "firstPublishedAt"),
   };
 }
 
@@ -115,7 +116,6 @@ function parsePrivate(source: JsonObject): PrivateVacancyFields {
   return {
     rejectionReason: stringOr(source, "rejectionReason", "").trim(),
     submittedAt: optionalIsoDate(source, "submittedAt"),
-    firstPublishedAt: optionalIsoDate(source, "firstPublishedAt"),
     freeWindowEndsAt: optionalIsoDate(source, "freeWindowEndsAt"),
     updatedAt: isoDate(source, "updatedAt"),
   };

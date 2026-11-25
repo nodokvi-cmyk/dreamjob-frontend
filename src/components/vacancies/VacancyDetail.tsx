@@ -47,7 +47,7 @@ export function EndedBanner({ status }: { status: Vacancy["status"] }) {
 
 function travelled(vacancy: Vacancy, now: number): number {
   if (vacancy.status === "closed" || vacancy.status === "expired") return 1;
-  const start = Date.parse(vacancy.createdAt);
+  const start = Date.parse(vacancy.firstPublishedAt ?? vacancy.createdAt);
   const end = Date.parse(vacancy.deadline);
   if (end <= start) return 1;
   return Math.min(1, Math.max(0.06, (now - start) / (end - start)));
@@ -77,10 +77,16 @@ export function VacancyTrack({ vacancy, now }: { vacancy: Vacancy; now: number }
           className="relative z-10 mt-0.5 size-[22px] shrink-0 rounded-full border-[5px] border-line-scarlet bg-line-scarlet"
         />
         <span className="flex flex-col gap-1">
-          <span className="transit-label text-base leading-none">Posted</span>
-          <time dateTime={vacancy.createdAt} className="text-[0.95rem] text-on-enamel-muted">
-            {formatDate(vacancy.createdAt)}
-          </time>
+          {vacancy.firstPublishedAt ? (
+            <>
+              <span className="transit-label text-base leading-none">Posted</span>
+              <time dateTime={vacancy.firstPublishedAt} className="text-[0.95rem] text-on-enamel-muted">
+                {formatDate(vacancy.firstPublishedAt)}
+              </time>
+            </>
+          ) : (
+            <span className="transit-label text-base leading-none">Not posted yet</span>
+          )}
         </span>
       </li>
       <li className="relative flex gap-4">
