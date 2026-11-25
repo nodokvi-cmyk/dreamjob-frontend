@@ -2,7 +2,7 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLoad } from "@/components/dashboard/useLoad";
 import { NotificationItem } from "@/components/notifications/NotificationItem";
 import { Button } from "@/components/ui/button";
@@ -41,8 +41,22 @@ export function NotificationPanel({ accountId, role, onNavigate }: NotificationP
   const [message, setMessage] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [busy, setBusy] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const clearAllRef = useRef<HTMLButtonElement>(null);
+  const keepRef = useRef<HTMLButtonElement>(null);
+  const confirmTouched = useRef(false);
   const loadKey = `${accountId}:${page}`;
   const overrides = patched.key === loadKey ? patched.items : null;
+
+  useEffect(() => {
+    if (!confirmTouched.current) return;
+    (confirmClear ? keepRef : clearAllRef).current?.focus();
+  }, [confirmClear]);
+
+  function askToClear(next: boolean) {
+    confirmTouched.current = true;
+    setConfirmClear(next);
+  }
 
   function patch(item: AppNotification) {
     setPatched((current) => {
@@ -117,6 +131,7 @@ export function NotificationPanel({ accountId, role, onNavigate }: NotificationP
         return;
       }
     }
+    headingRef.current?.focus();
     afterRemoval(remaining);
   }
 
@@ -126,7 +141,7 @@ export function NotificationPanel({ accountId, role, onNavigate }: NotificationP
     try {
       const deleted = await clearNotifications();
       setMessage(deleted === 0 ? "Nothing to clear. Locked notifications stay." : `Cleared ${deleted}. Locked notifications stay.`);
-      setConfirmClear(false);
+      askToClear(false);
       if (page > 1) setPage(1);
       else reload();
     } catch (error: unknown) {
@@ -144,7 +159,9 @@ export function NotificationPanel({ accountId, role, onNavigate }: NotificationP
     <div className="flex max-h-[min(36rem,calc(100dvh-6rem))] flex-col">
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div className="flex flex-col">
-          <h2 className="font-display text-lg leading-none font-bold uppercase">Notifications</h2>
+          <h2 ref={headingRef} tabIndex={-1} className="font-display text-lg leading-none font-bold uppercase outline-none">
+            Notifications
+          </h2>
           {data ? (
             <p className="mt-1 text-sm text-muted-foreground tabular">
               {data.unreadCount === 0 ? "All read" : `${data.unreadCount} unread`}
@@ -158,12 +175,19 @@ export function NotificationPanel({ accountId, role, onNavigate }: NotificationP
               <Button type="button" size="xs" variant="destructive" disabled={busy} onClick={clearAll}>
                 {busy ? "Clearing" : "Clear"}
               </Button>
-              <Button type="button" size="xs" variant="ghost" disabled={busy} onClick={() => setConfirmClear(false)}>
+              <Button
+                ref={keepRef}
+                type="button"
+                size="xs"
+                variant="ghost"
+                disabled={busy}
+                onClick={() => askToClear(false)}
+              >
                 Keep
               </Button>
             </div>
           ) : (
-            <Button type="button" size="xs" variant="ghost" onClick={() => setConfirmClear(true)}>
+            <Button ref={clearAllRef} type="button" size="xs" variant="ghost" onClick={() => askToClear(true)}>
               Clear all
             </Button>
           )

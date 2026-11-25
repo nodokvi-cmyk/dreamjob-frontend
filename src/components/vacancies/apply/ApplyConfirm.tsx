@@ -3,6 +3,7 @@
 import { ArrowRightIcon, ShieldAlertIcon } from "lucide-react";
 import Link from "next/link";
 import { AlertDialog } from "radix-ui";
+import { useReturnFocus } from "@/components/dashboard/useReturnFocus";
 import { FormAlert } from "@/components/form/FormAlert";
 import { Button } from "@/components/ui/button";
 import { useApply } from "@/components/vacancies/apply/useApply";
@@ -21,6 +22,7 @@ interface ApplyConfirmProps {
 
 export function ApplyConfirm({ open, onOpenChange, vacancy, kind, previousStatus, detailHref }: ApplyConfirmProps) {
   const { pending, error, send, reset } = useApply(vacancy.id);
+  const returnFocus = useReturnFocus(false);
   const reapply = kind === "reapply";
   const afterReject = reapply && previousStatus === "rejected";
 
@@ -39,7 +41,10 @@ export function ApplyConfirm({ open, onOpenChange, vacancy, kind, previousStatus
     <AlertDialog.Root open={open} onOpenChange={handleOpenChange}>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 z-50 bg-enamel/60 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[22px] border border-border bg-popover text-popover-foreground shadow-[0_24px_60px_-12px_rgb(7_12_34/0.45)] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+        <AlertDialog.Content
+          {...returnFocus}
+          className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[22px] border border-border bg-popover text-popover-foreground shadow-[0_24px_60px_-12px_rgb(7_12_34/0.45)] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        >
           <div aria-hidden className={reapply ? "h-1.5 shrink-0 bg-line-cobalt" : "h-1.5 shrink-0 bg-line-green"} />
           <div className="flex flex-col gap-5 p-6">
             <div className="flex flex-col gap-2">

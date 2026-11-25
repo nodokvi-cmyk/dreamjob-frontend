@@ -3,6 +3,7 @@
 import { AlertDialog } from "radix-ui";
 import { useState, type ReactNode } from "react";
 import { FormAlert } from "@/components/form/FormAlert";
+import { useReturnFocus } from "@/components/dashboard/useReturnFocus";
 import { useAction } from "@/components/profile/useAction";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ export function ConfirmDialog({
   const { pending, error, run, reset } = useAction();
   const [openState, setOpenState] = useState(false);
   const open = openProp ?? openState;
+  const returnFocus = useReturnFocus(Boolean(trigger));
 
   function setOpen(next: boolean) {
     setOpenState(next);
@@ -62,7 +64,10 @@ export function ConfirmDialog({
       {trigger ? <AlertDialog.Trigger asChild>{trigger}</AlertDialog.Trigger> : null}
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 z-50 bg-enamel/60 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[22px] border border-border bg-popover text-popover-foreground shadow-[0_24px_60px_-12px_rgb(7_12_34/0.45)] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+        <AlertDialog.Content
+          {...returnFocus}
+          className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[22px] border border-border bg-popover text-popover-foreground shadow-[0_24px_60px_-12px_rgb(7_12_34/0.45)] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        >
           <div
             aria-hidden
             className={cn("h-1.5 shrink-0", tone === "danger" ? "bg-line-scarlet" : "bg-line-amber")}
