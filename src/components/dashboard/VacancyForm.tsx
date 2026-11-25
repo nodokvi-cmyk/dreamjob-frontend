@@ -434,9 +434,9 @@ export function VacancyForm({ account, now, vacancy }: VacancyFormProps) {
               hint="Plain text. Line breaks are kept. Say what the work is, who the team is, and what you offer."
             />
             <div className="flex flex-col gap-3">
-              <h3 className="flex items-center gap-2 text-sm leading-none font-semibold">
+              <h2 className="flex items-center gap-2 text-sm leading-none font-semibold">
                 Requirements <span className="font-normal text-muted-foreground">Optional</span>
-              </h3>
+              </h2>
               <RequirementsField
                 items={draft.requirements}
                 error={submitted ? errors.requirements : undefined}

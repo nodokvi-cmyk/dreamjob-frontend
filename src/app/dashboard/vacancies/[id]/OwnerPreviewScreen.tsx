@@ -44,12 +44,9 @@ function OwnerPreview({ id, accountId, account }: { id: string; accountId: strin
 
   return (
     <div className="flex flex-1 flex-col">
-      <section aria-labelledby="owner-title" className="border-b border-border bg-background">
+      <section aria-label="Your view of this vacancy" className="border-b border-border bg-background">
         <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] lg:items-start lg:gap-12 lg:px-8">
           <div className="flex min-w-0 flex-col gap-3">
-            <h2 id="owner-title" className="sr-only">
-              Your view of this vacancy
-            </h2>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <StatusBadge status={vacancy.status} />
               <span className="text-sm text-muted-foreground">

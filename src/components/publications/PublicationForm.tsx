@@ -310,9 +310,9 @@ export function PublicationForm({ publication }: { publication?: Publication }) 
               onToggle={(type) => set("employmentTypes", toggleList(draft.employmentTypes, type))}
             />
             <div className="flex flex-col gap-3">
-              <h3 className="flex items-center gap-2 text-sm leading-none font-semibold">
+              <h2 className="flex items-center gap-2 text-sm leading-none font-semibold">
                 Locations <span className="font-normal text-muted-foreground">Optional</span>
-              </h3>
+              </h2>
               <ListField
                 items={draft.locations}
                 error={shown("locations")}
@@ -352,9 +352,9 @@ export function PublicationForm({ publication }: { publication?: Publication }) 
               }
             />
             <div className="flex flex-col gap-3">
-              <h3 className="flex items-center gap-2 text-sm leading-none font-semibold">
+              <h2 className="flex items-center gap-2 text-sm leading-none font-semibold">
                 Skills <span className="font-normal text-muted-foreground">Optional</span>
-              </h3>
+              </h2>
               <ListField
                 items={draft.skills}
                 error={shown("skills")}
