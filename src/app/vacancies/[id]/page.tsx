@@ -90,6 +90,15 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
 
   const { vacancy, now } = loaded;
   const jsonLd = jobPostingJson(vacancy);
+  const target = {
+    id: vacancy.id,
+    title: vacancy.title,
+    status: vacancy.status,
+    deadline: vacancy.deadline,
+    companyApproved: vacancy.companyApproved,
+    myApplication: vacancy.myApplication,
+    isBookmarked: vacancy.isBookmarked,
+  };
   return (
     <>
       <ViewerMarksProvider source={{ kind: "detail", id: vacancy.id }}>
@@ -106,8 +115,8 @@ export default async function VacancyPage({ params }: PageProps<"/vacancies/[id]
             href: companyHref(vacancy.company),
             rating: vacancy.rating,
           }}
-          actions={<DetailActions vacancy={vacancy} now={now} />}
-          apply={<ApplyPanel vacancy={vacancy} now={now} />}
+          actions={<DetailActions vacancy={target} now={now} />}
+          apply={<ApplyPanel vacancy={target} now={now} />}
         />
       </ViewerMarksProvider>
       <SimilarVacancies id={vacancy.id} category={vacancy.category} now={now} />

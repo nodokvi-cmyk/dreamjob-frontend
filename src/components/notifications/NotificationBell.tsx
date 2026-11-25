@@ -1,11 +1,22 @@
 "use client";
 
 import { BellIcon } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
-import { NotificationPanel } from "@/components/notifications/NotificationPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { BADGE_REFRESH_MS, badgeLabel } from "@/lib/notifications";
 import { getUnseenCount, markNotificationsSeen } from "@/services/notifications.service";
+
+const NotificationPanel = dynamic(
+  () => import("@/components/notifications/NotificationPanel").then((module) => module.NotificationPanel),
+  {
+    loading: () => (
+      <p role="status" className="px-4 py-8 text-center text-sm text-muted-foreground">
+        Loading…
+      </p>
+    ),
+  },
+);
 
 function useUnseenBadge(accountId: string) {
   const [count, setCount] = useState(0);

@@ -15,6 +15,7 @@ import { summary } from "@/lib/vacancy";
 import { vacanciesHref } from "@/lib/vacancyQuery";
 import { getPublicCompany } from "@/services/publicCompanies.service";
 import { listVacancies } from "@/services/publicVacancies.service";
+import { OBJECT_ID } from "@/services/vacancies.service";
 import type { PublicCompany, VacancyCard, VacancyQuery } from "@/types";
 
 type Loaded = { kind: "found"; company: PublicCompany } | { kind: "missing" } | { kind: "failed" };
@@ -81,6 +82,7 @@ export async function generateMetadata({ params }: PageProps<"/companies/[id]">)
 
 export default async function CompanyPage({ params }: PageProps<"/companies/[id]">) {
   const { id } = await params;
+  const previewLoad = OBJECT_ID.test(id) ? loadPreview(id.toLowerCase()) : Promise.resolve(null);
   const loaded = await load(id);
   if (loaded.kind === "missing") notFound();
   if (loaded.kind === "failed") {
@@ -95,7 +97,7 @@ export default async function CompanyPage({ params }: PageProps<"/companies/[id]
   }
   const { company } = loaded;
   const name = companyName(company);
-  const preview = company.openVacancies > 0 ? await loadPreview(company.id) : null;
+  const preview = company.openVacancies > 0 ? await previewLoad : null;
   const website = company.website.trim();
   const pastHref = vacanciesHref({ companyId: company.id, period: "past" });
 
